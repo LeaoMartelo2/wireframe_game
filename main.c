@@ -1,101 +1,58 @@
+#include "player.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <rcamera.h>
 #include <stdbool.h>
-
-bool turn_left = false;
-bool turn_right = false;
-
-void move_cam(Camera *camera) {
-    Vector2 mouse_pos_delta = GetMouseDelta();
-
-    float cam_mov_speed = 300.0f * GetFrameTime();
-    float cam_rot_speed = 0.1f * GetFrameTime();
-    float cam_rol_scale = 0.1f;
-
-    if (IsKeyDown(KEY_LEFT_SHIFT)) {
-        cam_mov_speed = 500.0f * GetFrameTime();
-    }
-
-    Vector3 forward = GetCameraForward(camera);
-
-    CameraYaw(camera, -mouse_pos_delta.x * cam_rot_speed, false);
-    CameraPitch(camera, -mouse_pos_delta.y * cam_rot_speed, false, false, false);
-
-    if (IsKeyDown(KEY_W)) {
-        CameraMoveForward(camera, cam_mov_speed, true);
-    }
-
-    if (IsKeyDown(KEY_A)) {
-        CameraMoveRight(camera, -cam_mov_speed, true);
-
-        if (turn_left == false) {
-            camera->up = Vector3RotateByAxisAngle(camera->up, forward, cam_rol_scale);
-        }
-
-        turn_left = true;
-    }
-
-    if (IsKeyReleased(KEY_A)) {
-        camera->up = Vector3Zero();
-        camera->up.y = 1.0f;
-        turn_left = false;
-    }
-
-    if (IsKeyDown(KEY_S)) {
-        CameraMoveForward(camera, -cam_mov_speed, true);
-    }
-
-    if (IsKeyDown(KEY_D)) {
-        CameraMoveRight(camera, cam_mov_speed, true);
-
-        if (turn_right == false) {
-            camera->up = Vector3RotateByAxisAngle(camera->up, forward, -cam_rol_scale);
-        }
-        turn_right = true;
-    }
-    if (IsKeyReleased(KEY_D)) {
-        camera->up = Vector3Zero();
-        camera->up.y = 1.0f;
-        turn_right = false;
-    }
-}
+#include <stdio.h>
 
 int main(void) {
 
-    InitWindow(800, 600, "Boomer Shooter");
+    InitWindow(1366, 768, "Boomer Shooter");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     MaximizeWindow();
     SetTargetFPS(60);
 
     DisableCursor();
 
-    Camera3D camera = {0};
-    camera.position = (Vector3){0, 10, 10};
-    camera.target = (Vector3){0, 0, 0};
-    camera.up = (Vector3){0, 1, 0};
-    camera.fovy = 90.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    Player player = {0};
+    player.camera = (Camera3D){0};
+    player.camera.position = (Vector3){10, 10, 10};
+    player.camera.target = Vector3Zero();
+    player.camera.up = (Vector3){0, 1, 0};
+    player.camera.fovy = 90.0f;
+    player.camera.projection = CAMERA_PERSPECTIVE;
+    player.postition = (Vector3){10, 10, 10};
+    player.turn_A = false;
+    player.turn_D = false;
+    player.move_speed = 500.0f;
+    player.cam_rot_speed = 0.1f;
+    player.cam_rol_scale = 0.1f;
+    player.gravity = 0;
+    player.bounding_box_size = (Vector3){5, 10, 5};
 
     Ray ray = {0};
 
     Vector3 cube_pos = {0};
-    Vector2 cube_screen_pos = {0};
 
     float size = 10.0f;
     Mesh cube_mesh = GenMeshCube(size, size, size);
     Model cube_model = LoadModelFromMesh(cube_mesh);
 
+    Mesh floor_mesh = GenMeshCube(600, 10, 600);
+    Model floor_model = LoadModelFromMesh(floor_mesh);
+    Vector3 floor_pos = {0, 0, 0};
+
     double rot = 0;
+
+    Texture2D billboard = LoadTexture("billboard.png");
+    Vector3 billboard_pos = cube_pos;
+
+    billboard_pos.y += 20;
 
     while (!WindowShouldClose()) {
 
-        move_cam(&camera);
-
-        Vector3 player_pos = camera.position;
-        player_pos.y = 5;
-
-        cube_screen_pos = GetWorldToScreen(cube_pos, camera);
+        move_cam(&player);
+        update_player(&player);
 
         rot++;
 
@@ -104,27 +61,33 @@ int main(void) {
             ClearBackground(BLACK);
 
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                ray = GetScreenToWorldRay((Vector2){GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 2}, camera);
+                ray = GetScreenToWorldRay((Vector2){GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 2},
+                                          player.camera);
             }
 
-            BeginMode3D(camera);
-            /*rlFPCameraBeginMode3D(&cam);*/
+            BeginMode3D(player.camera);
             {
-                DrawCubeWires((Vector3){0, -50, 0}, 300, 10, 300, RED);
-                /*DrawCubeWires(player_pos, 5, 10, 5, RED);*/
-                /*DrawCubeWires((Vector3){100, 0, 100}, 10, 10, 10, BLUE);*/
-                /*DrawModelEx(cube_model, cube_pos, (Vector3){10, 10, 10}, 0, Vector3One(), BLUE );*/
-                /*DrawModelEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLUE);*/
+
+                DrawModelWires(floor_model, floor_pos, 1, RED);
+
                 DrawModelWiresEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLUE);
 
+                DrawBillboard(player.camera, billboard, billboard_pos, 10, WHITE);
+
+                /*DrawCubeWiresV((Vector3){player.postition.x, player.postition.y - 5, player.postition.z},*/
+                /*player.bounding_box_size, ORANGE);*/
+
                 DrawRay(ray, YELLOW);
+
+                if (check_colision_test(&player, floor_model, floor_pos)) {
+                    printf("CollisonA\n");
+                }
             }
             EndMode3D();
 
             DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
-
-            /*DrawText(TextFormat("camera up:\nx:%f\ny:%f\nz:%f", camera.up.x, camera.up.y, camera.up.z),*/
-            /*5, 5, 30, RED);*/
+            DrawText(TextFormat("x:%f\ny:%f\nz:%f", player.postition.x, player.postition.y, player.postition.z),
+                     5, 5, 30, WHITE);
         }
         EndDrawing();
     }
