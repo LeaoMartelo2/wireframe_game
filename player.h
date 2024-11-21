@@ -15,6 +15,10 @@ typedef struct Player {
         float cam_rot_speed;
         float cam_rol_scale;
         float gravity;
+        float forward_velocity;
+        float sideways_velocity; /* should probably move this in to a Vector3 */
+        float vertical_velocity;
+        bool is_grounded;
 
 } Player;
 
@@ -22,6 +26,6 @@ void move_cam(Player *p);
 
 void update_player(Player *player);
 
-bool check_colision_test(Player *player, Model floor, Vector3 floor_pos);
+bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size);
 
 #endif // !PLAYER_H_
