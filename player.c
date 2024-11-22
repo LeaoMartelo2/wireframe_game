@@ -2,7 +2,7 @@
 #include <math.h>
 #include <raylib.h>
 #include <raymath.h>
-#include <stdio.h>
+#include <rlgl.h>
 
 bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size) {
 
@@ -49,9 +49,27 @@ void set_camera_pos(Player *player) {
     player->camera.target = player->camera.target;
 }
 
+Vector3 get_player_forward(Player *player) {
+
+    return Vector3Normalize(Vector3Subtract(player->camera.target, player->camera.position));
+}
+
+Vector3 get_player_up(Player *player) {
+
+    return Vector3Normalize(player->camera.up);
+}
+
+Vector3 get_player_right(Player *player) {
+    Vector3 forward = get_player_forward(player);
+    Vector3 up = get_player_up(player);
+
+    return Vector3Normalize(Vector3CrossProduct(forward, up));
+}
+
 void player_move_forward(Player *player, float distance) {
     /* direction its facing */
-    Vector3 forward = Vector3Normalize(Vector3Subtract(player->camera.target, player->camera.position));
+
+    Vector3 forward = get_player_forward(player);
 
     /* project vector in to world plane */
     forward.y = 0;
@@ -61,31 +79,25 @@ void player_move_forward(Player *player, float distance) {
     forward = Vector3Scale(forward, distance);
 
     player->postition = Vector3Add(player->postition, forward);
-    /*player->camera.position = player->postition;*/
     set_camera_pos(player);
     player->camera.target = Vector3Add(player->camera.target, forward);
 }
 
 void player_move_right(Player *player, float distance) {
 
-    Vector3 forward = Vector3Normalize(Vector3Subtract(player->camera.target, player->camera.position));
-
-    Vector3 up = Vector3Normalize(player->camera.up);
-
-    Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, up));
+    Vector3 right = get_player_right(player);
 
     right.y = 0;
     right = Vector3Scale(right, distance);
 
     player->postition = Vector3Add(player->postition, right);
-    /*player->camera.position = player->postition;*/
     set_camera_pos(player);
     player->camera.target = (Vector3Add(player->camera.target, right));
 }
 
 void player_move_vertical(Player *player, float distance) {
 
-    Vector3 up = Vector3Normalize(player->camera.up);
+    Vector3 up = get_player_up(player);
 
     up = Vector3Scale(up, distance);
 
@@ -137,7 +149,7 @@ void move_cam(Player *p) {
 
     float decay_rate = 0.1f;
 
-    printf("velocities: {%f, %f}\n", p->forward_velocity, p->sideways_velocity);
+    /*printf("velocities: {%f, %f}\n", p->forward_velocity, p->sideways_velocity);*/
 
     update_velocity(&p->forward_velocity, decay_rate);
     update_velocity(&p->sideways_velocity, decay_rate);
@@ -154,7 +166,7 @@ void move_cam(Player *p) {
     player_move_right(p, -p->move_speed * p->sideways_velocity * delta_time);
 
     if (IsKeyDown(KEY_W)) {
-        p->forward_velocity -= 1.0f;
+        p->forward_velocity -= p->move_speed * delta_time;
     }
 
     if (IsKeyDown(KEY_A)) {
@@ -194,20 +206,68 @@ void move_cam(Player *p) {
     }
 }
 
+void update_viewmodel_pos(Player *player) {
+
+    Vector3 temp = player->viewmodel_pos;
+
+    temp = get_player_forward(player);
+
+    Vector3 right = get_player_right(player);
+
+    temp = Vector3Add(temp, player->postition);
+    temp = Vector3Add(temp, right);
+
+    temp.y += 8.5;
+
+    if (player->forward_velocity != 0.0f) {
+
+        temp.y += sinf(GetTime()) * 0.3;
+    } else {
+        temp.y += sinf(GetTime()) * 0.2;
+    }
+
+    player->viewmodel_pos = temp;
+    /*player->viewmodel_rotation = temp.y;*/
+}
+
+void draw_viewmodel(Player *player, Model viewmodel) {
+
+    rlPushMatrix();
+    rlTranslatef(player->viewmodel_pos.x, player->viewmodel_pos.y, player->viewmodel_pos.z);
+
+    Vector3 direction = Vector3Subtract(player->camera.position, player->viewmodel_pos);
+    direction = Vector3Normalize(direction);
+
+    float yaw = atan2f(direction.x, direction.z);
+
+    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(player->sideways_velocity, -10, 10));
+
+    if (player->faceup) {
+        Matrix pitch_rotation = MatrixRotateX(yaw + 360);
+        rotation = MatrixMultiply(rotation, pitch_rotation);
+    }
+
+    rlMultMatrixf(MatrixToFloat(rotation));
+    rlScalef(1, 1, 1);
+    DrawModelWires(viewmodel, Vector3Zero(), 1, WHITE);
+    rlPopMatrix();
+}
+
 void update_player(Player *player) {
 
     float delta_time = GetFrameTime();
 
-    /*player->vertical_velocity = player->gravity;*/
+    update_viewmodel_pos(player);
 
-    /*update_velocity(&player->vertical_velocity, 1.0f);*/
     update_gravity(&player->vertical_velocity, player->gravity, 15.0f);
 
-    if (check_colision_test(player, Vector3Zero(), (Vector3){600, 10, 600})) {
+    if (check_colision_test(player, Vector3Zero(), (Vector3){2000, 10, 2000})) {
         player->is_grounded = true;
 
     } else {
         player_move_vertical(player, player->vertical_velocity * delta_time);
+        update_viewmodel_pos(player);
+        player->is_grounded = false;
     }
 
     if (IsKeyDown(KEY_SPACE)) {
@@ -215,7 +275,14 @@ void update_player(Player *player) {
             player->vertical_velocity = 250;
 
             player_move_vertical(player, player->vertical_velocity * delta_time);
+            update_viewmodel_pos(player);
             player->is_grounded = false;
         }
+    }
+
+    if (IsKeyDown(KEY_F)) {
+        player->faceup = true;
+    } else {
+        player->faceup = false;
     }
 }

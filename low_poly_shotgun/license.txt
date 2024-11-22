@@ -1,0 +1,8 @@
+Model Information:
+* title:	Low Poly Shotgun
+* source:	https://sketchfab.com/3d-models/low-poly-shotgun-1c05fc7fe7874b379745abca0ecc86b5
+* author:	elinazzart_ (https://sketchfab.com/elinaz_)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
