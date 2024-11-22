@@ -15,20 +15,20 @@ int main(void) {
 
     Player player = {0};
     player.camera = (Camera3D){0};
-    player.camera.position = (Vector3){10, 10, 10};
+    player.camera.position = (Vector3){0, 0, 0};
     player.camera.target = Vector3Zero();
     player.camera.up = (Vector3){0, 1, 0};
     player.camera.fovy = 90.0f;
     player.camera.projection = CAMERA_PERSPECTIVE;
-    player.postition = (Vector3){10, 12, 10};
+    player.postition = (Vector3){10, 50, 10};
     player.turn_A = false;
     player.turn_D = false;
-    player.move_speed = 100;
+    player.move_speed = 500;
     player.cam_rot_speed = 0.1f;
     player.cam_rol_scale = 0.03f;
     player.gravity = -150.0f;
     /*player.gravity = 0;*/
-    player.bounding_box_size = (Vector3){5, 10, 5};
+    player.bounding_box_size = (Vector3){5, 15, 5};
     player.forward_velocity = 0;
     player.sideways_velocity = 0;
     player.vertical_velocity = player.gravity;
@@ -39,14 +39,19 @@ int main(void) {
 
     Vector3 cube_pos = {0, 15, 0};
 
-    float size = 10.0f;
-    Mesh cube_mesh = GenMeshCube(size, size, size);
+    float cube_size = 10.0f;
+    Mesh cube_mesh = GenMeshCube(cube_size, cube_size, cube_size);
     Model cube_model = LoadModelFromMesh(cube_mesh);
 
     Vector3 floor_size = {2000, 10, 2000};
     Mesh floor_mesh = GenMeshCube(floor_size.x, floor_size.y, floor_size.z);
     Model floor_model = LoadModelFromMesh(floor_mesh);
     Vector3 floor_pos = {0, 0, 0};
+
+    Vector3 wall_size = {300, 300, 10};
+    Mesh wall_mesh = GenMeshCube(wall_size.x, wall_size.y, wall_size.z);
+    Model wall_model = LoadModelFromMesh(wall_mesh);
+    Vector3 wall_pos = {200, 155, 200};
 
     double rot = 0;
 
@@ -56,9 +61,6 @@ int main(void) {
     billboard_pos.y += 20;
 
     Model shotgun = LoadModel("low_poly_shotgun/scene.gltf");
-    Vector3 shotgun_pos = {0};
-
-    int shotgun_rot = 0;
 
     while (!WindowShouldClose()) {
 
@@ -67,13 +69,8 @@ int main(void) {
 
         rot++;
 
-        /*       shotgun.transform = MatrixRotateXYZ((Vector3){DEG2RAD * player.forward.x,
-                                                             DEG2RAD * player.forward.y,
-                                                             DEG2RAD * player.forward.z}); */
-
         BeginDrawing();
         {
-            /*ClearBackground(GetColor(0x181818FF));*/
             ClearBackground(BLACK);
 
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -85,21 +82,20 @@ int main(void) {
             {
 
                 DrawModel(floor_model, floor_pos, 1, GetColor(0x181818FF));
-                DrawModelWires(floor_model, floor_pos, 1, RED);
 
+                DrawModel(wall_model, wall_pos, 1, DARKGRAY);
+                DrawModelWires(wall_model, wall_pos, 1, RED);
+
+                DrawModelEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLACK);
                 DrawModelWiresEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLUE);
 
                 DrawBillboard(player.camera, billboard, billboard_pos, 10, WHITE);
 
                 DrawRay(ray, YELLOW);
 
-                /*DrawModelWires(shotgun, player.viewmodel_pos, 2, WHITE);*/
-
-                /*               DrawModelWiresEx(shotgun, player.viewmodel_pos,
-                                                (Vector3){0, 1, 0}, player.viewmodel_rotation, Vector3One(), WHITE); */
-                /*DrawModelWires(shotgun, player.viewmodel_pos, 1, WHITE);*/
-
                 draw_viewmodel(&player, shotgun);
+
+                DrawBoundingBox(player.bounding_box, GREEN);
             }
             EndMode3D();
 
@@ -107,13 +103,13 @@ int main(void) {
             DrawText(TextFormat("x:%f\ny:%f\nz:%f", player.postition.x, player.postition.y, player.postition.z),
                      5, 5, 30, WHITE);
 
-            DrawText(TextFormat("velo forward:%f\nvelo sideways:%f\nvelo vertical:%f",
+            /* DrawText(TextFormat("velo forward:%f\nvelo sideways:%f\nvelo vertical:%f",
                                 player.forward_velocity, player.sideways_velocity, player.vertical_velocity),
-                     5, 100, 30, WHITE);
+                     5, 100, 30, WHITE); */
 
-            DrawText(TextFormat("viewmodel:\nx:%f\ny:%f\nz:%f",
+            /* DrawText(TextFormat("viewmodel:\nx:%f\ny:%f\nz:%f",
                                 player.viewmodel_pos.x, player.viewmodel_pos.y, player.viewmodel_pos.z),
-                     5, 300, 30, WHITE);
+                     5, 300, 30, WHITE); */
         }
         EndDrawing();
     }

@@ -4,9 +4,10 @@
 #include <raymath.h>
 #include <rlgl.h>
 
-bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size) {
+bool check_colision_test(Player *player, Vector3 other_pos, Vector3 other_size) {
 
     Vector3 entity_pos = player->postition;
+    /*entity_pos.y += 7.5;*/
     Vector3 entity_size = player->bounding_box_size;
 
     Vector3 negative = {entity_pos.x - entity_size.x / 2,
@@ -17,24 +18,26 @@ bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size) 
                         entity_pos.y + entity_size.y / 2,
                         entity_pos.z + entity_size.z / 2};
 
-    BoundingBox entity_box = (BoundingBox){negative, positive};
+    BoundingBox player_bounding_box = (BoundingBox){negative, positive};
+
+    player->bounding_box = player_bounding_box;
 
     /*Vector3 floor_size = (Vector3){600, 10, 600};*/
 
-    Vector3 neg = {floor_pos.x - floor_size.x / 2,
-                   floor_pos.y - floor_size.y / 2,
-                   floor_pos.z - floor_size.z / 2};
+    Vector3 negative_other = {other_pos.x - other_size.x / 2,
+                              other_pos.y - other_size.y / 2,
+                              other_pos.z - other_size.z / 2};
 
-    Vector3 pos = {floor_pos.x + floor_size.x / 2,
-                   floor_pos.y + floor_size.y / 2,
-                   floor_pos.z + floor_size.z / 2};
+    Vector3 positive_other = {other_pos.x + other_size.x / 2,
+                              other_pos.y + other_size.y / 2,
+                              other_pos.z + other_size.z / 2};
 
-    BoundingBox floor_box = (BoundingBox){neg, pos};
+    BoundingBox other_bounding_box = (BoundingBox){negative_other, positive_other};
 
-    if (CheckCollisionBoxes(entity_box, floor_box)) {
+    if (CheckCollisionBoxes(player_bounding_box, other_bounding_box)) {
 
-        DrawBoundingBox(floor_box, GREEN);
-        DrawBoundingBox(entity_box, GREEN);
+        /*DrawBoundingBox(other_bounding_box, GREEN);*/
+        /*DrawBoundingBox(player_bounding_box, GREEN);*/
 
         return true;
     }
@@ -44,7 +47,7 @@ bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size) 
 
 void set_camera_pos(Player *player) {
     player->camera.position = player->postition;
-    player->camera.position.y = player->postition.y + 9;
+    player->camera.position.y = player->postition.y + 5;
     player->camera.up.y = 1.0f;
     player->camera.target = player->camera.target;
 }
@@ -165,13 +168,22 @@ void move_cam(Player *p) {
     player_move_forward(p, -p->move_speed * p->forward_velocity * delta_time);
     player_move_right(p, -p->move_speed * p->sideways_velocity * delta_time);
 
+    if (check_colision_test(p, (Vector3){200, 155, 200}, (Vector3){300, 300, 10})) {
+        /*p->postition = old_pos;*/
+
+        /* push in the oposite direction */
+        player_move_forward(p, +p->move_speed * p->forward_velocity * delta_time);
+        player_move_right(p, +p->move_speed * p->sideways_velocity * delta_time);
+
+        return;
+    }
+
     if (IsKeyDown(KEY_W)) {
         p->forward_velocity -= p->move_speed * delta_time;
     }
 
     if (IsKeyDown(KEY_A)) {
-
-        p->sideways_velocity += 1.0f;
+        p->sideways_velocity += p->move_speed * delta_time;
 
         if (p->turn_A == false) {
             p->camera.up = Vector3RotateByAxisAngle(p->camera.up, forward, p->cam_rol_scale);
@@ -187,12 +199,11 @@ void move_cam(Player *p) {
     }
 
     if (IsKeyDown(KEY_S)) {
-        p->forward_velocity += 1.0f;
+        p->forward_velocity += p->move_speed * delta_time;
     }
 
     if (IsKeyDown(KEY_D)) {
-
-        p->sideways_velocity -= 1.0f;
+        p->sideways_velocity -= p->move_speed * delta_time;
 
         if (p->turn_D == false) {
             p->camera.up = Vector3RotateByAxisAngle(p->camera.up, forward, -p->cam_rol_scale);
@@ -217,7 +228,7 @@ void update_viewmodel_pos(Player *player) {
     temp = Vector3Add(temp, player->postition);
     temp = Vector3Add(temp, right);
 
-    temp.y += 8.5;
+    temp.y += 4.5f;
 
     if (player->forward_velocity != 0.0f) {
 
@@ -227,7 +238,6 @@ void update_viewmodel_pos(Player *player) {
     }
 
     player->viewmodel_pos = temp;
-    /*player->viewmodel_rotation = temp.y;*/
 }
 
 void draw_viewmodel(Player *player, Model viewmodel) {
@@ -240,7 +250,7 @@ void draw_viewmodel(Player *player, Model viewmodel) {
 
     float yaw = atan2f(direction.x, direction.z);
 
-    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(player->sideways_velocity, -10, 10));
+    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(player->sideways_velocity, -50, 50));
 
     if (player->faceup) {
         Matrix pitch_rotation = MatrixRotateX(yaw + 360);
@@ -249,6 +259,7 @@ void draw_viewmodel(Player *player, Model viewmodel) {
 
     rlMultMatrixf(MatrixToFloat(rotation));
     rlScalef(1, 1, 1);
+    DrawModel(viewmodel, Vector3Zero(), 1, GetColor(0x181818FF));
     DrawModelWires(viewmodel, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
 }
@@ -272,7 +283,7 @@ void update_player(Player *player) {
 
     if (IsKeyDown(KEY_SPACE)) {
         if (player->is_grounded) {
-            player->vertical_velocity = 250;
+            player->vertical_velocity = 300;
 
             player_move_vertical(player, player->vertical_velocity * delta_time);
             update_viewmodel_pos(player);

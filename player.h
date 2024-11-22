@@ -21,6 +21,7 @@ typedef struct Player {
         bool is_grounded;
         Vector3 viewmodel_pos;
         bool faceup;
+        BoundingBox bounding_box;
 
 } Player;
 
