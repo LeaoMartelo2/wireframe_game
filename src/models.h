@@ -28,7 +28,6 @@ typedef struct Prop {
 } Prop;
 
 void load_map(Solid *solids, int *count, Ground *ground_geometry);
-
 void draw_map(const Solid *solids, int count, const Ground *ground_plates);
 
 void load_props(Prop *props);

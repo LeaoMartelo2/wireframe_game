@@ -6,7 +6,7 @@
 #include "../raylib/rcamera.h"
 #include "models.h"
 
-#define GROUND_PLATES 2
+#define GROUND_PLATES 10
 
 typedef struct Player {
         Camera3D camera;
@@ -26,7 +26,7 @@ typedef struct Player {
         int ground_pcount;
         Ground ground_geometry[GROUND_PLATES];
         int geometry_count;
-        Solid geometry[];
+        Solid geometry[100];
 
 } Player;
 

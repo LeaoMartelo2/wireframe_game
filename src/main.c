@@ -11,7 +11,8 @@ int main(void) {
 
     InitWindow(1366, 768, "Wireframe Game");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    /*SetWindowState(FLAG_MSAA_4X_HINT);*/
+    SetWindowState(FLAG_MSAA_4X_HINT);
+    SetTraceLogLevel(LOG_NONE);
     MaximizeWindow();
     SetTargetFPS(60);
 
@@ -23,7 +24,7 @@ int main(void) {
 
     load_map(player.geometry, &player.geometry_count, player.ground_geometry);
 
-    Prop props[2];
+    Prop props[10];
 
     load_props(props);
 
@@ -49,14 +50,8 @@ int main(void) {
         {
             ClearBackground(BLACK);
 
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                ray = GetScreenToWorldRay((Vector2){GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 2},
-                                          player.camera);
-            }
-
             BeginMode3D(player.camera);
             {
-
                 draw_map(player.geometry, player.geometry_count, player.ground_geometry);
 
                 draw_props(props);
