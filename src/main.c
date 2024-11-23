@@ -10,7 +10,7 @@
 
 int main(void) {
 
-    InitWindow(1366, 768, "Boomer Shooter");
+    InitWindow(1366, 768, "Wireframe Game");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     /*SetWindowState(FLAG_MSAA_4X_HINT);*/
     MaximizeWindow();
@@ -24,19 +24,16 @@ int main(void) {
 
     load_map(player.geometry, &player.geometry_count, player.ground_geometry);
 
+    Prop props[2];
+
+    load_props(props);
+
     Ray ray = {0};
 
-    Vector3 cube_pos = {0, 15, 0};
-    float cube_size = 10.0f;
-    Mesh cube_mesh = GenMeshCube(cube_size, cube_size, cube_size);
-    Model cube_model = LoadModelFromMesh(cube_mesh);
+    /*Texture2D billboard = LoadTexture("sprites/billboard.png");*/
+    /*Vector3 billboard_pos = cube_pos;*/
 
-    double rot = 0;
-
-    Texture2D billboard = LoadTexture("sprites/billboard.png");
-    Vector3 billboard_pos = cube_pos;
-
-    billboard_pos.y += 20;
+    /*billboard_pos.y += 20;*/
 
     Model shotgun = LoadModel("models/low_poly_shotgun/shotgun.gltf");
 
@@ -47,7 +44,6 @@ int main(void) {
         move_player(&player);
         update_player(&player);
 
-        rot++;
         item_pos.y += sinf(GetTime()) * 0.1f;
 
         BeginDrawing();
@@ -64,15 +60,7 @@ int main(void) {
 
                 draw_map(player.geometry, player.geometry_count, player.ground_geometry);
 
-                DrawModelEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLACK);
-                DrawModelWiresEx(cube_model, cube_pos, Vector3One(), rot, Vector3One(), BLUE);
-
-                DrawModelEx(shotgun, item_pos, Vector3One(), rot, (Vector3){10, 10, 10}, GetColor(0x181818FF));
-                DrawModelWiresEx(shotgun, item_pos, Vector3One(), rot, (Vector3){10, 10, 10}, WHITE);
-
-                DrawBillboard(player.camera, billboard, billboard_pos, 10, WHITE);
-
-                DrawRay(ray, YELLOW);
+                draw_props(props);
 
                 draw_viewmodel(&player, shotgun);
             }
