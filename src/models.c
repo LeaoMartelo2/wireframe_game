@@ -1,6 +1,6 @@
 #include "models.h"
-#include <raylib.h>
-#include <raymath.h>
+#include "../raylib/raylib.h"
+#include "../raylib/raymath.h"
 #include <stdio.h>
 
 #define GROUND_PLATES_COUNT 2
@@ -15,7 +15,6 @@ void load_map(Solid *solids, int *count, Ground *ground_geometry) {
     floor.mesh = GenMeshCube(floor.size.x, floor.size.y, floor.size.z);
     floor.model = LoadModelFromMesh(floor.mesh);
     floor.pos = (Vector3){0, 0, 0};
-
     ground_geometry[0] = floor;
 
     Solid wall;
@@ -29,7 +28,6 @@ void load_map(Solid *solids, int *count, Ground *ground_geometry) {
     solid_count++;
 
     Solid transparent_wall;
-
     transparent_wall.size = (Vector3){10, 300, 300};
     transparent_wall.mesh = GenMeshCube(transparent_wall.size.x, transparent_wall.size.y, transparent_wall.size.z);
     transparent_wall.model = LoadModelFromMesh(transparent_wall.mesh);

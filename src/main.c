@@ -1,9 +1,8 @@
+#include "../raylib/raylib.h"
+#include "../raylib/rcamera.h"
 #include "models.h"
 #include "player.h"
 #include <math.h>
-#include <raylib.h>
-#include <raymath.h>
-#include <rcamera.h>
 #include <stdbool.h>
 
 #define MAX_SOLIDS 10

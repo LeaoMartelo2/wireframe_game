@@ -1,7 +1,7 @@
 #ifndef MODELS_H_
 #define MODELS_H_
 
-#include <raylib.h>
+#include "../raylib/raylib.h"
 
 typedef struct Ground {
         Vector3 size;

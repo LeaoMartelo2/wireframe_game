@@ -1,10 +1,10 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include "../raylib/raylib.h"
+#include "../raylib/raymath.h"
+#include "../raylib/rcamera.h"
 #include "models.h"
-#include <raylib.h>
-#include <raymath.h>
-#include <rcamera.h>
 
 #define GROUND_PLATES 2
 
