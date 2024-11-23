@@ -21,6 +21,7 @@ typedef struct Player {
         Vector3 velocity;
         bool is_grounded;
         Vector3 viewmodel_pos;
+        Model viewmodel;
         bool faceup;
         BoundingBox bounding_box;
         int ground_pcount;
@@ -38,6 +39,6 @@ void update_player(Player *player);
 
 /*bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size);*/
 
-void draw_viewmodel(Player *player, Model viewmodel);
+void draw_viewmodel(Player *player);
 
 #endif // !PLAYER_H_

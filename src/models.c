@@ -58,7 +58,7 @@ void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
         }
 
         if (solids[i].see_through) {
-            DrawModel(solids[i].model, solids[i].pos, 1.0f, ColorAlpha(GetColor(0x181818FF), 0.5f));
+            DrawModel(solids[i].model, solids[i].pos, 1.0f, ColorAlpha(GetColor(0x181818FF), 0.8f));
             DrawModelWires(solids[i].model, solids[i].pos, 1.0f, RED);
         }
     }

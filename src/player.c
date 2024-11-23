@@ -5,6 +5,8 @@
 #include "models.h"
 #include <math.h>
 
+#define SHOTGUN_MODEL "models/low_poly_shotgun/shotgun.gltf"
+
 void init_player(Player *player) {
 
     player->camera = (Camera3D){0};
@@ -25,6 +27,7 @@ void init_player(Player *player) {
     player->velocity = Vector3Zero();
     player->is_grounded = false;
     player->viewmodel_pos = Vector3Zero();
+    player->viewmodel = LoadModel(SHOTGUN_MODEL);
 }
 
 bool check_colision_test(Player *player, bool ground) {
@@ -275,7 +278,7 @@ void update_viewmodel_pos(Player *player) {
     player->viewmodel_pos = temp;
 }
 
-void draw_viewmodel(Player *player, Model viewmodel) {
+void draw_viewmodel(Player *player) {
 
     rlPushMatrix();
     rlTranslatef(player->viewmodel_pos.x, player->viewmodel_pos.y, player->viewmodel_pos.z);
@@ -294,8 +297,8 @@ void draw_viewmodel(Player *player, Model viewmodel) {
 
     rlMultMatrixf(MatrixToFloat(rotation));
     rlScalef(1, 1, 1);
-    DrawModel(viewmodel, Vector3Zero(), 1, GetColor(0x181818FF));
-    DrawModelWires(viewmodel, Vector3Zero(), 1, WHITE);
+    DrawModel(player->viewmodel, Vector3Zero(), 1, GetColor(0x181818FF));
+    DrawModelWires(player->viewmodel, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
 }
 

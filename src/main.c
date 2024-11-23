@@ -1,84 +1,45 @@
 #include "../raylib/raylib.h"
 #include "../raylib/rcamera.h"
+#include "drawloop.h"
 #include "models.h"
 #include "player.h"
-#include <math.h>
-#include <stdbool.h>
+#include <stdio.h>
 
 #define MAX_SOLIDS 10
 
+typedef enum {
+    SCREEN_MENU,
+    SCREEN_GAME,
+} Screen;
+
 int main(void) {
 
-    InitWindow(1366, 768, "Wireframe Game");
-    SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetWindowState(FLAG_MSAA_4X_HINT);
+    SetWindowState(FLAG_VSYNC_HINT);
+
+    InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Game");
+    /*SetWindowState(FLAG_WINDOW_RESIZABLE);*/
+    /*MaximizeWindow();*/
     SetTraceLogLevel(LOG_NONE);
-    MaximizeWindow();
     SetTargetFPS(60);
+    ToggleFullscreen();
 
-    DisableCursor();
+    Screen current_screen = 1;
 
-    Player player = {0};
+    switch (current_screen) {
+    case SCREEN_MENU: {
+        printf("turn down for what\n");
+        draw_menu();
+    } break;
 
-    init_player(&player);
+    case SCREEN_GAME: {
 
-    load_map(player.geometry, &player.geometry_count, player.ground_geometry);
+        Player player = {0};
+        Prop props[10];
 
-    Prop props[10];
+        main_drawloop(&player, props);
 
-    load_props(props);
-
-    Ray ray = {0};
-
-    /*Texture2D billboard = LoadTexture("sprites/billboard.png");*/
-    /*Vector3 billboard_pos = cube_pos;*/
-
-    /*billboard_pos.y += 20;*/
-
-    Model shotgun = LoadModel("models/low_poly_shotgun/shotgun.gltf");
-
-    Vector3 item_pos = {500, 15, 0};
-
-    while (!WindowShouldClose()) {
-
-        move_player(&player);
-        update_player(&player);
-
-        item_pos.y += sinf(GetTime()) * 0.1f;
-
-        BeginDrawing();
-        {
-            ClearBackground(BLACK);
-
-            BeginMode3D(player.camera);
-            {
-                draw_map(player.geometry, player.geometry_count, player.ground_geometry);
-
-                draw_props(props);
-
-                draw_viewmodel(&player, shotgun);
-            }
-            EndMode3D();
-
-            DrawFPS(1, 1);
-
-            DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
-            DrawText(TextFormat("x:%f\ny:%f\nz:%f", player.postition.x, player.postition.y, player.postition.z),
-                     5, 30, 30, WHITE);
-
-            DrawText(TextFormat("velo forward:%f\nvelo sideways:%f\nvelo vertical:%f",
-                                player.velocity.x, player.velocity.z, player.velocity.y),
-                     5, 150, 30, WHITE);
-
-            /* DrawText(TextFormat("viewmodel:\nx:%f\ny:%f\nz:%f",
-                                player.viewmodel_pos.x, player.viewmodel_pos.y, player.viewmodel_pos.z),
-                     5, 300, 30, WHITE); */
-        }
-        EndDrawing();
-    }
-
-    for (int i = 0; i < player.geometry_count; i++) {
-        UnloadModel(player.geometry[i].model);
+    } break;
     }
 
     CloseWindow();
