@@ -68,6 +68,8 @@ void draw_menu(MainMenu *menu) {
     int text_width = MeasureText(menu->text, 50);
     DrawText("Play", menu->button.x + (menu->button.width / 2.0f) - text_width / 2.0f,
              menu->button.y, 50, menu->text_color);
+
+    DrawText("Tittle goes here", 150, 50, 100, WHITE);
 }
 
 void main_drawloop(Player *player, Prop *props) {
