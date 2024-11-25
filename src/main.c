@@ -3,14 +3,8 @@
 #include "drawloop.h"
 #include "models.h"
 #include "player.h"
-#include <stdio.h>
 
 #define MAX_SOLIDS 10
-
-typedef enum {
-    SCREEN_MENU,
-    SCREEN_GAME,
-} Screen;
 
 int main(void) {
 
@@ -24,22 +18,36 @@ int main(void) {
     SetTargetFPS(60);
     ToggleFullscreen();
 
-    Screen current_screen = 1;
+    InitAudioDevice();
 
-    switch (current_screen) {
-    case SCREEN_MENU: {
-        printf("turn down for what\n");
-        draw_menu();
-    } break;
+    MainMenu menu = {0};
+    load_menu(&menu);
 
-    case SCREEN_GAME: {
+    Screen current_screen = 0;
 
-        Player player = {0};
-        Prop props[10];
+    while (!WindowShouldClose()) {
 
-        main_drawloop(&player, props);
+        switch (current_screen) {
 
-    } break;
+        case SCREEN_MENU: {
+
+            update_menu(&menu, &current_screen);
+
+            BeginDrawing();
+            draw_menu(&menu);
+            EndDrawing();
+
+        } break;
+
+        case SCREEN_GAME: {
+
+            Player player = {0};
+            Prop props[10];
+
+            main_drawloop(&player, props);
+
+        } break;
+        }
     }
 
     CloseWindow();

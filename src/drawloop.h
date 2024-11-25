@@ -5,7 +5,25 @@
 #include "models.h"
 #include "player.h"
 
-void draw_menu();
+#define SHOTGUN_MODEL "models/low_poly_shotgun/shotgun.gltf"
+
+typedef enum {
+    SCREEN_MENU,
+    SCREEN_GAME,
+} Screen;
+
+typedef struct MainMenu {
+        Rectangle button;
+        Music music;
+        char *text;
+        Color text_color;
+        Camera3D menu_camera;
+
+} MainMenu;
+
+void load_menu(MainMenu *menu);
+void update_menu(MainMenu *menu, Screen *current_screen);
+void draw_menu(MainMenu *menu);
 
 void main_drawloop(Player *player, Prop *props);
 
