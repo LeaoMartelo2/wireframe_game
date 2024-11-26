@@ -8,7 +8,7 @@
 
 void load_map(Solid *solids, int *count, Ground *ground_geometry) {
 
-#include "map_geometry.map"
+#include "map/map_geometry.map"
 }
 
 void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
@@ -35,7 +35,7 @@ void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
 
 void load_props(Prop *props) {
 
-#include "map_props.map"
+#include "map/map_props.map"
 }
 
 double rot = 0;
