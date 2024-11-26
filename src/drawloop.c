@@ -1,4 +1,6 @@
 #include "drawloop.h"
+#include "models.h"
+#include "player.h"
 
 Model menu_shotgun = {0};
 Vector3 menu_shotgun_pos = {5, 0, 0};
@@ -29,18 +31,29 @@ void load_menu(MainMenu *menu) {
 
     menu_shotgun = LoadModel(SHOTGUN_MODEL);
 }
+Sound select = {0};
+bool hoovered = false;
 
 void update_menu(MainMenu *menu, Screen *current_screen) {
+
+    select = LoadSound("sounds/snd_button.wav");
+
     UpdateMusicStream(menu->music);
     Vector2 mouse_pos = GetMousePosition();
 
     if (CheckCollisionPointRec(mouse_pos, menu->button)) {
         menu->text_color = WHITE;
+        if (hoovered == false) {
+            PlaySound(select);
+            hoovered = true;
+        }
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
             *current_screen = SCREEN_GAME;
+            DisableCursor();
         }
     } else {
         menu->text_color = GRAY;
+        hoovered = false;
     }
 }
 
@@ -72,43 +85,39 @@ void draw_menu(MainMenu *menu) {
     DrawText("Tittle goes here", 150, 50, 100, WHITE);
 }
 
-void main_drawloop(Player *player, Prop *props) {
-
-    DisableCursor();
+void load_main(Player *player, Prop *props) {
     init_player(player);
     load_map(player->geometry, &player->geometry_count, player->ground_geometry);
     load_props(props);
+}
 
-    while (!WindowShouldClose()) {
+void update_main(Player *player) {
+    move_player(player);
+    update_player(player);
+}
 
-        move_player(player);
-        update_player(player);
+void main_drawloop(Player *player, Prop *props) {
 
-        BeginDrawing();
-        {
-            ClearBackground(BLACK);
+    ClearBackground(BLACK);
 
-            BeginMode3D(player->camera);
-            {
-                draw_map(player->geometry, player->geometry_count, player->ground_geometry);
+    BeginMode3D(player->camera);
+    {
+        draw_map(player->geometry, player->geometry_count, player->ground_geometry);
 
-                draw_props(props);
+        draw_props(props);
 
-                draw_viewmodel(player);
-            }
-            EndMode3D();
-
-            DrawFPS(1, 1);
-
-            DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
-            DrawText(TextFormat("x:%f\ny:%f\nz:%f", player->postition.x, player->postition.y, player->postition.z),
-                     5, 30, 30, WHITE);
-
-            DrawText(TextFormat("velo forward:%f\nvelo sideways:%f\nvelo vertical:%f",
-                                player->velocity.x, player->velocity.z, player->velocity.y),
-                     5, 150, 30, WHITE);
-        }
-        EndDrawing();
+        draw_viewmodel(player);
     }
-    return;
+    EndMode3D();
+
+    DrawFPS(1, 1);
+
+    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
+    DrawText(TextFormat("x:%f\ny:%f\nz:%f",
+                        player->postition.x, player->postition.y, player->postition.z),
+             5, 30, 30, WHITE);
+
+    DrawText(TextFormat("velo forward:%f\nvelo sideways:%f\nvelo vertical:%f",
+                        player->velocity.x, player->velocity.z, player->velocity.y),
+             5, 150, 30, WHITE);
 }

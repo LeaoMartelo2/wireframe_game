@@ -304,6 +304,8 @@ void draw_viewmodel(Player *player) {
 
 void update_player(Player *player) {
 
+    /*Sound reload = LoadSound("sounds/reload.wav");*/
+
     float delta_time = GetFrameTime();
 
     update_viewmodel_pos(player);
@@ -331,6 +333,7 @@ void update_player(Player *player) {
 
     if (IsKeyDown(KEY_F)) {
         player->faceup = true;
+        /*PlaySound(reload);*/
     } else {
         player->faceup = false;
     }

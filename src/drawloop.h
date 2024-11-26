@@ -25,6 +25,8 @@ void load_menu(MainMenu *menu);
 void update_menu(MainMenu *menu, Screen *current_screen);
 void draw_menu(MainMenu *menu);
 
+void load_main(Player *player, Prop *props);
+void update_main(Player *player);
 void main_drawloop(Player *player, Prop *props);
 
 #endif // !DRAWLOOP_H_

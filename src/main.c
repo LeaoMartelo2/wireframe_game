@@ -23,6 +23,10 @@ int main(void) {
     MainMenu menu = {0};
     load_menu(&menu);
 
+    Player player = {0};
+    Prop props[10];
+    load_main(&player, props);
+
     Screen current_screen = 0;
 
     while (!WindowShouldClose()) {
@@ -41,10 +45,11 @@ int main(void) {
 
         case SCREEN_GAME: {
 
-            Player player = {0};
-            Prop props[10];
+            update_main(&player);
 
+            BeginDrawing();
             main_drawloop(&player, props);
+            EndDrawing();
 
         } break;
         }
