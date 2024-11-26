@@ -95,6 +95,36 @@ void load_props(Prop *props) {
     third_cube.bounce = true;
 
     props[2] = third_cube;
+
+    Prop test = {0};
+    test.pos = (Vector3){110, 10, 0};
+    test.size = (Vector3){5, 5, 10};
+    test.mesh = GenMeshSphere(test.size.x, 5, test.size.z);
+    test.model = LoadModelFromMesh(test.mesh);
+    test.rotate = true;
+    test.bounce = true;
+
+    props[3] = test;
+
+    Prop cone = {0};
+    cone.pos = (Vector3){147, 10, 0};
+    cone.size = (Vector3){5, 10, 5};
+    cone.mesh = GenMeshCone(cone.size.x, cone.size.y, cone.size.z);
+    cone.model = LoadModelFromMesh(cone.mesh);
+    cone.rotate = true;
+    cone.bounce = true;
+
+    props[4] = cone;
+
+    Prop cylinder = {0};
+    cylinder.pos = (Vector3){184, 10, 0};
+    cylinder.size = (Vector3){5, 10, 5};
+    cylinder.mesh = GenMeshCylinder(cylinder.size.x, cylinder.size.y, cylinder.size.z);
+    cylinder.model = LoadModelFromMesh(cylinder.mesh);
+    cylinder.rotate = true;
+    cylinder.bounce = true;
+
+    props[5] = cylinder;
 }
 
 double rot = 0;
