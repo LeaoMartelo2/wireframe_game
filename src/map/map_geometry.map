@@ -1,0 +1,31 @@
+    int solid_count = 0;
+
+    Ground floor = {0};
+    floor.size = (Vector3){2000, 1, 2000};
+    floor.mesh = GenMeshCube(floor.size.x, floor.size.y, floor.size.z);
+    floor.model = LoadModelFromMesh(floor.mesh);
+    floor.pos = (Vector3){0, 0, 0};
+    ground_geometry[0] = floor;
+
+    Solid wall;
+    wall.size = (Vector3){300, 100, 10};
+    wall.mesh = GenMeshCube(wall.size.x, wall.size.y, wall.size.z);
+    wall.model = LoadModelFromMesh(wall.mesh);
+    wall.pos = (Vector3){200, 52, 200};
+    wall.see_through = false;
+
+    solids[0] = wall;
+    solid_count++;
+
+    Solid transparent_wall;
+    transparent_wall.size = (Vector3){10, 100, 300};
+    transparent_wall.mesh = GenMeshCube(transparent_wall.size.x,
+                                        transparent_wall.size.y, transparent_wall.size.z);
+    transparent_wall.model = LoadModelFromMesh(transparent_wall.mesh);
+    transparent_wall.pos = (Vector3){600, 52, 200};
+    transparent_wall.see_through = true;
+
+    solids[1] = transparent_wall;
+    solid_count++;
+
+    *count = solid_count;
