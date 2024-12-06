@@ -8,7 +8,7 @@
 
 void load_map(Solid *solids, int *count, Ground *ground_geometry) {
 
-#include "map/map_geometry.map"
+#include "map/map_geometry.wireframe"
 }
 
 void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
@@ -27,7 +27,7 @@ void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
         }
 
         if (solids[i].see_through) {
-            DrawModel(solids[i].model, solids[i].pos, 1.0f, ColorAlpha(GetColor(0x181818FF), 0.8f));
+            DrawModel(solids[i].model, solids[i].pos, 1.0f, ColorAlpha(DARKGRAY, 0.8f));
             DrawModelWires(solids[i].model, solids[i].pos, 1.0f, RED);
         }
     }
@@ -35,7 +35,7 @@ void draw_map(const Solid *solids, int count, const Ground *ground_plates) {
 
 void load_props(Prop *props) {
 
-#include "map/map_props.map"
+#include "map/map_props.wireframe"
 }
 
 double rot = 0;

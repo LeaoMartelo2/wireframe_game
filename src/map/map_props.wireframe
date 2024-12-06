@@ -1,0 +1,13 @@
+ props[0].pos = (Vector3){0, 10, 0};
+ props[0].size = (Vector3){10, 10, 10};
+ props[0].mesh = GenMeshCube(10, 10, 10);
+ props[0].model = LoadModelFromMesh(props[0].mesh);
+ props[0].rotate = false;
+ props[0].bounce = true;
+                                                    
+ props[1].pos = (Vector3){70, 10, 0};
+ props[1].size = (Vector3){10, 10, 10};
+ props[1].mesh = GenMeshCube(10, 10, 10);
+ props[1].model = LoadModelFromMesh(props[1].mesh);
+ props[1].rotate = true;
+ props[1].bounce = true;

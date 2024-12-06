@@ -1,0 +1,22 @@
+int solid_count = 0;
+                                                                       
+ground_geometry[0].size = (Vector3){2000, 1, 2000};
+ground_geometry[0].mesh = GenMeshCube(2000, 1, 2000);
+ground_geometry[0].model = LoadModelFromMesh(ground_geometry[0].mesh);
+ground_geometry[0].pos = (Vector3){0, 0, 0};
+                                                                       
+solids[0].size = (Vector3){300, 100, 10};
+solids[0].mesh = GenMeshCube(300, 100, 10);
+solids[0].model = LoadModelFromMesh(solids[0].mesh);
+solids[0].pos = (Vector3){200, 52, 200};
+solids[0].see_through = false;
+solid_count++;
+                                                                       
+solids[1].size = (Vector3){10, 100, 300};
+solids[1].mesh = GenMeshCube(10, 100, 300);
+solids[1].model = LoadModelFromMesh(solids[1].mesh);
+solids[1].pos = (Vector3){600, 52, 200};
+solids[1].see_through = true;
+solid_count++;
+                                                                       
+*count = solid_count;
