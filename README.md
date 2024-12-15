@@ -1,4 +1,4 @@
-#Wireframe Game (engine)
+# Wireframe Game (engine)
 
 Simple game/game engine made in C using the [RayLib library](https://github.com/raysan5/raylib) for its backend.
 
