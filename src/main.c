@@ -4,6 +4,8 @@
 #include "models.h"
 #include "player.h"
 
+/* refactor */
+
 #define MAX_SOLIDS 10
 
 int main(void) {
