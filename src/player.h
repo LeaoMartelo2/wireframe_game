@@ -6,38 +6,44 @@
 #include "../raylib/rcamera.h"
 #include "models.h"
 
-#define GROUND_PLATES 10
-
 typedef struct Player {
-        Camera3D camera;
-        Vector3 postition;
-        Vector3 bounding_box_size;
-        bool turn_A;
-        bool turn_D;
-        float move_speed;
-        float cam_rot_speed;
-        float cam_rol_scale;
-        float gravity;
-        Vector3 velocity;
-        bool is_grounded;
-        Vector3 viewmodel_pos;
-        Model viewmodel;
-        bool faceup;
-        BoundingBox bounding_box;
-        int ground_pcount;
-        Ground ground_geometry[GROUND_PLATES];
-        int geometry_count;
-        Solid geometry[100];
+        struct {
+                Camera3D player_cam;
+                float mouse_sens;
+                float camera_tilt;
+        } camera;
+
+        struct {
+                Vector3 pos;
+                Vector3 velocity;
+                float move_speed;
+                float gravity;
+                bool is_grounded;
+                Vector2 input;
+        } movement;
+
+        struct {
+                Vector3 bounding_box_size;
+                BoundingBox bounding_box;
+        } collision;
+
+        struct {
+                Model viewmodel;
+                Vector3 viewmodel_pos;
+        } hud;
+
+        struct {
+                bool turn_A;
+                bool turn_D;
+        } misc;
 
 } Player;
 
-void init_player(Player *player);
+void player_setup(Player *player);
 
 void move_player(Player *p);
 
 void update_player(Player *player);
-
-/*bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size);*/
 
 void draw_viewmodel(Player *player);
 

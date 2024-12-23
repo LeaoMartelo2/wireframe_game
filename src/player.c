@@ -7,27 +7,25 @@
 
 #define SHOTGUN_MODEL "models/low_poly_shotgun/shotgun.gltf"
 
-void init_player(Player *player) {
+void player_setup(Player *player) {
+    player->camera.player_cam = (Camera3D){0};
+    player->camera.player_cam.position = Vector3Zero();
+    player->camera.player_cam.target = Vector3Zero();
+    player->camera.player_cam.up = (Vector3){0, 1, 0};
+    player->camera.player_cam.fovy = 90.0f;
+    player->camera.player_cam.projection = CAMERA_PERSPECTIVE;
+    player->camera.camera_tilt = 0.01f;
+    player->camera.mouse_sens = 0.1f;
 
-    player->camera = (Camera3D){0};
-    player->camera.position = (Vector3){0, 0, 0};
-    player->camera.target = Vector3Zero();
-    player->camera.up = (Vector3){0, 1, 0};
-    player->camera.fovy = 90.0f;
-    player->camera.projection = CAMERA_PERSPECTIVE;
-    player->postition = (Vector3){10, 50, 10};
-    player->turn_A = false;
-    player->turn_D = false;
-    player->move_speed = 500;
-    player->cam_rot_speed = 0.1f;
-    player->cam_rol_scale = 0.01f;
-    player->gravity = -150.0f;
-    /*player->gravity = 0;*/
-    player->bounding_box_size = (Vector3){5, 15, 5};
-    player->velocity = Vector3Zero();
-    player->is_grounded = false;
-    player->viewmodel_pos = Vector3Zero();
-    player->viewmodel = LoadModel(SHOTGUN_MODEL);
+    player->movement.pos = (Vector3){50, 50, 50};
+    player->movement.move_speed = 500.0f;
+    player->movement.input = (Vector2){0, 0};
+    player->movement.velocity = Vector3Zero();
+    player->movement.gravity = -150.0f;
+    player->movement.is_grounded = false;
+
+    player->collision.bounding_box_size = (Vector3){5, 15, 5};
+    player->collision.bounding_box = (BoundingBox){0};
 }
 
 bool check_colision_test(Player *player, bool ground) {
