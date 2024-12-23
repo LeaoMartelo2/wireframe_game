@@ -4,16 +4,12 @@
 #include "models.h"
 #include "player.h"
 
-#define MAX_SOLIDS 10
-
 int main(void) {
 
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
 
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Game");
-    /*SetWindowState(FLAG_WINDOW_RESIZABLE);*/
-    /*MaximizeWindow();*/
     SetTraceLogLevel(LOG_NONE);
     SetTargetFPS(60);
     ToggleFullscreen();

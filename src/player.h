@@ -31,7 +31,7 @@ typedef struct Player {
 
 } Player;
 
-void init_player(Player *player);
+void player_setup(Player *player);
 
 void move_player(Player *p);
 

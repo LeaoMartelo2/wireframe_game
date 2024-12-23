@@ -7,7 +7,7 @@
 
 #define SHOTGUN_MODEL "models/low_poly_shotgun/shotgun.gltf"
 
-void init_player(Player *player) {
+void player_setup(Player *player) {
 
     player->camera = (Camera3D){0};
     player->camera.position = (Vector3){0, 0, 0};
@@ -15,7 +15,7 @@ void init_player(Player *player) {
     player->camera.up = (Vector3){0, 1, 0};
     player->camera.fovy = 90.0f;
     player->camera.projection = CAMERA_PERSPECTIVE;
-    player->postition = (Vector3){10, 50, 10};
+    player->postition = (Vector3){50, 50, 50};
     player->turn_A = false;
     player->turn_D = false;
     player->move_speed = 500;

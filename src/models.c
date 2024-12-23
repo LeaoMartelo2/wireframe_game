@@ -8,6 +8,12 @@
 
 void load_map(Solid *solids, int *count, Ground *ground_geometry) {
 
+    // #include "map/map_geometry.wireframe"
+    ground_geometry[0].size = (Vector3){2000, 1, 2000};
+    ground_geometry[0].mesh = GenMeshCube(2000, 1, 2000);
+    ground_geometry[0].model = LoadModelFromMesh(ground_geometry[0].mesh);
+    ground_geometry[0].pos = (Vector3){0, 0, 0};
+
 #include "map/map_geometry.wireframe"
 }
 
