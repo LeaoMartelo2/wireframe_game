@@ -2,33 +2,53 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
-#include "models.h"
 #include <math.h>
 
-#define SHOTGUN_MODEL "models/low_poly_shotgun/shotgun.gltf"
+BoundingBox player_calculate_boundingbox(Player *player);
 
 void player_setup(Player *player) {
-    player->camera.player_cam = (Camera3D){0};
-    player->camera.player_cam.position = Vector3Zero();
-    player->camera.player_cam.target = Vector3Zero();
-    player->camera.player_cam.up = (Vector3){0, 1, 0};
-    player->camera.player_cam.fovy = 90.0f;
-    player->camera.player_cam.projection = CAMERA_PERSPECTIVE;
-    player->camera.camera_tilt = 0.01f;
-    player->camera.mouse_sens = 0.1f;
+    player->camera = (Camera3D){0};
+    player->camera.position = Vector3Zero();
+    player->camera.target = Vector3Zero();
+    player->camera.up = (Vector3){0, 1, 0};
+    player->camera.fovy = 90.0f;
+    player->camera.projection = CAMERA_PERSPECTIVE;
+    player->camera_misc.camera_tilt = 0.01f;
+    player->camera_misc.mouse_sens = 0.1f;
 
-    player->movement.pos = (Vector3){50, 50, 50};
-    player->movement.move_speed = 500.0f;
-    player->movement.input = (Vector2){0, 0};
-    player->movement.velocity = Vector3Zero();
-    player->movement.gravity = -150.0f;
-    player->movement.is_grounded = false;
+    player->pos = (Vector3){50, 50, 50};
+    player->move_speed = 500.0f;
+    player->velocity = Vector3Zero();
+    player->acc_rate = 0.05f;
+    player->gravity = -150.0f;
+    player->is_grounded = false;
+
+    player->input.forwards = 0.0f;
+    player->input.sideways = 0.0f;
+    player->input.up_down = 0.0f;
 
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
-    player->collision.bounding_box = (BoundingBox){0};
+    player->collision.bounding_box = player_calculate_boundingbox(player);
 }
 
-bool check_colision_test(Player *player, bool ground) {
+BoundingBox player_calculate_boundingbox(Player *player) {
+
+    Vector3 entity_size = player->collision.bounding_box_size;
+
+    Vector3 negative = {player->pos.x - entity_size.x / 2,
+                        player->pos.y - entity_size.y / 2,
+                        player->pos.z - entity_size.z / 2};
+
+    Vector3 positive = {player->pos.x + entity_size.x / 2,
+                        player->pos.y + entity_size.y / 2,
+                        player->pos.z + entity_size.z / 2};
+
+    BoundingBox player_bounding_box = (BoundingBox){negative, positive};
+
+    return player_bounding_box;
+}
+
+/*bool check_colision_test(Player *player, bool ground) {
 
     Vector3 other_pos = {0};
     Vector3 other_size = {0};
@@ -72,44 +92,43 @@ bool check_colision_test(Player *player, bool ground) {
 
         if (CheckCollisionBoxes(player_bounding_box, other_bounding_box)) {
 
-            /*DrawBoundingBox(other_bounding_box, GREEN);*/
-            /*DrawBoundingBox(player_bounding_box, GREEN);*/
+            //DrawBoundingBox(other_bounding_box, GREEN);
+            //DrawBoundingBox(player_bounding_box, GREEN);
 
             return true;
         }
     }
 
     return false;
-}
+} */
 
-void set_camera_pos(Player *player) {
-    player->camera.position = player->postition;
-    player->camera.position.y = player->postition.y + 5;
+void player_update_camera(Player *player) {
+    player->camera.position = player->pos;
+    player->camera.position.y = player->pos.y + 5;
     player->camera.up.y = 1.0f;
     player->camera.target = player->camera.target;
 }
 
-Vector3 get_player_forward(Player *player) {
+Vector3 player_get_forward(Player *player) {
 
     return Vector3Normalize(Vector3Subtract(player->camera.target, player->camera.position));
 }
 
-Vector3 get_player_up(Player *player) {
+Vector3 player_get_up(Player *player) {
 
     return Vector3Normalize(player->camera.up);
 }
 
-Vector3 get_player_right(Player *player) {
-    Vector3 forward = get_player_forward(player);
-    Vector3 up = get_player_up(player);
+Vector3 player_get_right(Player *player) {
+    Vector3 forward = player_get_forward(player);
+    Vector3 up = player_get_up(player);
 
     return Vector3Normalize(Vector3CrossProduct(forward, up));
 }
 
 void player_move_forward(Player *player, float distance) {
-    /* direction its facing */
 
-    Vector3 forward = get_player_forward(player);
+    Vector3 forward = player_get_forward(player);
 
     /* project vector in to world plane */
     forward.y = 0;
@@ -118,142 +137,110 @@ void player_move_forward(Player *player, float distance) {
     /* scale by distance */
     forward = Vector3Scale(forward, distance);
 
-    player->postition = Vector3Add(player->postition, forward);
-    set_camera_pos(player);
+    player->pos = Vector3Add(player->pos, forward);
+    player_update_camera(player);
+    // keep target forwards to player pos
     player->camera.target = Vector3Add(player->camera.target, forward);
 }
 
 void player_move_right(Player *player, float distance) {
 
-    Vector3 right = get_player_right(player);
+    Vector3 right = player_get_right(player);
 
     right.y = 0;
     right = Vector3Scale(right, distance);
 
-    player->postition = Vector3Add(player->postition, right);
-    set_camera_pos(player);
+    player->pos = Vector3Add(player->pos, right);
+    player_update_camera(player);
+    // move target along
     player->camera.target = (Vector3Add(player->camera.target, right));
 }
 
 void player_move_vertical(Player *player, float distance) {
 
-    Vector3 up = get_player_up(player);
+    Vector3 up = player_get_up(player);
 
     up = Vector3Scale(up, distance);
 
-    player->postition = Vector3Add(player->postition, up);
-    set_camera_pos(player);
+    player->pos = Vector3Add(player->pos, up);
+    player_update_camera(player);
+    // move camera along
     player->camera.target = Vector3Add(player->camera.target, up);
 }
 
-void clamp_float(float *velocity) {
-    if (*velocity > 1) {
-        *velocity = 1;
-    }
+void player_velocity_decay(float *velocity, float decay_rate) {
 
-    if (*velocity < -1) {
-        *velocity = -1;
-    }
-
-    // deadzone to avoid floating point errors:
-
-    float dead_zone = 0.1;
-
-    if (fabsf(*velocity) < dead_zone) {
-        *velocity = 0.0f;
-    }
-}
-
-void update_velocity(float *velocity, float decay_rate) {
-
-    if (*velocity > 0.0000f) {
+    if (*velocity > 0.0f) {
         *velocity -= decay_rate;
     }
 
-    if (*velocity < 0.0000f) {
+    if (*velocity < 0.0f) {
         *velocity += decay_rate;
     }
 }
 
-void update_gravity(float *velocity, float gravity, float rate) {
+void player_update_gravity(float *velocity, float gravity, float rate) {
 
     if (*velocity > gravity) {
         *velocity -= rate;
     }
 }
 
-void move_player(Player *p) {
+void player_get_input(Player *player) {
+
+    if (IsKeyDown(KEY_W)) {
+        float forwards = player->input.forwards;
+        forwards += player->acc_rate;
+        forwards = Clamp(forwards, -1.0f, 1.0f);
+        player->input.forwards = forwards;
+    }
+
+    if (IsKeyDown(KEY_S)) {
+        float backwards = player->input.forwards;
+        backwards -= player->acc_rate;
+        backwards = Clamp(backwards, -1.0f, 1.0f);
+        player->input.forwards = backwards;
+    }
+
+    if (IsKeyDown(KEY_A)) {
+        float left = player->input.sideways;
+        left += player->acc_rate;
+        left = Clamp(left, -1.0f, 1.0f);
+        player->input.sideways = left;
+    }
+
+    if (IsKeyDown(KEY_D)) {
+        float right = player->input.sideways;
+        right -= player->acc_rate;
+        right = Clamp(right, -1.0f, 1.0f);
+        player->input.sideways = right;
+    }
+}
+
+void move_player(Player *player) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
 
     float decay_rate = 0.1f;
 
-    /*printf("velocities: {%f, %f}\n", p->forward_velocity, p->sideways_velocity);*/
+    player_velocity_decay(&player->velocity.x, decay_rate);
+    player_velocity_decay(&player->velocity.z, decay_rate);
 
-    update_velocity(&p->velocity.x, decay_rate);
-    update_velocity(&p->velocity.z, decay_rate);
+    Vector3 forward = GetCameraForward(&player->camera);
 
-    clamp_float(&p->velocity.x);
-    clamp_float(&p->velocity.z);
+    CameraYaw(&player->camera, -mouse_pos_delta.x * player->camera_misc.mouse_sens * delta_time, false);
+    CameraPitch(&player->camera, -mouse_pos_delta.y * player->camera_misc.mouse_sens * delta_time,
+                true, false, false);
 
-    Vector3 forward = GetCameraForward(&p->camera);
+    player_get_input(player);
 
-    CameraYaw(&p->camera, -mouse_pos_delta.x * p->cam_rot_speed * delta_time, false);
-    CameraPitch(&p->camera, -mouse_pos_delta.y * p->cam_rot_speed * delta_time, true, false, false);
-
-    player_move_forward(p, -p->move_speed * p->velocity.x * delta_time);
-    player_move_right(p, -p->move_speed * p->velocity.z * delta_time);
-
-    if (check_colision_test(p, false)) {
-
-        /* push in the oposite direction */
-        player_move_forward(p, +p->move_speed * p->velocity.x * delta_time);
-        player_move_right(p, +p->move_speed * p->velocity.z * delta_time);
-
-        return;
-    }
-
-    if (IsKeyDown(KEY_W)) {
-        p->velocity.x -= p->move_speed * delta_time;
-    }
-
-    if (IsKeyDown(KEY_A)) {
-        p->velocity.z += p->move_speed * delta_time;
-
-        if (p->turn_A == false) {
-            p->camera.up = Vector3RotateByAxisAngle(p->camera.up, forward, p->cam_rol_scale);
-        }
-
-        p->turn_A = true;
-    }
-
-    if (IsKeyReleased(KEY_A)) {
-        p->camera.up = Vector3Zero();
-        p->camera.up.y = 1.0f;
-        p->turn_A = false;
-    }
-
-    if (IsKeyDown(KEY_S)) {
-        p->velocity.x += p->move_speed * delta_time;
-    }
-
-    if (IsKeyDown(KEY_D)) {
-        p->velocity.z -= p->move_speed * delta_time;
-
-        if (p->turn_D == false) {
-            p->camera.up = Vector3RotateByAxisAngle(p->camera.up, forward, -p->cam_rol_scale);
-        }
-        p->turn_D = true;
-    }
-    if (IsKeyReleased(KEY_D)) {
-        p->camera.up = Vector3Zero();
-        p->camera.up.y = 1.0f;
-        p->turn_D = false;
-    }
+    player_move_forward(player, player->move_speed * player->input.forwards * delta_time);
+    // if the sideways input is negative, it should move to the left
+    player_move_right(player, player->move_speed * player->input.sideways * delta_time);
 }
 
-void update_viewmodel_pos(Player *player) {
+/*void update_viewmodel_pos(Player *player) {
 
     Vector3 temp = player->viewmodel_pos;
 
@@ -274,9 +261,9 @@ void update_viewmodel_pos(Player *player) {
     }
 
     player->viewmodel_pos = temp;
-}
+} */
 
-void draw_viewmodel(Player *player) {
+/*void draw_viewmodel(Player *player) {
 
     rlPushMatrix();
     rlTranslatef(player->viewmodel_pos.x, player->viewmodel_pos.y, player->viewmodel_pos.z);
@@ -299,40 +286,11 @@ void draw_viewmodel(Player *player) {
     DrawModelWires(player->viewmodel, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
 }
+*/
 
 void update_player(Player *player) {
 
-    /*Sound reload = LoadSound("sounds/reload.wav");*/
-
     float delta_time = GetFrameTime();
 
-    update_viewmodel_pos(player);
-
-    update_gravity(&player->velocity.y, player->gravity, 15.0f);
-
-    if (check_colision_test(player, true)) {
-        player->is_grounded = true;
-
-    } else {
-        player_move_vertical(player, player->velocity.y * delta_time);
-        update_viewmodel_pos(player);
-        player->is_grounded = false;
-    }
-
-    if (IsKeyDown(KEY_SPACE)) {
-        if (player->is_grounded) {
-            player->velocity.y = 300;
-
-            player_move_vertical(player, player->velocity.y * delta_time);
-            update_viewmodel_pos(player);
-            player->is_grounded = false;
-        }
-    }
-
-    if (IsKeyDown(KEY_F)) {
-        player->faceup = true;
-        /*PlaySound(reload);*/
-    } else {
-        player->faceup = false;
-    }
+    move_player(player);
 }

@@ -1,5 +1,6 @@
 #include "../raylib/raylib.h"
 #include "../raylib/rcamera.h"
+#include "player.h"
 
 int main(void) {
 
@@ -13,7 +14,17 @@ int main(void) {
 
     InitAudioDevice();
 
+    Player player = {0};
+    player_setup(&player);
+
     while (!WindowShouldClose()) {
+
+        BeginDrawing();
+        BeginMode3D(player.camera);
+
+        EndMode3D();
+
+        EndDrawing();
     }
 
     CloseWindow();

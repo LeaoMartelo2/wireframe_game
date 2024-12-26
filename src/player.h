@@ -7,20 +7,27 @@
 #include "models.h"
 
 typedef struct Player {
+        Camera3D camera;
         struct {
-                Camera3D player_cam;
                 float mouse_sens;
                 float camera_tilt;
-        } camera;
+                bool turn_A;
+                bool turn_D;
+
+        } camera_misc;
+
+        Vector3 pos;
+        Vector3 velocity;
+        float acc_rate;
+        float move_speed;
+        float gravity;
+        bool is_grounded;
 
         struct {
-                Vector3 pos;
-                Vector3 velocity;
-                float move_speed;
-                float gravity;
-                bool is_grounded;
-                Vector2 input;
-        } movement;
+                float forwards;
+                float sideways;
+                float up_down;
+        } input;
 
         struct {
                 Vector3 bounding_box_size;
@@ -33,18 +40,12 @@ typedef struct Player {
         } hud;
 
         struct {
-                bool turn_A;
-                bool turn_D;
         } misc;
 
 } Player;
 
 void player_setup(Player *player);
 
-void move_player(Player *p);
-
 void update_player(Player *player);
-
-void draw_viewmodel(Player *player);
 
 #endif // !PLAYER_H_
