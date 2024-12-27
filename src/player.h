@@ -42,6 +42,11 @@ typedef struct Player {
                 Vector3 viewmodel_pos;
         } hud;
 
+        struct {
+                bool no_gravity;
+                bool noclip;
+        } misc;
+
 } Player;
 
 void player_setup(Player *player);

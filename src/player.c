@@ -17,7 +17,7 @@ void player_setup(Player *player) {
     player->camera_misc.mouse_sens = 0.1f;
 
     player->pos = (Vector3){50, 50, 50};
-    player->move_speed = 500.0f;
+    player->move_speed = 1500.0f;
     player->acc_rate = 0.1f;
     player->gravity = -150.0f;
     player->is_grounded = false;
@@ -31,6 +31,9 @@ void player_setup(Player *player) {
 
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
     player->collision.bounding_box = (BoundingBox)player_calculate_boundingbox(player);
+
+    player->misc.noclip = false;
+    player->misc.noclip = false;
 }
 
 BoundingBox player_calculate_boundingbox(Player *player) {
@@ -50,7 +53,7 @@ BoundingBox player_calculate_boundingbox(Player *player) {
     return player_bounding_box;
 }
 
-/*bool check_colision_test(Player *player, bool ground) {
+bool player_colliding_with_geometry(Player *player, bool ground) {
 
     Vector3 other_pos = {0};
     Vector3 other_size = {0};
@@ -94,15 +97,15 @@ BoundingBox player_calculate_boundingbox(Player *player) {
 
         if (CheckCollisionBoxes(player_bounding_box, other_bounding_box)) {
 
-            //DrawBoundingBox(other_bounding_box, GREEN);
-            //DrawBoundingBox(player_bounding_box, GREEN);
+            // DrawBoundingBox(other_bounding_box, GREEN);
+            // DrawBoundingBox(player_bounding_box, GREEN);
 
             return true;
         }
     }
 
     return false;
-} */
+}
 
 void player_update_camera(Player *player) {
     player->camera.position = player->pos;
@@ -250,7 +253,7 @@ void player_get_input(Player *player) {
 
 void player_calculate_velocity(Player *player) {
 
-    float max_speed = 500.0f;
+    float max_speed = player->move_speed;
 
     player->velocity.forwards = player->move_speed * player->input.forwards;
     player->velocity.forwards = Clamp(player->velocity.forwards, -max_speed, max_speed);
