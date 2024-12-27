@@ -12,17 +12,40 @@ int main(void) {
     SetTargetFPS(60);
     ToggleFullscreen();
 
+    DisableCursor();
+
     InitAudioDevice();
 
     Player player = {0};
     player_setup(&player);
 
     while (!WindowShouldClose()) {
+        update_player(&player);
 
         BeginDrawing();
+
+        ClearBackground(BLACK);
+
         BeginMode3D(player.camera);
 
+        DrawCube(Vector3Zero(), 50, 50, 50, RED);
+
+        /*DrawBoundingBox(player.collision.bounding_box, GREEN);*/
+        DrawCube(player.pos, 5, 15, 5, ORANGE);
+        DrawCubeWires(player.pos, 5, 15, 5, ORANGE);
+
         EndMode3D();
+
+        DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
+
+        DrawText(TextFormat("pos:\nX:%.2f, Y:%.2f, Z:%.2f\n"
+                            "Camera target:\nX: %.2f, Y:%.2f, Z:%.2f\n"
+                            "Input:\nFowards/backwards: %f, sideways: %f",
+                            player.pos.x, player.pos.y, player.pos.z,
+                            player.camera.target.x, player.camera.target.y, player.camera.target.z,
+                            player.input.forwards, player.input.sideways),
+                 10, 10,
+                 20, WHITE);
 
         EndDrawing();
     }

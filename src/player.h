@@ -4,7 +4,6 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
-#include "models.h"
 
 typedef struct Player {
         Camera3D camera;
@@ -38,9 +37,6 @@ typedef struct Player {
                 Model viewmodel;
                 Vector3 viewmodel_pos;
         } hud;
-
-        struct {
-        } misc;
 
 } Player;
 

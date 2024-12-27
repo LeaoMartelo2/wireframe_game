@@ -19,7 +19,7 @@ void player_setup(Player *player) {
     player->pos = (Vector3){50, 50, 50};
     player->move_speed = 500.0f;
     player->velocity = Vector3Zero();
-    player->acc_rate = 0.05f;
+    player->acc_rate = 0.1f;
     player->gravity = -150.0f;
     player->is_grounded = false;
 
@@ -104,9 +104,8 @@ BoundingBox player_calculate_boundingbox(Player *player) {
 
 void player_update_camera(Player *player) {
     player->camera.position = player->pos;
-    player->camera.position.y = player->pos.y + 5;
+    player->camera.position.y = player->pos.y + 7;
     player->camera.up.y = 1.0f;
-    player->camera.target = player->camera.target;
 }
 
 Vector3 player_get_forward(Player *player) {
@@ -188,6 +187,28 @@ void player_update_gravity(float *velocity, float gravity, float rate) {
 
 void player_get_input(Player *player) {
 
+    float dead_zone = 0.1f;
+
+    if (player->input.forwards > 0.000000f) {
+        player->input.forwards -= 0.05f;
+        player->input.forwards = Clamp(player->input.forwards, -1.0f, 1.0f);
+    }
+
+    if (player->input.forwards < 0.000000f) {
+        player->input.forwards += 0.05f;
+        player->input.forwards = Clamp(player->input.forwards, -1.0f, 1.0f);
+    }
+
+    if (player->input.sideways > 0.000000f) {
+        player->input.sideways -= 0.05f;
+        player->input.sideways = Clamp(player->input.sideways, -1.0f, 1.0f);
+    }
+
+    if (player->input.sideways < 0.000000f) {
+        player->input.sideways += 0.05f;
+        player->input.sideways = Clamp(player->input.sideways, -1.0f, 1.0f);
+    }
+
     if (IsKeyDown(KEY_W)) {
         float forwards = player->input.forwards;
         forwards += player->acc_rate;
@@ -215,6 +236,14 @@ void player_get_input(Player *player) {
         right = Clamp(right, -1.0f, 1.0f);
         player->input.sideways = right;
     }
+
+    if (fabs(player->input.forwards) < dead_zone) {
+        player->input.forwards = 0.0f;
+    }
+
+    if (fabs(player->input.sideways) < dead_zone) {
+        player->input.sideways = 0.0f;
+    }
 }
 
 void move_player(Player *player) {
@@ -227,8 +256,6 @@ void move_player(Player *player) {
     player_velocity_decay(&player->velocity.x, decay_rate);
     player_velocity_decay(&player->velocity.z, decay_rate);
 
-    Vector3 forward = GetCameraForward(&player->camera);
-
     CameraYaw(&player->camera, -mouse_pos_delta.x * player->camera_misc.mouse_sens * delta_time, false);
     CameraPitch(&player->camera, -mouse_pos_delta.y * player->camera_misc.mouse_sens * delta_time,
                 true, false, false);
@@ -237,7 +264,7 @@ void move_player(Player *player) {
 
     player_move_forward(player, player->move_speed * player->input.forwards * delta_time);
     // if the sideways input is negative, it should move to the left
-    player_move_right(player, player->move_speed * player->input.sideways * delta_time);
+    player_move_right(player, -player->move_speed * player->input.sideways * delta_time);
 }
 
 /*void update_viewmodel_pos(Player *player) {
@@ -290,7 +317,6 @@ void move_player(Player *player) {
 
 void update_player(Player *player) {
 
-    float delta_time = GetFrameTime();
-
     move_player(player);
+    player_update_camera(player);
 }
