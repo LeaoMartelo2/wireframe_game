@@ -2,7 +2,7 @@
 CC = gcc
 WINDOWS_COMPILER = x86_64-w64-mingw32-gcc 
 
-FLAGS = -Wall -Wextra -pedantic -lm -O2 -std=c17 -L ./raylib/linux/ -lraylib
+FLAGS = -Wall -Wextra -pedantic -lm -O2 -std=c17 -ggdb -L ./raylib/linux/ -lraylib
 WINDOWS_FLAGS = -Wall -Wextra -pedantic -lm -O2 -std=c17 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm 
 
 SRCDIR = src

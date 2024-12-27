@@ -18,7 +18,6 @@ void player_setup(Player *player) {
 
     player->pos = (Vector3){50, 50, 50};
     player->move_speed = 500.0f;
-    player->velocity = Vector3Zero();
     player->acc_rate = 0.1f;
     player->gravity = -150.0f;
     player->is_grounded = false;
@@ -27,8 +26,11 @@ void player_setup(Player *player) {
     player->input.sideways = 0.0f;
     player->input.up_down = 0.0f;
 
+    player->velocity.forwards = 0.0f;
+    player->velocity.sideways = 0.0f;
+
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
-    player->collision.bounding_box = player_calculate_boundingbox(player);
+    player->collision.bounding_box = (BoundingBox)player_calculate_boundingbox(player);
 }
 
 BoundingBox player_calculate_boundingbox(Player *player) {
@@ -246,25 +248,35 @@ void player_get_input(Player *player) {
     }
 }
 
+void player_calculate_velocity(Player *player) {
+
+    float max_speed = 500.0f;
+
+    player->velocity.forwards = player->move_speed * player->input.forwards;
+    player->velocity.forwards = Clamp(player->velocity.forwards, -max_speed, max_speed);
+    // x = 500 * (-1 .. 1) (percentage of total)
+
+    player->velocity.sideways = player->move_speed * player->input.sideways;
+    player->velocity.sideways = Clamp(player->velocity.sideways, -max_speed, max_speed);
+}
+
 void move_player(Player *player) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
-
-    float decay_rate = 0.1f;
-
-    player_velocity_decay(&player->velocity.x, decay_rate);
-    player_velocity_decay(&player->velocity.z, decay_rate);
 
     CameraYaw(&player->camera, -mouse_pos_delta.x * player->camera_misc.mouse_sens * delta_time, false);
     CameraPitch(&player->camera, -mouse_pos_delta.y * player->camera_misc.mouse_sens * delta_time,
                 true, false, false);
 
     player_get_input(player);
+    player_calculate_velocity(player);
 
-    player_move_forward(player, player->move_speed * player->input.forwards * delta_time);
+    player_move_forward(player, player->velocity.forwards * delta_time);
     // if the sideways input is negative, it should move to the left
-    player_move_right(player, -player->move_speed * player->input.sideways * delta_time);
+    player_move_right(player, -player->velocity.sideways * delta_time);
+
+    player->collision.bounding_box = player_calculate_boundingbox(player);
 }
 
 /*void update_viewmodel_pos(Player *player) {

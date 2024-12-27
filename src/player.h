@@ -16,7 +16,6 @@ typedef struct Player {
         } camera_misc;
 
         Vector3 pos;
-        Vector3 velocity;
         float acc_rate;
         float move_speed;
         float gravity;
@@ -27,6 +26,11 @@ typedef struct Player {
                 float sideways;
                 float up_down;
         } input;
+
+        struct {
+                float forwards;
+                float sideways;
+        } velocity;
 
         struct {
                 Vector3 bounding_box_size;

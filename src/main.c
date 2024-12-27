@@ -30,9 +30,7 @@ int main(void) {
 
         DrawCube(Vector3Zero(), 50, 50, 50, RED);
 
-        /*DrawBoundingBox(player.collision.bounding_box, GREEN);*/
-        DrawCube(player.pos, 5, 15, 5, ORANGE);
-        DrawCubeWires(player.pos, 5, 15, 5, ORANGE);
+        DrawBoundingBox(player.collision.bounding_box, GREEN);
 
         EndMode3D();
 
@@ -40,10 +38,12 @@ int main(void) {
 
         DrawText(TextFormat("pos:\nX:%.2f, Y:%.2f, Z:%.2f\n"
                             "Camera target:\nX: %.2f, Y:%.2f, Z:%.2f\n"
-                            "Input:\nFowards/backwards: %f, sideways: %f",
+                            "Input:\nFowards/backwards: %f, sideways: %f\n"
+                            "Velocity:\nForwards/backwards: %.2f, %.2f\n",
                             player.pos.x, player.pos.y, player.pos.z,
                             player.camera.target.x, player.camera.target.y, player.camera.target.z,
-                            player.input.forwards, player.input.sideways),
+                            player.input.forwards, player.input.sideways,
+                            player.velocity.forwards, player.velocity.sideways),
                  10, 10,
                  20, WHITE);
 
