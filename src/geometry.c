@@ -75,7 +75,7 @@ void test_cube(Geometry_Array *map_geometry) {
 
     Geometry cube = {
         .size = (Vector3){50, 50, 50},
-        .pos = (Vector3){10, 10, 10},
+        .pos = (Vector3){25, 25, 25},
         .mesh = GenMeshCube(50, 50, 50),
         .model = LoadModelFromMesh(cube.mesh),
     };

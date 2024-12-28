@@ -2,7 +2,9 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
+#include "geometry.h"
 #include <math.h>
+#include <string.h>
 
 BoundingBox player_calculate_boundingbox(Player *player);
 
@@ -16,8 +18,8 @@ void player_setup(Player *player) {
     player->camera_misc.camera_tilt = 0.01f;
     player->camera_misc.mouse_sens = 0.1f;
 
-    player->pos = (Vector3){50, 7.5f, 50}; // player is 15 units tall, 7.5 makes the feet touch Y = 0
-    player->move_speed = 1500.0f;
+    player->pos = (Vector3){150, 7.5f, 50}; // player is 15 units tall, 7.5 makes the feet touch Y = 0
+    player->move_speed = 200.0f;
     player->acc_rate = 0.15f;
     player->gravity = -150.0f;
     player->is_grounded = false;
@@ -32,8 +34,15 @@ void player_setup(Player *player) {
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
     player->collision.bounding_box = player_calculate_boundingbox(player);
 
+    player->viewmodel.model = LoadModel("models/low_poly_shotgun/shotgun.gltf"); // find better solution later
+    player->viewmodel.viewmodel_pos = Vector3Zero();
+
     player->misc.noclip = false;
-    player->misc.noclip = false;
+    player->misc.show_debug = false;
+}
+
+void player_set_collision_map(Player *player, Geometry_Array *map_geometry) {
+    player->collision.map_geometry = *map_geometry;
 }
 
 BoundingBox player_calculate_boundingbox(Player *player) {
@@ -53,37 +62,19 @@ BoundingBox player_calculate_boundingbox(Player *player) {
     return player_bounding_box;
 }
 
-/*bool player_colliding_with_geometry(Player *player, bool ground) {
+bool player_checkcollision_geometry(Player *player) {
 
-    Vector3 other_pos = {0};
-    Vector3 other_size = {0};
+    for (size_t i = 0; i < player->collision.map_geometry.size; i++) {
 
-    for (int i = 0; i < player->geometry_count; i++) {
+        Vector3 player_pos = player->pos;
 
-        if (ground == false) {
-            other_pos = player->geometry[i].pos;
-            other_size = player->geometry[i].size;
-        }
+        BoundingBox player_bounding_box = player->collision.bounding_box;
 
-        if (ground == true) {
-            other_pos = player->ground_geometry[i].pos;
-            other_size = player->ground_geometry[i].size;
-        }
+        /*BoundingBox geometry_bbx = GetModelBoundingBox(player->collision.map_geometry.data[i].model);*/
 
-        Vector3 entity_pos = player->postition;
-        Vector3 entity_size = player->bounding_box_size;
+        Vector3 other_pos = player->collision.map_geometry.data[i].pos;
 
-        Vector3 negative = {entity_pos.x - entity_size.x / 2,
-                            entity_pos.y - entity_size.y / 2,
-                            entity_pos.z - entity_size.z / 2};
-
-        Vector3 positive = {entity_pos.x + entity_size.x / 2,
-                            entity_pos.y + entity_size.y / 2,
-                            entity_pos.z + entity_size.z / 2};
-
-        BoundingBox player_bounding_box = (BoundingBox){negative, positive};
-
-        player->bounding_box = player_bounding_box;
+        Vector3 other_size = player->collision.map_geometry.data[i].size;
 
         Vector3 negative_other = {other_pos.x - other_size.x / 2,
                                   other_pos.y - other_size.y / 2,
@@ -93,19 +84,16 @@ BoundingBox player_calculate_boundingbox(Player *player) {
                                   other_pos.y + other_size.y / 2,
                                   other_pos.z + other_size.z / 2};
 
-        BoundingBox other_bounding_box = (BoundingBox){negative_other, positive_other};
+        BoundingBox geometry_bbx = (BoundingBox){negative_other, positive_other};
 
-        if (CheckCollisionBoxes(player_bounding_box, other_bounding_box)) {
-
-            // DrawBoundingBox(other_bounding_box, GREEN);
-            // DrawBoundingBox(player_bounding_box, GREEN);
+        if (CheckCollisionBoxes(player_bounding_box, geometry_bbx)) {
 
             return true;
         }
     }
 
     return false;
-}*/
+}
 
 void player_update_camera(Player *player) {
     player->camera.position = player->pos;
@@ -273,7 +261,7 @@ void player_calculate_velocity(Player *player) {
     player->velocity.sideways = Clamp(player->velocity.sideways, -max_speed, max_speed);
 }
 
-void move_player(Player *player) {
+void player_move(Player *player) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
@@ -281,6 +269,27 @@ void move_player(Player *player) {
     CameraYaw(&player->camera, -mouse_pos_delta.x * player->camera_misc.mouse_sens * delta_time, false);
     CameraPitch(&player->camera, -mouse_pos_delta.y * player->camera_misc.mouse_sens * delta_time,
                 true, false, false);
+
+    player_get_input(player);
+
+    Player player_copy = *player;
+
+    player_get_input(&player_copy);
+    player_calculate_velocity(&player_copy);
+    player_move_forward(&player_copy, player_copy.velocity.forwards * delta_time);
+    player_move_right(&player_copy, -player_copy.velocity.sideways * delta_time);
+
+    player_copy.collision.bounding_box = player_calculate_boundingbox(&player_copy);
+    DrawBoundingBox(player_copy.collision.bounding_box, ORANGE);
+
+    if (player_checkcollision_geometry(&player_copy)) {
+        player->velocity.forwards = 0.0f;
+        player->velocity.sideways = 0.0f;
+        player_copy.velocity.forwards = 0.0f;
+        player_copy.velocity.sideways = 0.0f;
+        player_copy.pos = player->pos;
+        return;
+    }
 
     player_get_input(player);
     player_calculate_velocity(player);
@@ -292,61 +301,63 @@ void move_player(Player *player) {
     player->collision.bounding_box = player_calculate_boundingbox(player);
 }
 
-/*void update_viewmodel_pos(Player *player) {
+void player_update_viewmodel(Player *player) {
 
-    Vector3 temp = player->viewmodel_pos;
+    Vector3 temp = player->viewmodel.viewmodel_pos;
 
-    temp = get_player_forward(player);
+    temp = player_get_forward(player);
 
-    Vector3 right = get_player_right(player);
+    Vector3 right = player_get_right(player);
 
-    temp = Vector3Add(temp, player->postition);
+    temp = Vector3Add(temp, player->pos);
     temp = Vector3Add(temp, right);
 
-    temp.y += 4.5f;
+    temp.y = player->pos.y + 6.5f;
 
-    if (player->velocity.x != 0.0f) {
+    player->viewmodel.viewmodel_pos = temp;
+}
 
-        temp.y += sinf(GetTime()) * 0.2;
-    } else {
-        temp.y += sinf(GetTime()) * 0.1;
-    }
-
-    player->viewmodel_pos = temp;
-} */
-
-/*void draw_viewmodel(Player *player) {
+void player_draw_viewmodel(Player *player) {
 
     rlPushMatrix();
-    rlTranslatef(player->viewmodel_pos.x, player->viewmodel_pos.y, player->viewmodel_pos.z);
+    rlTranslatef(player->viewmodel.viewmodel_pos.x,
+                 player->viewmodel.viewmodel_pos.y,
+                 player->viewmodel.viewmodel_pos.z);
 
-    Vector3 direction = Vector3Subtract(player->camera.position, player->viewmodel_pos);
+    Vector3 direction = Vector3Subtract(player->camera.position, player->viewmodel.viewmodel_pos);
     direction = Vector3Normalize(direction);
 
     float yaw = atan2f(direction.x, direction.z);
 
-    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(player->velocity.z, -50, 50));
-
-    if (player->faceup) {
-        Matrix pitch_rotation = MatrixRotateX(yaw + 360);
-        rotation = MatrixMultiply(rotation, pitch_rotation);
-    }
+    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(player->input.sideways, -1.5, 1.5));
 
     rlMultMatrixf(MatrixToFloat(rotation));
     rlScalef(1, 1, 1);
-    DrawModel(player->viewmodel, Vector3Zero(), 1, GetColor(0x181818FF));
-    DrawModelWires(player->viewmodel, Vector3Zero(), 1, WHITE);
+    DrawModel(player->viewmodel.model, Vector3Zero(), 1, GetColor(0x181818FF));
+    DrawModelWires(player->viewmodel.model, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
 }
-*/
 
-void update_player(Player *player) {
+void player_update(Player *player) {
 
-    move_player(player);
+    player_move(player);
     player_update_camera(player);
+    player_update_viewmodel(player);
+
+    if (IsKeyPressed(KEY_F3)) {
+        player->misc.show_debug = !player->misc.show_debug;
+    }
 }
 
-/*void player_debug(Player *player) {
+void player_debug(Player *player) {
+
+    if (!player->misc.show_debug) {
+        return;
+    }
+
+    if (player_checkcollision_geometry(player)) {
+        DrawText("TRUE", GetScreenWidth() / 2, GetScreenHeight() / 2, 50, GREEN);
+    }
 
     DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
                         "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
@@ -356,4 +367,25 @@ void update_player(Player *player) {
                         player->velocity.forwards, player->velocity.sideways),
              10, 10,
              20, WHITE);
-}*/
+}
+
+void player_debug3D(Player *player) {
+
+    if (!player->misc.show_debug) {
+        return;
+    }
+
+    DrawBoundingBox(player->collision.bounding_box, GREEN);
+}
+
+void player_draw3D(Player *player) {
+
+    player_draw_viewmodel(player);
+
+    player_debug3D(player);
+}
+
+void player_draw_hud(Player *player) {
+
+    player_debug(player);
+}

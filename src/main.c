@@ -26,8 +26,11 @@ int main(void) {
 
     test_cube(&map_geometry);
 
+    player_set_collision_map(&player, &map_geometry);
+
     while (!WindowShouldClose()) {
-        update_player(&player);
+
+        /*player_update(&player);*/
 
         BeginDrawing();
 
@@ -35,17 +38,19 @@ int main(void) {
 
         BeginMode3D(player.camera);
 
+        player_update(&player);
+
         draw_reference_point();
 
         draw_world(&map_geometry);
 
-        DrawBoundingBox(player.collision.bounding_box, GREEN);
+        player_draw3D(&player);
 
         EndMode3D();
 
-        DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
+        player_draw_hud(&player);
 
-        player_debug(&player);
+        DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
 
         EndDrawing();
     }
