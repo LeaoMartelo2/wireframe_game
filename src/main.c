@@ -2,7 +2,6 @@
 #include "../raylib/rcamera.h"
 #include "geometry.h"
 #include "player.h"
-#include <stdlib.h>
 
 int main(void) {
 
@@ -40,20 +39,13 @@ int main(void) {
 
         draw_world(&map_geometry);
 
-        /*DrawBoundingBox(player.collision.bounding_box, GREEN);*/
+        DrawBoundingBox(player.collision.bounding_box, GREEN);
 
         EndMode3D();
 
         DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
 
-        DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
-                            "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
-                            "Velocity:\n -> Forward: %.2f\n -> Sideways: %.2f\n",
-                            player.pos.x, player.pos.y, player.pos.z,
-                            player.input.forwards, player.input.sideways, player.input.up_down,
-                            player.velocity.forwards, player.velocity.sideways),
-                 10, 10,
-                 20, WHITE);
+        player_debug(&player);
 
         EndDrawing();
     }

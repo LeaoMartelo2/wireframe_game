@@ -26,7 +26,7 @@ typedef struct {
         int *items;
         size_t count;
         size_t capacity;
-} integer_da;
+} int_da;
 
 typedef struct {
         float *items;

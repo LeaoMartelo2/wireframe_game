@@ -16,7 +16,7 @@ void player_setup(Player *player) {
     player->camera_misc.camera_tilt = 0.01f;
     player->camera_misc.mouse_sens = 0.1f;
 
-    player->pos = (Vector3){50, 0, 50};
+    player->pos = (Vector3){50, 7.5f, 50}; // player is 15 units tall, 7.5 makes the feet touch Y = 0
     player->move_speed = 1500.0f;
     player->acc_rate = 0.15f;
     player->gravity = -150.0f;
@@ -345,3 +345,15 @@ void update_player(Player *player) {
     move_player(player);
     player_update_camera(player);
 }
+
+/*void player_debug(Player *player) {
+
+    DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
+                        "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
+                        "Velocity:\n -> Forward: %.2f\n -> Sideways: %.2f\n",
+                        player->pos.x, player->pos.y, player->pos.z,
+                        player->input.forwards, player->input.sideways, player->input.up_down,
+                        player->velocity.forwards, player->velocity.sideways),
+             10, 10,
+             20, WHITE);
+}*/
