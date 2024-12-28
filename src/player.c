@@ -53,7 +53,7 @@ BoundingBox player_calculate_boundingbox(Player *player) {
     return player_bounding_box;
 }
 
-bool player_colliding_with_geometry(Player *player, bool ground) {
+/*bool player_colliding_with_geometry(Player *player, bool ground) {
 
     Vector3 other_pos = {0};
     Vector3 other_size = {0};
@@ -105,7 +105,7 @@ bool player_colliding_with_geometry(Player *player, bool ground) {
     }
 
     return false;
-}
+}*/
 
 void player_update_camera(Player *player) {
     player->camera.position = player->pos;

@@ -1,5 +1,6 @@
 #include "../raylib/raylib.h"
 #include "../raylib/rcamera.h"
+#include "geometry.h"
 #include "player.h"
 
 int main(void) {
@@ -19,6 +20,19 @@ int main(void) {
     Player player = {0};
     player_setup(&player);
 
+    Geometry_Array map_geometry;
+
+    geometry_array_init(&map_geometry);
+
+    Geometry test_cube = {
+        .size = (Vector3){50, 50, 50},
+        .pos = (Vector3){10, 10, 10},
+        .mesh = GenMeshCube(50, 50, 50),
+        .model = LoadModelFromMesh(test_cube.mesh),
+    };
+
+    geometry_array_push(&map_geometry, &test_cube);
+
     while (!WindowShouldClose()) {
         update_player(&player);
 
@@ -29,6 +43,8 @@ int main(void) {
         BeginMode3D(player.camera);
 
         DrawCube(Vector3Zero(), 50, 50, 50, RED);
+
+        draw_world(&map_geometry);
 
         DrawBoundingBox(player.collision.bounding_box, GREEN);
 
