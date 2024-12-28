@@ -26,18 +26,12 @@ typedef struct {
         int *items;
         size_t count;
         size_t capacity;
-} Numbers;
+} integer_da;
 
 typedef struct {
-        Geometry *items;
+        float *items;
         size_t count;
         size_t capacity;
-} da_Geometry;
-
-typedef struct {
-        Prop *items;
-        size_t count;
-        size_t capacity;
-} da_Props;
+} float_da;
 
 #endif // !DARRAYS_H_

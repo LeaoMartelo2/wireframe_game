@@ -46,6 +46,15 @@ void geometry_array_free(Geometry_Array *arr) {
     arr->capacity = 0;
 }
 
+void draw_reference_point() {
+
+    float max_dist = 100000.0f;
+
+    DrawLine3D(Vector3Zero(), (Vector3){max_dist, 0, 0}, RED);
+    DrawLine3D(Vector3Zero(), (Vector3){0, max_dist, 0}, GREEN);
+    DrawLine3D(Vector3Zero(), (Vector3){0, 0, max_dist}, BLUE);
+}
+
 void draw_world(Geometry_Array *map_geometry) {
 
     for (size_t i = 0; i < map_geometry->size; ++i) {
@@ -60,4 +69,16 @@ void draw_world(Geometry_Array *map_geometry) {
                        1.0f,
                        RED);
     }
+}
+
+void test_cube(Geometry_Array *map_geometry) {
+
+    Geometry cube = {
+        .size = (Vector3){50, 50, 50},
+        .pos = (Vector3){10, 10, 10},
+        .mesh = GenMeshCube(50, 50, 50),
+        .model = LoadModelFromMesh(cube.mesh),
+    };
+
+    geometry_array_push(map_geometry, &cube);
 }

@@ -35,6 +35,10 @@ Geometry *geometry_array_get(Geometry_Array *arr, size_t index);
 
 void geometry_array_free(Geometry_Array *arr);
 
+void draw_reference_point();
+
 void draw_world(Geometry_Array *map_geometry);
+
+void test_cube(Geometry_Array *map_geometry);
 
 #endif // !GEOMETRY_H_

@@ -16,9 +16,9 @@ void player_setup(Player *player) {
     player->camera_misc.camera_tilt = 0.01f;
     player->camera_misc.mouse_sens = 0.1f;
 
-    player->pos = (Vector3){50, 50, 50};
+    player->pos = (Vector3){50, 0, 50};
     player->move_speed = 1500.0f;
-    player->acc_rate = 0.1f;
+    player->acc_rate = 0.15f;
     player->gravity = -150.0f;
     player->is_grounded = false;
 
@@ -30,7 +30,7 @@ void player_setup(Player *player) {
     player->velocity.sideways = 0.0f;
 
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
-    player->collision.bounding_box = (BoundingBox)player_calculate_boundingbox(player);
+    player->collision.bounding_box = player_calculate_boundingbox(player);
 
     player->misc.noclip = false;
     player->misc.noclip = false;
@@ -194,23 +194,26 @@ void player_get_input(Player *player) {
 
     float dead_zone = 0.1f;
 
+    float decay_rate = 0.05f;
+
+    // INPUT DECAY TO 0;
     if (player->input.forwards > 0.000000f) {
-        player->input.forwards -= 0.05f;
+        player->input.forwards -= decay_rate;
         player->input.forwards = Clamp(player->input.forwards, -1.0f, 1.0f);
     }
 
     if (player->input.forwards < 0.000000f) {
-        player->input.forwards += 0.05f;
+        player->input.forwards += decay_rate;
         player->input.forwards = Clamp(player->input.forwards, -1.0f, 1.0f);
     }
 
     if (player->input.sideways > 0.000000f) {
-        player->input.sideways -= 0.05f;
+        player->input.sideways -= decay_rate;
         player->input.sideways = Clamp(player->input.sideways, -1.0f, 1.0f);
     }
 
     if (player->input.sideways < 0.000000f) {
-        player->input.sideways += 0.05f;
+        player->input.sideways += decay_rate;
         player->input.sideways = Clamp(player->input.sideways, -1.0f, 1.0f);
     }
 
@@ -240,6 +243,13 @@ void player_get_input(Player *player) {
         right -= player->acc_rate;
         right = Clamp(right, -1.0f, 1.0f);
         player->input.sideways = right;
+    }
+
+    if (IsKeyDown(KEY_SPACE)) {
+        player->input.up_down = 1.0f;
+    }
+    if (IsKeyReleased(KEY_SPACE)) {
+        player->input.up_down = 0.0f;
     }
 
     if (fabs(player->input.forwards) < dead_zone) {
