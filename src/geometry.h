@@ -5,34 +5,33 @@
 #include "../raylib/raymath.h"
 #include <stdlib.h>
 
+#define INITIAL_CAPACITY 10
+
 typedef struct Geometry {
-        Vector3 size;
-        Vector3 pos;
-        Mesh mesh;
-        Model model;
+    Vector3 size;
+    Vector3 pos;
+    Mesh mesh;
+    Model model;
 } Geometry;
 
 typedef struct Prop {
-        Vector3 size;
-        Vector3 pos;
-        Mesh mesh;
-        Model model;
-        bool bounce;
-        bool rotate;
+    Vector3 size;
+    Vector3 pos;
+    Mesh mesh;
+    Model model;
+    bool bounce;
+    bool rotate;
 } Prop;
 
 typedef struct {
-        Geometry *data;
-        size_t size;
-        size_t capacity;
+    Geometry *data;
+    int size;
+    int capacity;
 } Geometry_Array;
 
-void geometry_array_init(Geometry_Array *arr);
-
-void geometry_array_push(Geometry_Array *arr, const Geometry *geometry);
-
-Geometry *geometry_array_get(Geometry_Array *arr, size_t index);
-
+Geometry_Array *geometry_array_setup();
+void geometry_array_push(Geometry_Array *arr, const Geometry geometry);
+Geometry geometry_array_get(Geometry_Array *arr, int index);
 void geometry_array_free(Geometry_Array *arr);
 
 void draw_reference_point();

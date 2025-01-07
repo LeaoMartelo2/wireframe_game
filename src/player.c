@@ -21,7 +21,7 @@ void player_setup(Player *player) {
     player->pos = (Vector3){150, 7.5f, 50}; // player is 15 units tall, 7.5 makes the feet touch Y = 0
     player->move_speed = 200.0f;
     player->acc_rate = 0.15f;
-    player->gravity = -150.0f;
+    player->gravity = -10.0f;
     player->is_grounded = false;
 
     player->input.forwards = 0.0f;
@@ -30,6 +30,7 @@ void player_setup(Player *player) {
 
     player->velocity.forwards = 0.0f;
     player->velocity.sideways = 0.0f;
+    player->velocity.vertical = 0.0f;
 
     player->collision.bounding_box_size = (Vector3){5, 15, 5};
     player->collision.bounding_box = player_calculate_boundingbox(player);
@@ -37,8 +38,9 @@ void player_setup(Player *player) {
     player->viewmodel.model = LoadModel("models/low_poly_shotgun/shotgun.gltf"); // find better solution later
     player->viewmodel.viewmodel_pos = Vector3Zero();
 
-    player->misc.noclip = false;
     player->misc.show_debug = false;
+    player->misc.noclip = false;
+    player->misc.no_gravity = true;
 }
 
 void player_set_collision_map(Player *player, Geometry_Array *map_geometry) {
@@ -63,6 +65,10 @@ BoundingBox player_calculate_boundingbox(Player *player) {
 }
 
 bool player_checkcollision_geometry(Player *player) {
+
+    if (player->misc.noclip) {
+        return false;
+    }
 
     for (size_t i = 0; i < player->collision.map_geometry.size; i++) {
 
@@ -259,6 +265,11 @@ void player_calculate_velocity(Player *player) {
 
     player->velocity.sideways = player->move_speed * player->input.sideways;
     player->velocity.sideways = Clamp(player->velocity.sideways, -max_speed, max_speed);
+
+    if (player->misc.no_gravity) {
+
+        player->velocity.vertical += player->gravity;
+    }
 }
 
 void player_move(Player *player) {
@@ -272,22 +283,31 @@ void player_move(Player *player) {
 
     player_get_input(player);
 
+    // creates a fake player, calculate its movement first, if it colided with something, dont
+    // move the real player there.
     Player player_copy = *player;
+
+    /*Vector3 cpy_oldpos = player_copy.pos;*/
 
     player_get_input(&player_copy);
     player_calculate_velocity(&player_copy);
     player_move_forward(&player_copy, player_copy.velocity.forwards * delta_time);
     player_move_right(&player_copy, -player_copy.velocity.sideways * delta_time);
+    /*player_move_vertical(&player_copy, player_copy.gravity * delta_time);*/
 
     player_copy.collision.bounding_box = player_calculate_boundingbox(&player_copy);
-    DrawBoundingBox(player_copy.collision.bounding_box, ORANGE);
+
+    /*DrawBoundingBox(player_copy.collision.bounding_box, ORANGE);*/
 
     if (player_checkcollision_geometry(&player_copy)) {
+
+        player_copy.pos = player->pos;
         player->velocity.forwards = 0.0f;
         player->velocity.sideways = 0.0f;
         player_copy.velocity.forwards = 0.0f;
         player_copy.velocity.sideways = 0.0f;
-        player_copy.pos = player->pos;
+        player->input.forwards = 0.0f;
+        player->input.sideways = 0.0f;
         return;
     }
 
@@ -295,8 +315,8 @@ void player_move(Player *player) {
     player_calculate_velocity(player);
 
     player_move_forward(player, player->velocity.forwards * delta_time);
-    // if the sideways input is negative, it should move to the left
     player_move_right(player, -player->velocity.sideways * delta_time);
+    /*player_move_vertical(player, player->gravity * delta_time);*/
 
     player->collision.bounding_box = player_calculate_boundingbox(player);
 }
@@ -355,10 +375,6 @@ void player_debug(Player *player) {
         return;
     }
 
-    if (player_checkcollision_geometry(player)) {
-        DrawText("TRUE", GetScreenWidth() / 2, GetScreenHeight() / 2, 50, GREEN);
-    }
-
     DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
                         "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
                         "Velocity:\n -> Forward: %.2f\n -> Sideways: %.2f\n",
@@ -367,6 +383,10 @@ void player_debug(Player *player) {
                         player->velocity.forwards, player->velocity.sideways),
              10, 10,
              20, WHITE);
+
+    if (player->misc.noclip) {
+        DrawText("NoClip enabled", GetScreenWidth() - 150, 10, 20, WHITE);
+    }
 }
 
 void player_debug3D(Player *player) {
@@ -380,9 +400,13 @@ void player_debug3D(Player *player) {
 
 void player_draw3D(Player *player) {
 
+    BeginMode3D(player->camera);
+
     player_draw_viewmodel(player);
 
     player_debug3D(player);
+
+    EndMode3D();
 }
 
 void player_draw_hud(Player *player) {

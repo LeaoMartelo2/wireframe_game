@@ -1,6 +1,6 @@
 # Wireframe Game (engine)
 
-Simple game/game engine made in C using the [RayLib library](https://github.com/raysan5/raylib) for its backend.
+Simple game/game engine made in C++ using the [RayLib library](https://github.com/raysan5/raylib) for its backend.
 
 I will not keep the readme up to date until the product is at a state i am happy with
 and with enough content so i can write a meaningfull readme, with documentation and such.
