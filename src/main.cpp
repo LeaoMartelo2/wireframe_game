@@ -37,8 +37,6 @@ int main(void) {
             EndMode3D();
 
             player.draw_hud();
-
-            DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
         }
         EndDrawing();
     }

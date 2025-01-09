@@ -5,6 +5,7 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
 #include "geometry.h"
+#include <vector>
 
 class Player {
     // public variables
@@ -39,7 +40,6 @@ class Player {
     struct {
         Vector3 bounding_box_size;
         BoundingBox bounding_box;
-        Geometry_Array map_geometry;
     } collision;
 
     struct {
@@ -57,31 +57,32 @@ class Player {
     // public methods
     Player();
 
-    void update();
-    void draw();
-    void draw_hud();
-    BoundingBox calculate_boundingbox();
+    void update(void);
+    void draw(void);
+    void draw_hud(void);
+    BoundingBox calculate_boundingbox(void);
+    bool check_collision_geometry(const std::vector<Geometry> &map_geometry);
 
-    Vector3 get_forward();
-    Vector3 get_up();
-    Vector3 get_right();
+    Vector3 get_forward(void);
+    Vector3 get_up(void);
+    Vector3 get_right(void);
 
-    void debug();
-    void debug_3d();
+    void debug(void);
+    void debug_3d(void);
 
   private:
     // private variables
   private:
     // private methods
-    void get_input();
-    void calculate_velocity();
+    void get_input(void);
+    void calculate_velocity(void);
     void move_forward(float distance);
     void move_right(float distance);
     void move_vertical(float distance);
-    void move();
-    void update_camera();
-    void update_viewmodel();
-    void draw_viewmodel();
+    void move(void);
+    void update_camera(void);
+    void update_viewmodel(void);
+    void draw_viewmodel(void);
 };
 
 #endif // !PLAYER_H_

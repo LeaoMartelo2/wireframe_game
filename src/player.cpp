@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #define FILL_COLOR GetColor(0x181818FF)
 
@@ -58,23 +59,16 @@ BoundingBox Player::calculate_boundingbox() {
     return player_bounding_box;
 }
 
-bool player_checkcollision_geometry(Player *player) {
+bool Player::check_collision_geometry(const std::vector<Geometry> &map_geometry) {
 
-    if (player->misc.noclip) {
+    if (misc.noclip) {
         return false;
     }
 
-    for (size_t i = 0; i < player->collision.map_geometry.size; i++) {
+    for (int i = 0; map_geometry.size(); i++) {
 
-        Vector3 player_pos = player->pos;
-
-        BoundingBox player_bounding_box = player->collision.bounding_box;
-
-        /*BoundingBox geometry_bbx = GetModelBoundingBox(player->collision.map_geometry.data[i].model);*/
-
-        Vector3 other_pos = player->collision.map_geometry.data[i].pos;
-
-        Vector3 other_size = player->collision.map_geometry.data[i].size;
+        Vector3 other_pos = map_geometry[i].pos;
+        Vector3 other_size = map_geometry[i].size;
 
         Vector3 negative_other = {other_pos.x - other_size.x / 2,
                                   other_pos.y - other_size.y / 2,
@@ -84,10 +78,9 @@ bool player_checkcollision_geometry(Player *player) {
                                   other_pos.y + other_size.y / 2,
                                   other_pos.z + other_size.z / 2};
 
-        BoundingBox geometry_bbx = (BoundingBox){negative_other, positive_other};
+        BoundingBox geometry_bounding_box = (BoundingBox){negative_other, positive_other};
 
-        if (CheckCollisionBoxes(player_bounding_box, geometry_bbx)) {
-
+        if (CheckCollisionBoxes(collision.bounding_box, geometry_bounding_box)) {
             return true;
         }
     }
@@ -328,6 +321,8 @@ void Player::draw() {
 
 void Player::draw_hud() {
     debug();
+
+    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
 
     // health /  ammo /  etc
 }
