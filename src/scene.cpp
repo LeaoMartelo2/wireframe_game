@@ -66,6 +66,14 @@ void Scene::loadmap(const char *filename) {
     lognest_trace("[Scene] Sucessfully loaded '%d' Geometries from '%s' in the scene.", i, filename);
 }
 
+void Scene::draw_map_geometry() {
+
+    for (size_t i = 0; i < map_geometry.size(); ++i) {
+
+        geometry_draw(&map_geometry[i]);
+    }
+}
+
 void Scene::update() {
 
     player.update();
@@ -77,6 +85,7 @@ void Scene::update() {
         BeginMode3D(player.camera);
         {
             draw_reference_point();
+            draw_map_geometry();
 
             player.draw();
             player.debug_3d();
@@ -84,7 +93,6 @@ void Scene::update() {
         EndMode3D();
 
         player.draw_hud();
-        DrawFPS(GetScreenWidth() - 100, 0);
     }
     EndDrawing();
 }

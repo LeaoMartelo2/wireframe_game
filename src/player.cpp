@@ -322,6 +322,8 @@ void Player::debug() {
     if (misc.noclip) {
         DrawText("NoClip enabled", GetScreenWidth() - 150, 10, 20, WHITE);
     }
+
+    DrawFPS(GetScreenWidth() - 100, 0);
 }
 
 void Player::debug_3d() {

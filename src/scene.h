@@ -24,6 +24,8 @@ class Scene {
 
   private:
     // private methods
+
+    void draw_map_geometry();
 };
 
 #endif // !SCENE_H_

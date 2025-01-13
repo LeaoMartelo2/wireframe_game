@@ -7,3 +7,9 @@ void draw_reference_point() {
     DrawLine3D((Vector3)Vector3Zero(), {0, distance, 0}, GREEN);
     DrawLine3D((Vector3)Vector3Zero(), {0, 0, distance}, BLUE);
 }
+
+void geometry_draw(Geometry *geometry) {
+
+    DrawModel(geometry->model, geometry->pos, 1.0f, DARKGRAY);
+    DrawModelWires(geometry->model, geometry->pos, 1.0f, RED);
+}
