@@ -56,6 +56,7 @@ class Player {
   public:
     // public methods
     Player();
+    ~Player();
 
     void update(void);
     void draw(void);

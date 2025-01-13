@@ -1,47 +1,33 @@
-#include "../raylib/raylib.h"
-#include "../raylib/rcamera.h"
-#include "geometry.h"
-#include "player.h"
+#define LOGNEST_IMPLEMENTATION
+#include "include/lognest.h"
+#include "misc.h"
+#include "scene.h"
 
 int main(void) {
 
-    SetWindowState(FLAG_MSAA_4X_HINT);
-    SetWindowState(FLAG_VSYNC_HINT);
+    lognest_trace("|=====================-Wireframe Engine Start-=====================|");
 
-    InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
-    SetTraceLogLevel(LOG_NONE);
-    SetTargetFPS(60);
-    ToggleFullscreen();
+    raylib_setup();
+    InitAudioDevice();
 
     DisableCursor();
 
-    InitAudioDevice();
+    {
+        Scene scene;
 
-    Player player;
+        scene.start("src/test_map.json");
 
-    while (!WindowShouldClose()) {
+        while (!WindowShouldClose()) {
 
-        player.update();
-
-        BeginDrawing();
-        {
-
-            ClearBackground(BLACK);
-
-            BeginMode3D(player.camera);
-            {
-                draw_reference_point();
-                player.draw();
-                player.debug_3d();
-            }
-            EndMode3D();
-
-            player.draw_hud();
+            scene.update();
         }
-        EndDrawing();
+
+        scene.end();
+
+        CloseWindow();
     }
 
-    CloseWindow();
+    lognest_trace("[Wireframe] Window closed.");
 
     return 0;
 }

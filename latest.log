@@ -1,0 +1,196 @@
+[25/01/13][19:59:42][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][19:59:42][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][19:59:42][DEBUG]: [Raylib] Enabled Fullscreen
+[25/01/13][19:59:42][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][19:59:42][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][19:59:42][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][19:59:42][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][19:59:42][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][19:59:42][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][19:59:42][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][19:59:42][LOG]  : [Scene] Scene constructed.
+[25/01/13][19:59:42][LOG]  : [Scene] Attempting to load map 'src/test_map.json'
+[25/01/13][19:59:42][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][19:59:42][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][19:59:42][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][19:59:58][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][19:59:59][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][19:59:59][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][19:59:59][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][19:59:59][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][19:59:59][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:24][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:36][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:37][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:37][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:37][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:38][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:38][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:39][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:39][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:39][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:39][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:40][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:40][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:40][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:00:41][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:00:58][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:37][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:37][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:37][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:37][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:38][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:39][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:39][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:39][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:39][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:40][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:40][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:40][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:41][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:41][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:41][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:41][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:41][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:42][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:42][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:01:42][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:01:44][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:01:44][LOG]  : [Player] Player destructor called.
+[25/01/13][20:01:44][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:06:21][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:06:21][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:06:21][DEBUG]: [Raylib] Enabled Fullscreen
+[25/01/13][20:06:21][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:06:21][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:06:21][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:06:21][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:06:21][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:06:21][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:06:21][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:06:21][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:06:21][LOG]  : [Scene] Attempting to load map 'src/test_map.json'
+[25/01/13][20:06:21][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:06:21][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:06:21][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:06:24][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:06:26][DEBUG]: [Player] Toggled debug menu 0 -> 1.
+[25/01/13][20:06:35][DEBUG]: [Player] Toggled debug menu 1 -> 0.
+[25/01/13][20:06:36][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:06:36][LOG]  : [Player] Player destructor called.
+[25/01/13][20:06:36][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:07:53][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:07:53][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:07:53][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:07:53][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:07:53][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:07:53][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:07:53][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:07:53][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:07:53][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:07:53][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:07:53][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:07:53][LOG]  : [Scene] Attempting to load map 'src/test_map.json'
+[25/01/13][20:07:53][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:07:53][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:07:53][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:08:20][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:08:20][LOG]  : [Player] Player destructor called.
+[25/01/13][20:08:20][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:15:04][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:15:04][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:15:04][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:15:04][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:15:04][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:15:04][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:15:04][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:15:04][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:15:04][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:15:04][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:15:04][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:15:04][LOG]  : [Scene] Attempting to load map 'src/test_map.json'
+[25/01/13][20:19:24][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:19:24][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:19:24][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:19:24][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:19:24][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:19:24][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:19:24][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:19:24][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:19:24][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:19:24][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:19:24][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:19:24][LOG]  : [Scene] Attempting to load map 'src/test_map.json'
+[25/01/13][20:19:24][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:19:24][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'.
+[25/01/13][20:19:24][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:19:53][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:19:53][LOG]  : [Player] Player destructor called.
+[25/01/13][20:19:53][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:21:58][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:21:58][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:21:58][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:21:59][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:21:59][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:21:59][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:21:59][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:21:59][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:21:59][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:21:59][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:21:59][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:21:59][LOG]  : [Scene] Attempting to load a map from 'src/test_map.json'
+[25/01/13][20:21:59][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json',totalling 0 entries loaded so far
+[25/01/13][20:21:59][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json',totalling 1 entries loaded so far
+[25/01/13][20:21:59][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:22:07][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:22:07][LOG]  : [Player] Player destructor called.
+[25/01/13][20:22:07][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:22:59][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:22:59][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:22:59][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:23:00][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:23:00][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:23:00][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:23:00][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:23:00][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:23:00][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:23:00][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:23:00][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:23:00][LOG]  : [Scene] Attempting to load a map from 'src/test_map.json'
+[25/01/13][20:23:00][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json', totalling 1 entries loaded so far
+[25/01/13][20:23:00][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json', totalling 2 entries loaded so far
+[25/01/13][20:23:00][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:23:17][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:23:17][LOG]  : [Player] Player destructor called.
+[25/01/13][20:23:17][LOG]  : [Wireframe] Window closed.
+[25/01/13][20:24:05][LOG]  : |=====================-Wireframe Engine Start-=====================|
+[25/01/13][20:24:05][DEBUG]: [Raylib] Set target FPS to 60
+[25/01/13][20:24:05][LOG]  : [Raylib] Enabled Fullscreen
+[25/01/13][20:24:05][DEBUG]: [Player] Camera sucessfully setup.
+[25/01/13][20:24:05][DEBUG]: [Player] Movement values sucessfully setup.
+[25/01/13][20:24:05][DEBUG]: [Player] Input variables '0' initialized.
+[25/01/13][20:24:05][DEBUG]: [Player] Player size and Bounding Box calculated.
+[25/01/13][20:24:05][DEBUG]: [Player] Viewmodel sucessfully loaded from 'models/low_poly_shotgun/shotgun.gltf'.
+[25/01/13][20:24:05][DEBUG]: [Player] Player debug-tools sucessfully loaded.
+[25/01/13][20:24:05][LOG]  : [Player] Player constructed sucessfully.
+[25/01/13][20:24:05][LOG]  : [Scene] Scene constructed.
+[25/01/13][20:24:05][LOG]  : [Scene] Attempting to load a map from 'src/test_map.json'
+[25/01/13][20:24:05][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'. 1 Entries loaded so far.
+[25/01/13][20:24:05][DEBUG]: [Scene] Sucessfully loaded a geometry from 'src/test_map.json'. 2 Entries loaded so far.
+[25/01/13][20:24:05][LOG]  : [Scene] Sucessfully loaded '2' Geometries from 'src/test_map.json' in the scene.
+[25/01/13][20:24:17][LOG]  : [Scene] Scene destructed.
+[25/01/13][20:24:17][LOG]  : [Player] Player destructor called.
+[25/01/13][20:24:17][LOG]  : [Wireframe] Window closed.

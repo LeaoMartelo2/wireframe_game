@@ -3,6 +3,7 @@
 
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
+#include "include/json.hpp"
 #include <stdlib.h>
 
 #define INITIAL_CAPACITY 10

@@ -14,11 +14,13 @@ class Scene {
     // private members
 
   public:
-    void start();
+    Scene();
+    ~Scene();
+    void start(const char *filename);
     void update();
     void end();
 
-    void loadmap();
+    void loadmap(const char *filename);
 
   private:
     // private methods

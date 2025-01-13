@@ -3,9 +3,8 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "geometry.h"
+#include "include/lognest.h"
 #include <math.h>
-#include <stdio.h>
-#include <string.h>
 #include <vector>
 
 #define FILL_COLOR GetColor(0x181818FF)
@@ -15,31 +14,49 @@ Player::Player() {
     camera = *new Camera3D;
     camera.position = Vector3Zero();
     camera.target = Vector3Zero();
-    camera.up = (Vector3){0, 1, 0};
+    camera.up = {0, 1, 0};
     camera.fovy = 90.0f;
     camera.projection = CAMERA_PERSPECTIVE;
     camera_misc.camera_tilt = 0.01f;
     camera_misc.mouse_sens = 0.1f;
 
-    pos = (Vector3){150, 7.5, 50};
+    lognest_debug("[Player] Camera sucessfully setup.");
+
+    pos = {150, 7.5, 50};
     move_speed = 200.0f;
     acc_rate = 0.15f;
     gravity = -10.0f;
     is_grounded = false;
 
+    lognest_debug("[Player] Movement values sucessfully setup.");
+
     input.forwards = 0.0f;
     input.sideways = 0.0f;
     input.up_down = 0.0f;
 
-    collision.bounding_box_size = (Vector3){5, 15, 5};
+    lognest_debug("[Player] Input variables '0' initialized.");
+
+    collision.bounding_box_size = {5, 15, 5};
     collision.bounding_box = calculate_boundingbox();
 
-    viewmodel.model = LoadModel("models/low_poly_shotgun/shotgun.gltf"); // find better solution later
+    lognest_debug("[Player] Player size and Bounding Box calculated.");
+
+    viewmodel.model = LoadModel(VIEWMODEL_PATH); // find better solution later
     viewmodel.viewmodel_pos = Vector3Zero();
+
+    lognest_debug("[Player] Viewmodel sucessfully loaded from '%s'.", VIEWMODEL_PATH);
 
     misc.show_debug = true;
     misc.noclip = false;
     misc.no_gravity = true;
+
+    lognest_debug("[Player] Player debug-tools sucessfully loaded.");
+
+    lognest_trace("[Player] Player constructed sucessfully.");
+}
+
+Player::~Player() {
+    lognest_trace("[Player] Player destructor called.");
 }
 
 BoundingBox Player::calculate_boundingbox() {
@@ -54,7 +71,7 @@ BoundingBox Player::calculate_boundingbox() {
                         pos.y + entity_size.y / 2,
                         pos.z + entity_size.z / 2};
 
-    BoundingBox player_bounding_box = (BoundingBox){negative, positive};
+    BoundingBox player_bounding_box = {negative, positive};
 
     return player_bounding_box;
 }
@@ -78,7 +95,7 @@ bool Player::check_collision_geometry(const std::vector<Geometry> &map_geometry)
                                   other_pos.y + other_size.y / 2,
                                   other_pos.z + other_size.z / 2};
 
-        BoundingBox geometry_bounding_box = (BoundingBox){negative_other, positive_other};
+        BoundingBox geometry_bounding_box = {negative_other, positive_other};
 
         if (CheckCollisionBoxes(collision.bounding_box, geometry_bounding_box)) {
             return true;
@@ -285,6 +302,7 @@ void Player::update() {
 
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;
+        lognest_debug("[Player] Toggled debug menu %d -> %d.", !misc.show_debug, misc.show_debug);
     }
 }
 
@@ -314,7 +332,6 @@ void Player::debug_3d() {
 }
 
 void Player::draw() {
-
     draw_viewmodel();
     debug_3d();
 }
