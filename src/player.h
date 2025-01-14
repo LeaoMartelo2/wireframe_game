@@ -56,13 +56,14 @@ class Player {
   public:
     // public methods
     Player();
+    /*Player(const Player &other);*/
     ~Player();
 
-    void update(void);
+    void update(std::vector<Geometry> &map_geometry);
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
-    bool check_collision_geometry(const std::vector<Geometry> &map_geometry);
+    bool check_collision_geometry(std::vector<Geometry> &map_geometry);
 
     Vector3 get_forward(void);
     Vector3 get_up(void);
@@ -80,7 +81,7 @@ class Player {
     void move_forward(float distance);
     void move_right(float distance);
     void move_vertical(float distance);
-    void move(void);
+    void move(std::vector<Geometry> &map_geometry);
     void update_camera(void);
     void update_viewmodel(void);
     void draw_viewmodel(void);

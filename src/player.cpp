@@ -59,6 +59,26 @@ Player::~Player() {
     lognest_trace("[Player] Player destructor called.");
 }
 
+/*Player::Player(const Player &other) {
+
+    pos = other.pos;
+    move_speed = other.move_speed;
+    acc_rate = other.acc_rate;
+
+    camera.target = other.camera.target;
+
+    camera_misc = other.camera_misc;
+
+    collision.bounding_box_size = other.collision.bounding_box_size;
+    collision.bounding_box = other.collision.bounding_box;
+    move_speed = other.move_speed;
+    acc_rate = other.acc_rate;
+    velocity.forwards = other.velocity.forwards;
+    velocity.sideways = other.velocity.sideways;
+
+    input = other.input;
+}*/
+
 BoundingBox Player::calculate_boundingbox() {
 
     Vector3 entity_size = collision.bounding_box_size;
@@ -76,16 +96,17 @@ BoundingBox Player::calculate_boundingbox() {
     return player_bounding_box;
 }
 
-bool Player::check_collision_geometry(const std::vector<Geometry> &map_geometry) {
+bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry) {
 
     if (misc.noclip) {
         return false;
     }
 
-    for (int i = 0; map_geometry.size(); i++) {
+    /*for (size_t i = 0; map_geometry.size(); ++i) {*/
+    for (auto i : map_geometry) {
 
-        Vector3 other_pos = map_geometry[i].pos;
-        Vector3 other_size = map_geometry[i].size;
+        Vector3 other_pos = i.pos;
+        Vector3 other_size = i.size;
 
         Vector3 negative_other = {other_pos.x - other_size.x / 2,
                                   other_pos.y - other_size.y / 2,
@@ -242,7 +263,7 @@ void Player::calculate_velocity() {
     velocity.sideways = Clamp(velocity.sideways, -max_speed, max_speed);
 }
 
-void Player::move() {
+void Player::move(std::vector<Geometry> &map_geometry) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
@@ -253,6 +274,40 @@ void Player::move() {
 
     get_input();
 
+    // create a "fake" player, calculate its movement first, if it colides with something
+    // don't move the real player.
+
+    static Player fake_player(*this);
+
+    fake_player.pos = pos;
+
+    fake_player.get_input();
+    fake_player.calculate_velocity();
+    fake_player.move_forward(fake_player.velocity.forwards * delta_time);
+    fake_player.move_right(fake_player.velocity.sideways * delta_time);
+
+    fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
+
+    DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
+
+    if (fake_player.check_collision_geometry(map_geometry)) {
+        fake_player.pos = pos;
+
+        velocity.forwards = 0.0f;
+        velocity.sideways = 0.0f;
+
+        fake_player.velocity.forwards = 0.0f;
+        fake_player.velocity.sideways = 0.0f;
+
+        input.forwards = 0.0f;
+        input.sideways = 0.0f;
+
+        lognest_warn("FAILED MOVE!!!!!");
+
+        return;
+    }
+
+    /*get_input();*/
     calculate_velocity();
     move_forward(velocity.forwards * delta_time);
     move_right(-velocity.sideways * delta_time);
@@ -295,8 +350,8 @@ void Player::draw_viewmodel() {
     rlPopMatrix();
 }
 
-void Player::update() {
-    move();
+void Player::update(std::vector<Geometry> &map_geometry) {
+    move(map_geometry);
     update_camera();
     update_viewmodel();
 

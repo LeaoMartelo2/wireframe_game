@@ -76,7 +76,7 @@ void Scene::draw_map_geometry() {
 
 void Scene::update() {
 
-    player.update();
+    /*player.update(map_geometry);*/
 
     BeginDrawing();
     {
@@ -86,6 +86,8 @@ void Scene::update() {
         {
             draw_reference_point();
             draw_map_geometry();
+
+            player.update(map_geometry);
 
             player.draw();
             player.debug_3d();
