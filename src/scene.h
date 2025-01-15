@@ -8,6 +8,7 @@
 class Scene {
   public:
     std::vector<Geometry> map_geometry;
+    std::vector<Floor> map_floor;
     Player player;
 
   private:

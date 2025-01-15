@@ -6,14 +6,14 @@
 #include "include/json.hpp"
 #include <stdlib.h>
 
-#define INITIAL_CAPACITY 10
-
 typedef struct Geometry {
     Vector3 size;
     Vector3 pos;
     Mesh mesh;
     Model model;
 } Geometry;
+
+void geometry_draw(Geometry *geometry);
 
 typedef struct Prop {
     Vector3 size;
@@ -26,6 +26,13 @@ typedef struct Prop {
 
 void draw_reference_point(void);
 
-void geometry_draw(Geometry *geometry);
+typedef struct Floor {
+    Vector3 size;
+    Vector3 pos;
+    Mesh mesh;
+    Model model;
+} Floor;
+
+void floor_draw(Floor *floor);
 
 #endif // !GEOMETRY_H_

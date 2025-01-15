@@ -13,3 +13,8 @@ void geometry_draw(Geometry *geometry) {
     DrawModel(geometry->model, geometry->pos, 1.0f, DARKGRAY);
     DrawModelWires(geometry->model, geometry->pos, 1.0f, RED);
 }
+
+void floor_draw(Floor *floor) {
+    DrawModel(floor->model, floor->pos, 1.0f, GetColor(0x181818FF));
+    DrawModelWires(floor->model, floor->pos, 1.0f, RED);
+}

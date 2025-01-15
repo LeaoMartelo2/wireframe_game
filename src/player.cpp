@@ -20,7 +20,7 @@ Player::Player() {
     camera_misc.camera_tilt = 0.01f;
     camera_misc.mouse_sens = 0.1f;
 
-    lognest_debug("[Player] Camera sucessfully setup.");
+    lognest_debug("[Player] Camera created.");
 
     pos = {150, 7.5, 50};
     move_speed = 200.0f;
@@ -32,36 +32,38 @@ Player::Player() {
     velocity.sideways = 0;
     velocity.vertical = 0;
 
-    lognest_debug("[Player] Movement values sucessfully setup.");
+    lognest_debug("[Player] Setup default movement variables.");
 
     input.forwards = 0.0f;
     input.sideways = 0.0f;
     input.up_down = 0.0f;
 
-    lognest_debug("[Player] Input variables '0' initialized.");
-
     collision.bounding_box_size = {5, 15, 5};
     collision.bounding_box = calculate_boundingbox();
 
-    lognest_debug("[Player] Player size and Bounding Box calculated.");
+    lognest_debug("[Player] Player Bounding Box calculated.");
 
     viewmodel.model = LoadModel(VIEWMODEL_PATH); // find better solution later
     viewmodel.viewmodel_pos = Vector3Zero();
 
-    lognest_debug("[Player] Viewmodel sucessfully loaded from '%s'.", VIEWMODEL_PATH);
+    lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
 
     misc.show_debug = true;
     misc.noclip = false;
     misc.no_gravity = true;
 
-    lognest_debug("[Player] Player debug-tools sucessfully loaded.");
+    lognest_debug("[Player] Player debug-tools loaded.");
 
-    lognest_trace("[Player] Player constructed sucessfully.");
+    lognest_trace("[Player] Player constructed");
 }
 
-Player::~Player() {
-    lognest_trace("[Player] Player destructor called.");
-}
+/*Player::~Player() {*/
+/*lognest_trace("[Player] Player destructor called.");*/
+
+// leaving this disabled as of now, due fake_player being instanced as
+// static makes this be detroyed at program exit
+// leaving multiple logs
+/*}*/
 
 Player::Player(const Player &other) {
 
@@ -271,7 +273,16 @@ void Player::calculate_velocity() {
 
 void Player::move(std::vector<Geometry> &map_geometry) {
 
+    static bool fakeplayer_dbg = false;
+
     static Player fake_player(*this);
+    // create a "fake" player, calculate its movement first, if it colides with something
+    // don't move the real player.
+
+    if (!fakeplayer_dbg) {
+        lognest_debug("[Player] Created Geometry collision check hitbox.");
+        fakeplayer_dbg = true;
+    }
 
     fake_player.pos = pos;
 

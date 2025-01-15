@@ -25,46 +25,86 @@ void Scene::end() {
 
 void Scene::loadmap(const char *filename) {
 
-    lognest_trace("[Scene] Attempting to load a map from '%s'", filename);
+    lognest_trace("[Scene] Attempting to load Level from from '%s'.", filename);
 
-    std::ifstream file(filename);
+    std::ifstream file_geometry(std::string(filename) + "/geometry.json");
 
-    if (!file.is_open()) {
-        lognest_error("[Scene] Could not open file %s, exiting with status '1'", filename);
-        exit(1);
-        return;
+    if (!file_geometry.is_open()) {
+        lognest_error("[Scene] Could not open file '%s/geometry.json', whilist attemping to load Geometries.",
+                      filename);
+    } else {
+
+        nlohmann::json j;
+
+        file_geometry >> j;
+
+        int i = 0;
+        for (const auto &item : j) {
+            Geometry geometry;
+
+            geometry.size.x = item["size"]["x"];
+            geometry.size.y = item["size"]["y"];
+            geometry.size.z = item["size"]["z"];
+
+            geometry.pos.x = item["pos"]["x"];
+            geometry.pos.x = item["pos"]["y"];
+            geometry.pos.x = item["pos"]["z"];
+
+            geometry.mesh = GenMeshCube(geometry.size.x,
+                                        geometry.size.y,
+                                        geometry.size.z);
+
+            geometry.model = LoadModelFromMesh(geometry.mesh);
+
+            map_geometry.emplace_back(geometry);
+
+            lognest_debug("[Scene] Sucessfully loaded a geometry from '%s/geometry.json'. "
+                          "%d Entry(ies) loaded so far.",
+                          filename, ++i);
+        }
+
+        lognest_trace("[Scene] Sucessfully loaded '%d' Geometries from '%s/geometry.json' in the scene.",
+                      i, filename);
     }
 
-    nlohmann::json j;
+    std::ifstream file_floor(std::string(filename) + "/floor.json");
 
-    file >> j;
+    if (!file_floor.is_open()) {
+        lognest_error("[Scene] Could not open file '%s/floor.json', whilist attemping to load Floor.",
+                      filename);
+    } else {
 
-    int i = 0;
-    for (const auto &item : j) {
-        Geometry geometry;
+        nlohmann::json floor;
 
-        geometry.size.x = item["size"]["x"];
-        geometry.size.y = item["size"]["y"];
-        geometry.size.z = item["size"]["z"];
+        file_floor >> floor;
 
-        geometry.pos.x = item["pos"]["x"];
-        geometry.pos.x = item["pos"]["y"];
-        geometry.pos.x = item["pos"]["z"];
+        int i = 0;
+        for (const auto &item : floor) {
 
-        geometry.mesh = GenMeshCube(geometry.size.x,
-                                    geometry.size.y,
-                                    geometry.size.z);
+            Floor floor;
 
-        geometry.model = LoadModelFromMesh(geometry.mesh);
+            floor.size.x = item["size"]["x"];
+            floor.size.y = item["size"]["y"];
+            floor.size.z = item["size"]["z"];
 
-        map_geometry.emplace_back(geometry);
+            floor.pos.x = item["size"]["x"];
+            floor.pos.y = item["size"]["y"];
+            floor.pos.z = item["size"]["z"];
 
-        lognest_debug("[Scene] Sucessfully loaded a geometry from '%s'. "
-                      "%d Entries loaded so far.",
-                      filename, ++i);
+            floor.mesh = GenMeshCube(floor.size.x,
+                                     floor.size.y,
+                                     floor.size.z);
+
+            floor.model = LoadModelFromMesh(floor.mesh);
+
+            map_floor.emplace_back(floor);
+
+            lognest_debug("[Scene] Sucessfully loaded '%d' Floor tiles from '%s/floor.json' in the scene.",
+                          ++i, filename);
+        }
+
+        lognest_trace("[Scene] Sucessfully loaded '%d' Floor tiles from '%s/floor.json' in the scene.", i, filename);
     }
-
-    lognest_trace("[Scene] Sucessfully loaded '%d' Geometries from '%s' in the scene.", i, filename);
 }
 
 void Scene::draw_map_geometry() {
@@ -82,7 +122,7 @@ void Scene::update() {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    /*player.update(map_geometry);*/
+    player.update(map_geometry);
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
@@ -97,7 +137,7 @@ void Scene::update() {
 
         BeginMode3D(player.camera);
         {
-            player.update(map_geometry);
+            /*player.update(map_geometry);*/
 
             player.draw();
             player.debug_3d();

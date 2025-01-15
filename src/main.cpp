@@ -5,7 +5,7 @@
 
 int main(void) {
 
-    lognest_trace("|=====================-Wireframe Engine Start-=====================|");
+    lognest_trace("|=====================-Wireframe Engine Start-=====================|\n");
 
     raylib_setup();
     InitAudioDevice();
@@ -15,7 +15,7 @@ int main(void) {
     {
         Scene scene;
 
-        scene.start("src/test_map.json");
+        scene.start("src/level/test");
 
         while (!WindowShouldClose()) {
 
@@ -27,7 +27,9 @@ int main(void) {
         CloseWindow();
     }
 
-    lognest_trace("[Wireframe] Window closed.");
+    lognest_trace("[Raylib] Window closed.");
+
+    lognest_trace("|=====================-Wireframe Engine End-=======================|\n");
 
     return 0;
 }
