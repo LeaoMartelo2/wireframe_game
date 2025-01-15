@@ -132,7 +132,7 @@ void Scene::update(void) {
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    player.update(map_geometry);
+    player.update(map_geometry, map_floor);
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;

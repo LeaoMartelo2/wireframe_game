@@ -4,6 +4,7 @@
 #include "../raylib/rlgl.h"
 #include "geometry.h"
 #include "include/lognest.h"
+#include "misc.h"
 #include <math.h>
 #include <vector>
 
@@ -22,10 +23,10 @@ Player::Player() {
 
     lognest_debug("[Player] Camera created.");
 
-    pos = {150, 7.5, 50};
+    pos = {150, 20, 50};
     move_speed = 200.0f;
     acc_rate = 0.15f;
-    gravity = -10.0f;
+    gravity = 9.806f;
     is_grounded = false;
 
     velocity.forwards = 0;
@@ -50,7 +51,7 @@ Player::Player() {
 
     misc.show_debug = true;
     misc.noclip = false;
-    misc.no_gravity = true;
+    misc.no_gravity = false;
 
     lognest_debug("[Player] Player debug-tools loaded.");
 
@@ -134,6 +135,34 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry) {
     return false;
 }
 
+bool Player::check_collision_floor(std::vector<Floor> &map_floor) {
+
+    if (misc.noclip) {
+        return false;
+    }
+
+    for (auto i : map_floor) {
+        Vector3 other_pos = i.pos;
+        Vector3 other_size = i.size;
+
+        Vector3 negative_other = {other_pos.x - other_size.x / 2,
+                                  other_pos.y - other_size.y / 2,
+                                  other_pos.z - other_size.z / 2};
+
+        Vector3 positive_other = {other_pos.x + other_size.x / 2,
+                                  other_pos.y + other_size.y / 2,
+                                  other_pos.z + other_size.z / 2};
+
+        BoundingBox floor_bounding_box = {negative_other, positive_other};
+
+        if (CheckCollisionBoxes(collision.bounding_box, floor_bounding_box)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Player::update_camera() {
     camera.position = pos;
     camera.position.y = pos.y + 7;
@@ -194,6 +223,12 @@ void Player::move_vertical(float distance) {
     camera.target = Vector3Add(camera.target, up);
 }
 
+void Player::update_gravity() {
+    if (!is_grounded) {
+        velocity.vertical -= gravity;
+    }
+}
+
 void Player::get_input() {
 
     float dead_zone = 0.1f;
@@ -218,6 +253,10 @@ void Player::get_input() {
     if (input.sideways < 0.000000f) {
         input.sideways += decay_rate;
         input.forwards = Clamp(input.forwards, -1, 1);
+    }
+
+    if (input.up_down) {
+        input.up_down = 0;
     }
 
     if (IsKeyDown(KEY_W)) {
@@ -246,6 +285,13 @@ void Player::get_input() {
         input.sideways = right;
     }
 
+    if (IsKeyDown(KEY_SPACE)) {
+        if (is_grounded) {
+            input.up_down = 1.0f;
+            is_grounded = false;
+        }
+    }
+
     if (fabs(input.forwards) < dead_zone) {
         input.forwards = 0.0f;
     }
@@ -271,7 +317,7 @@ void Player::calculate_velocity() {
     velocity.sideways = Clamp(velocity.sideways, -max_speed, max_speed);
 }
 
-void Player::move(std::vector<Geometry> &map_geometry) {
+void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
 
     static bool fakeplayer_dbg = false;
 
@@ -310,7 +356,7 @@ void Player::move(std::vector<Geometry> &map_geometry) {
 
     fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
 
-    DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
+    /*DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);*/
 
     if (fake_player.check_collision_geometry(map_geometry)) {
 
@@ -332,6 +378,23 @@ void Player::move(std::vector<Geometry> &map_geometry) {
     calculate_velocity();
     move_forward(velocity.forwards * delta_time);
     move_right(-velocity.sideways * delta_time);
+
+    if (check_collision_floor(map_floor)) {
+        is_grounded = true;
+    } else {
+
+        move_vertical(velocity.vertical * delta_time);
+        is_grounded = false;
+    }
+
+    if (IsKeyDown(KEY_SPACE)) {
+        if (is_grounded) {
+            velocity.vertical = 150;
+
+            move_vertical(velocity.vertical * delta_time);
+            is_grounded = false;
+        }
+    }
 
     collision.bounding_box = calculate_boundingbox();
 }
@@ -371,15 +434,18 @@ void Player::draw_viewmodel() {
     rlPopMatrix();
 }
 
-void Player::update(std::vector<Geometry> &map_geometry) {
+void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
 
-    move(map_geometry);
+    move(map_geometry, map_floor);
     update_camera();
     update_viewmodel();
 
+    update_gravity();
+
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;
-        lognest_debug("[Player] Toggled debug menu %d -> %d.", !misc.show_debug, misc.show_debug);
+        lognest_debug("[Player] Toggled debug menu '%s' -> '%s'.", bool_to_string(!misc.show_debug),
+                      bool_to_string(misc.show_debug));
     }
 }
 
@@ -390,10 +456,12 @@ void Player::debug() {
 
     DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
                         "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
-                        "Velocity:\n -> Forward: %.2f\n -> Sideways: %.2f\n",
+                        "Velocity:\n -> Forward: %.2f\n -> Vertical: %.2f\n -> Sideways: %.2f\n"
+                        "Grounded: %s\n",
                         pos.x, pos.y, pos.z,
                         input.forwards, input.sideways, input.up_down,
-                        velocity.forwards, velocity.sideways),
+                        velocity.forwards, velocity.vertical, velocity.sideways,
+                        bool_to_string(is_grounded)),
              10, 10,
              20, WHITE);
     if (misc.noclip) {

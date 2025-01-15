@@ -18,4 +18,8 @@ inline void raylib_setup(void) {
     lognest_trace("[Raylib] Enabled Fullscreen.");
 }
 
+inline const char *bool_to_string(bool value) {
+    return value ? "true" : "false";
+}
+
 #endif // !MISC_H_
