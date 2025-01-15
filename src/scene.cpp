@@ -20,7 +20,7 @@ void Scene::start(const char *filename) {
     loadmap(filename);
 }
 
-void Scene::end() {
+void Scene::end(void) {
 }
 
 void Scene::loadmap(const char *filename) {
@@ -28,9 +28,10 @@ void Scene::loadmap(const char *filename) {
     lognest_trace("[Scene] Attempting to load Level from from '%s'.", filename);
 
     std::ifstream file_geometry(std::string(filename) + "/geometry.json");
+    lognest_trace("[Scene] Trying to load Geometry(ies) from '%s/geometry.json'", filename);
 
     if (!file_geometry.is_open()) {
-        lognest_error("[Scene] Could not open file '%s/geometry.json', whilist attemping to load Geometries.",
+        lognest_error("[Scene] Could not open file '%s/geometry.json' whilist attemping to load Geometries.",
                       filename);
     } else {
 
@@ -58,7 +59,7 @@ void Scene::loadmap(const char *filename) {
 
             map_geometry.emplace_back(geometry);
 
-            lognest_debug("[Scene] Sucessfully loaded a geometry from '%s/geometry.json'. "
+            lognest_debug("[Scene] Loaded a geometry from '%s/geometry.json'. "
                           "%d Entry(ies) loaded so far.",
                           filename, ++i);
         }
@@ -68,9 +69,10 @@ void Scene::loadmap(const char *filename) {
     }
 
     std::ifstream file_floor(std::string(filename) + "/floor.json");
+    lognest_trace("[Scene] Trying to load Floor Tiles from '%s/floor.json'", filename);
 
     if (!file_floor.is_open()) {
-        lognest_error("[Scene] Could not open file '%s/floor.json', whilist attemping to load Floor.",
+        lognest_error("[Scene] Could not open file '%s/floor.json' whilist attemping to load Floor.",
                       filename);
     } else {
 
@@ -87,9 +89,9 @@ void Scene::loadmap(const char *filename) {
             floor.size.y = item["size"]["y"];
             floor.size.z = item["size"]["z"];
 
-            floor.pos.x = item["size"]["x"];
-            floor.pos.y = item["size"]["y"];
-            floor.pos.z = item["size"]["z"];
+            floor.pos.x = item["pos"]["x"];
+            floor.pos.y = item["pos"]["y"];
+            floor.pos.z = item["pos"]["z"];
 
             floor.mesh = GenMeshCube(floor.size.x,
                                      floor.size.y,
@@ -99,15 +101,16 @@ void Scene::loadmap(const char *filename) {
 
             map_floor.emplace_back(floor);
 
-            lognest_debug("[Scene] Sucessfully loaded '%d' Floor tiles from '%s/floor.json' in the scene.",
-                          ++i, filename);
+            lognest_debug("[Scene] Loaded a Floor tile from '%s/floor.json' in the scene. "
+                          "%d Entry(ies) loaded so far.",
+                          filename, ++i);
         }
 
         lognest_trace("[Scene] Sucessfully loaded '%d' Floor tiles from '%s/floor.json' in the scene.", i, filename);
     }
 }
 
-void Scene::draw_map_geometry() {
+void Scene::draw_map_geometry(void) {
 
     for (size_t i = 0; i < map_geometry.size(); ++i) {
 
@@ -115,7 +118,14 @@ void Scene::draw_map_geometry() {
     }
 }
 
-void Scene::update() {
+void Scene::draw_map_floor(void) {
+
+    for (size_t i = 0; i < map_floor.size(); ++i) {
+        floor_draw(&map_floor[i]);
+    }
+}
+
+void Scene::update(void) {
 
     const int target_tickrate = 60;
     const std::chrono::milliseconds tick_duration(1000 / target_tickrate);
@@ -139,11 +149,12 @@ void Scene::update() {
         {
             /*player.update(map_geometry);*/
 
+            draw_reference_point();
+            draw_map_floor();
+            draw_map_geometry();
+
             player.draw();
             player.debug_3d();
-
-            draw_reference_point();
-            draw_map_geometry();
         }
         EndMode3D();
 

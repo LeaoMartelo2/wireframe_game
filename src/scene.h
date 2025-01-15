@@ -18,15 +18,16 @@ class Scene {
     Scene();
     ~Scene();
     void start(const char *filename);
-    void update();
-    void end();
+    void update(void);
+    void end(void);
 
     void loadmap(const char *filename);
 
   private:
     // private methods
 
-    void draw_map_geometry();
+    void draw_map_geometry(void);
+    void draw_map_floor(void);
 };
 
 #endif // !SCENE_H_
