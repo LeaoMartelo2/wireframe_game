@@ -56,7 +56,7 @@ class Player {
   public:
     // public methods
     Player();
-    /*Player(const Player &other);*/
+    Player(const Player &other);
     ~Player();
 
     void update(std::vector<Geometry> &map_geometry);

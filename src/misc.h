@@ -6,7 +6,7 @@
 
 inline void raylib_setup() {
 
-    SetWindowState(FLAG_MSAA_4X_HINT);
+    /*SetWindowState(FLAG_MSAA_4X_HINT);*/
     SetWindowState(FLAG_VSYNC_HINT);
 
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");

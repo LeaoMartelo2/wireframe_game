@@ -3,8 +3,9 @@
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "player.h"
-#include <cstdio>
+#include <chrono>
 #include <fstream>
+#include <thread>
 
 Scene::Scene() : player() {
     lognest_trace("[Scene] Scene constructed.");
@@ -76,7 +77,19 @@ void Scene::draw_map_geometry() {
 
 void Scene::update() {
 
+    const int target_tickrate = 60;
+    const std::chrono::milliseconds tick_duration(1000 / target_tickrate);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     /*player.update(map_geometry);*/
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+
+    if (elapsed < tick_duration) {
+        std::this_thread::sleep_for(tick_duration - elapsed);
+    }
 
     BeginDrawing();
     {
@@ -84,13 +97,13 @@ void Scene::update() {
 
         BeginMode3D(player.camera);
         {
-            draw_reference_point();
-            draw_map_geometry();
-
             player.update(map_geometry);
 
             player.draw();
             player.debug_3d();
+
+            draw_reference_point();
+            draw_map_geometry();
         }
         EndMode3D();
 
