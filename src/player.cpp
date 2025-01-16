@@ -11,6 +11,7 @@
 #define FILL_COLOR GetColor(0x181818FF)
 
 #define VIEWMODEL_PATH "models/low_poly_shotgun/shotgun.gltf"
+
 Player::Player() {
     camera = *new Camera3D;
     camera.position = Vector3Zero();
@@ -50,7 +51,7 @@ Player::Player() {
     lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
 
     misc.show_debug = false;
-    misc.noclip = false;
+    misc.noclip = true;
     misc.no_gravity = false;
 
     lognest_debug("[Player] Player debug-tools loaded.");
@@ -224,8 +225,15 @@ void Player::move_vertical(float distance) {
 }
 
 void Player::update_gravity() {
+
+    if (misc.no_gravity) {
+        velocity.vertical = 0;
+        return;
+    }
+
     if (!is_grounded) {
-        velocity.vertical -= gravity;
+        if (velocity.vertical > -90)
+            velocity.vertical -= gravity;
     }
 }
 
@@ -356,7 +364,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
 
-    /*DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);*/
+    DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
 
     if (fake_player.check_collision_geometry(map_geometry)) {
 
@@ -374,7 +382,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         return;
     }
 
-    get_input();
+    collision.bounding_box = calculate_boundingbox();
     calculate_velocity();
     move_forward(velocity.forwards * delta_time);
     move_right(-velocity.sideways * delta_time);
@@ -393,6 +401,16 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
             move_vertical(velocity.vertical * delta_time);
             is_grounded = false;
+        }
+    }
+
+    if (misc.noclip) {
+        if (IsKeyDown(KEY_LEFT_SHIFT)) {
+            move_vertical(-100 * delta_time);
+        }
+
+        if (IsKeyDown(KEY_SPACE)) {
+            move_vertical(100 * delta_time);
         }
     }
 
@@ -436,16 +454,29 @@ void Player::draw_viewmodel() {
 
 void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
 
+    if (misc.noclip) {
+        misc.no_gravity = true;
+    }
+    if (!misc.noclip) {
+        misc.no_gravity = false;
+    }
+
+    update_gravity();
     move(map_geometry, map_floor);
     update_camera();
     update_viewmodel();
-
-    update_gravity();
 
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;
         lognest_debug("[Player] Toggled debug menu '%s' -> '%s'.", bool_to_string(!misc.show_debug),
                       bool_to_string(misc.show_debug));
+    }
+
+    if (IsKeyDown(KEY_LEFT_CONTROL)) {
+        if (IsKeyPressed(KEY_N)) {
+            misc.noclip = !misc.noclip;
+            lognest_debug("[Player] Toggle NoClip '%s' -> '%s'", bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
+        }
     }
 }
 
