@@ -4,41 +4,89 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
-#include "models.h"
+#include "geometry.h"
+#include <vector>
 
-#define GROUND_PLATES 10
-
-typedef struct Player {
-        Camera3D camera;
-        Vector3 postition;
-        Vector3 bounding_box_size;
+class Player {
+    // public variables
+  public:
+    Camera3D camera;
+    struct {
+        float mouse_sens;
+        float camera_tilt;
         bool turn_A;
         bool turn_D;
-        float move_speed;
-        float cam_rot_speed;
-        float cam_rol_scale;
-        float gravity;
-        Vector3 velocity;
-        bool is_grounded;
-        Vector3 viewmodel_pos;
-        Model viewmodel;
-        bool faceup;
+
+    } camera_misc;
+
+    Vector3 pos;
+    float acc_rate;
+    float move_speed;
+    float gravity;
+    bool is_grounded;
+
+    struct {
+        float forwards;
+        float sideways;
+        float up_down;
+    } input;
+
+    struct {
+        float forwards;
+        float sideways;
+        float vertical;
+    } velocity;
+
+    struct {
+        Vector3 bounding_box_size;
         BoundingBox bounding_box;
-        int ground_pcount;
-        Ground ground_geometry[GROUND_PLATES];
-        int geometry_count;
-        Solid geometry[100];
+    } collision;
 
-} Player;
+    struct {
+        Model model;
+        Vector3 viewmodel_pos;
+    } viewmodel;
 
-void player_setup(Player *player);
+    struct {
+        bool show_debug;
+        bool noclip;
+        bool no_gravity;
+    } misc;
 
-void move_player(Player *p);
+  public:
+    // public methods
+    Player();
+    Player(const Player &other);
+    /*~Player();*/
 
-void update_player(Player *player);
+    void update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void draw(void);
+    void draw_hud(void);
+    BoundingBox calculate_boundingbox(void);
+    bool check_collision_geometry(std::vector<Geometry> &map_geometry);
+    bool check_collision_floor(std::vector<Floor> &map_floor);
 
-/*bool check_colision_test(Player *player, Vector3 floor_pos, Vector3 floor_size);*/
+    Vector3 get_forward(void);
+    Vector3 get_up(void);
+    Vector3 get_right(void);
 
-void draw_viewmodel(Player *player);
+    void debug(void);
+    void debug_3d(void);
+
+  private:
+    // private variables
+  private:
+    // private methods
+    void get_input(void);
+    void calculate_velocity(void);
+    void move_forward(float distance);
+    void move_right(float distance);
+    void move_vertical(float distance);
+    void update_gravity();
+    void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void update_camera(void);
+    void update_viewmodel(void);
+    void draw_viewmodel(void);
+};
 
 #endif // !PLAYER_H_
