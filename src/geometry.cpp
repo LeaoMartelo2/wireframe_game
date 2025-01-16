@@ -17,4 +17,5 @@ void geometry_draw(Geometry *geometry) {
 void floor_draw(Floor *floor) {
     DrawModel(floor->model, floor->pos, 1.0f, GetColor(0x181818FF));
     /*DrawModelWires(floor->model, floor->pos, 1.0f, RED);*/
+    DrawCubeWiresV(floor->pos, floor->size, RED);
 }

@@ -48,8 +48,8 @@ void Scene::loadmap(const char *filename) {
             geometry.size.z = item["size"]["z"];
 
             geometry.pos.x = item["pos"]["x"];
-            geometry.pos.x = item["pos"]["y"];
-            geometry.pos.x = item["pos"]["z"];
+            geometry.pos.y = item["pos"]["y"];
+            geometry.pos.z = item["pos"]["z"];
 
             geometry.mesh = GenMeshCube(geometry.size.x,
                                         geometry.size.y,

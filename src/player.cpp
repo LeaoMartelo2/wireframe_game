@@ -49,7 +49,7 @@ Player::Player() {
 
     lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
 
-    misc.show_debug = true;
+    misc.show_debug = false;
     misc.noclip = false;
     misc.no_gravity = false;
 
