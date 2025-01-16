@@ -15,7 +15,7 @@ int main(void) {
     {
         Scene scene;
 
-        scene.start("src/level/test");
+        scene.start("levels/test");
 
         while (!WindowShouldClose()) {
 

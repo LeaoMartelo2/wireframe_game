@@ -33,4 +33,4 @@ $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 # Clean all builds
 clear: 
-	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o main main.exe
+	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o main main.exe 
