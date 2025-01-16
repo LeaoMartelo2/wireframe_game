@@ -13,7 +13,7 @@ inline void raylib_setup(void) {
     srand(time(NULL));
     int random = rand() % 185 + 1;
 
-    if (random == 185) {
+    if (random == 1) {
         troll();
     }
 
