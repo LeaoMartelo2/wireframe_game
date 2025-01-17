@@ -31,7 +31,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
 > [!NOTE]
 > You can cross-compile from Linux to Microsoft Windows.\
 > Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux requireaments.\
-> Run `make -j4 win`, you'll be left out with `wireframe.exe`\
+> Run `make -j4 win`, you'll be left out with `wireframe.exe`
 
 
 ## Engine structure
@@ -71,7 +71,7 @@ Engine Instance
 
 ## Logging
 
-This projects integrates with [LogNest](github.com/LeaoMartelo2/LogNest).
+This projects integrates with [LogNest](https://github.com/LeaoMartelo2/LogNest).
 
 The engine, by default, writes it's log to `latest.log` at the main executable path.
 
