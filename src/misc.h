@@ -24,7 +24,7 @@ inline void raylib_setup(void) {
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);
 
-    SetTargetFPS(100);
+    SetTargetFPS(60);
     ToggleFullscreen();
     lognest_trace("[Raylib] Enabled Fullscreen.");
 }

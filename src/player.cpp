@@ -347,8 +347,6 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         fakeplayer_dbg = true;
     }
 
-    fake_player.pos = pos;
-
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
 
@@ -360,23 +358,24 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     // create a "fake" player, calculate its movement first, if it colides with something
     // don't move the real player.
-
-    fake_player.camera.target = camera.target;
-    fake_player.camera.position = camera.position;
-    fake_player.camera.up = camera.up;
-    fake_player.pos = pos;
-    /*fake_player.misc.noclip = misc.noclip;*/
-
-    fake_player.get_input();
-    fake_player.calculate_velocity();
-    fake_player.move_forward(fake_player.velocity.forwards * delta_time);
-    fake_player.move_right(-fake_player.velocity.sideways * delta_time);
-
-    fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
-
-    DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
+    //
+    // only check for collisions if NOT in noclip
 
     if (!misc.noclip) {
+
+        fake_player.camera.target = camera.target;
+        fake_player.camera.position = camera.position;
+        fake_player.camera.up = camera.up;
+        fake_player.pos = pos;
+
+        fake_player.get_input();
+        fake_player.calculate_velocity();
+        fake_player.move_forward(fake_player.velocity.forwards * delta_time);
+        fake_player.move_right(-fake_player.velocity.sideways * delta_time);
+
+        fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
+
+        DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
 
         if (fake_player.check_collision_geometry(map_geometry)) {
 
@@ -490,7 +489,8 @@ void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
         if (IsKeyPressed(KEY_N)) {
             misc.noclip = !misc.noclip;
-            lognest_debug("[Player] Toggle NoClip '%s' -> '%s'", bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
+            lognest_debug("[Player] Toggle NoClip '%s' -> '%s'",
+                          bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
         }
     }
 }
