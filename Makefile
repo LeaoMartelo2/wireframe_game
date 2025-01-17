@@ -5,8 +5,8 @@ FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -peda
 WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O2 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static
 
 SRCDIR = src
-OBJDIR = obj
-WINOBJDIR = obj/win
+OBJDIR = build/unix
+WINOBJDIR = build/win32
 
 SRC = $(wildcard $(SRCDIR)/*.cpp)
 
@@ -15,11 +15,11 @@ WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
 
 # Default target for Linux
 main: $(OBJ)
-	$(CC) $^ $(FLAGS) -o main
+	$(CC) $^ $(FLAGS) -o wireframe
 
 # Windows target
 win: $(WINOBJ)
-	$(WINDOWS_COMPILER) $^ $(WINDOWS_FLAGS) -o main.exe
+	$(WINDOWS_COMPILER) $^ $(WINDOWS_FLAGS) -o wireframe.exe
 
 # Compile object files for Linux
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
@@ -33,4 +33,4 @@ $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 # Clean all builds
 clear: 
-	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o main main.exe 
+	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe 

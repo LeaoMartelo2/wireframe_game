@@ -10,7 +10,7 @@
 
 #define FILL_COLOR GetColor(0x181818FF)
 
-#define VIEWMODEL_PATH "models/low_poly_shotgun/shotgun.gltf"
+#define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
 
 Player::Player() {
     camera = *new Camera3D;
