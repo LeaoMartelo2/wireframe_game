@@ -26,8 +26,11 @@ Player::Player() {
 
     pos = {150, 20, 50};
     move_speed = 200.0f;
+    side_speed = 180.0f;
+    air_boost = 1.10f;
     acc_rate = 0.15f;
     gravity = 9.806f;
+    max_acell = 250.0f;
     is_grounded = false;
 
     velocity.forwards = 0;
@@ -51,7 +54,7 @@ Player::Player() {
     lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
 
     misc.show_debug = false;
-    misc.noclip = true;
+    misc.noclip = false;
     misc.no_gravity = false;
 
     lognest_debug("[Player] Player debug-tools loaded.");
@@ -81,12 +84,13 @@ Player::Player(const Player &other) {
     /*collision.bounding_box = other.collision.bounding_box;*/
     move_speed = other.move_speed;
     acc_rate = other.acc_rate;
+    side_speed = other.side_speed;
+    air_boost = other.air_boost;
+    is_grounded = other.is_grounded;
     velocity.forwards = other.velocity.forwards;
     velocity.sideways = other.velocity.sideways;
 
     input = other.input;
-
-    misc = other.misc;
 }
 
 BoundingBox Player::calculate_boundingbox() {
@@ -232,8 +236,11 @@ void Player::update_gravity() {
     }
 
     if (!is_grounded) {
-        if (velocity.vertical > -90)
+        if (velocity.vertical >= -max_acell) {
             velocity.vertical -= gravity;
+        } else {
+            velocity.vertical = -max_acell;
+        }
     }
 }
 
@@ -311,18 +318,20 @@ void Player::get_input() {
 
 void Player::calculate_velocity() {
 
-    float max_speed = move_speed;
+    static float scale = 1.0f;
 
-    velocity.forwards = move_speed * input.forwards;
-    velocity.forwards = Clamp(velocity.forwards, -max_speed, max_speed);
+    scale = is_grounded ? 1.0f : air_boost;
+
+    velocity.forwards = move_speed * input.forwards * scale;
+    velocity.forwards = Clamp(velocity.forwards, -move_speed * scale, move_speed * scale);
 
     // x = move_speed * (-1 ... 1) <-- this leaves us with a percentage of total max speed
     // based on how long the player held the directional key
     // as in: slight tap = move slowly; held the key for a bit = fullspeed
     // makes movement more natural to controll
 
-    velocity.sideways = move_speed * input.sideways;
-    velocity.sideways = Clamp(velocity.sideways, -max_speed, max_speed);
+    velocity.sideways = side_speed * input.sideways * scale;
+    velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
 }
 
 void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
@@ -356,6 +365,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
     fake_player.camera.position = camera.position;
     fake_player.camera.up = camera.up;
     fake_player.pos = pos;
+    /*fake_player.misc.noclip = misc.noclip;*/
 
     fake_player.get_input();
     fake_player.calculate_velocity();
@@ -366,20 +376,23 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
 
-    if (fake_player.check_collision_geometry(map_geometry)) {
+    if (!misc.noclip) {
 
-        fake_player.pos = pos;
+        if (fake_player.check_collision_geometry(map_geometry)) {
 
-        velocity.forwards = 0.0f;
-        velocity.sideways = 0.0f;
+            fake_player.pos = pos;
 
-        fake_player.velocity.vertical = 0;
-        fake_player.velocity.sideways = 0;
+            velocity.forwards = 0.0f;
+            velocity.sideways = 0.0f;
 
-        input.forwards = 0.0f;
-        input.sideways = 0.0f;
+            fake_player.velocity.vertical = 0;
+            fake_player.velocity.sideways = 0;
 
-        return;
+            input.forwards = 0.0f;
+            input.sideways = 0.0f;
+
+            return;
+        }
     }
 
     collision.bounding_box = calculate_boundingbox();
@@ -450,6 +463,8 @@ void Player::draw_viewmodel() {
     DrawModel(viewmodel.model, Vector3Zero(), 1, FILL_COLOR);
     DrawModelWires(viewmodel.model, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
+
+    /*DrawCube(camera.target, 5, 5, 5, ORANGE);*/
 }
 
 void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
@@ -486,17 +501,17 @@ void Player::debug() {
     }
 
     DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
-                        "Input:\n -> Forward: %f\n -> Sideways: %f\n -> Upwards: %f\n"
+                        "Input:\n -> Forward: %f\n -> Sideways: %f\n"
                         "Velocity:\n -> Forward: %.2f\n -> Vertical: %.2f\n -> Sideways: %.2f\n"
                         "Grounded: %s\n",
                         pos.x, pos.y, pos.z,
-                        input.forwards, input.sideways, input.up_down,
+                        input.forwards, input.sideways,
                         velocity.forwards, velocity.vertical, velocity.sideways,
                         bool_to_string(is_grounded)),
              10, 10,
              20, WHITE);
     if (misc.noclip) {
-        DrawText("NoClip enabled", GetScreenWidth() - 150, 10, 20, WHITE);
+        DrawText("NoClip enabled", GetScreenWidth() - 150, 15, 20, WHITE);
     }
 
     DrawFPS(GetScreenWidth() - 100, 0);

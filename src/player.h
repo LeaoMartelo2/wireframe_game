@@ -22,7 +22,10 @@ class Player {
     Vector3 pos;
     float acc_rate;
     float move_speed;
+    float side_speed;
+    float air_boost;
     float gravity;
+    float max_acell;
     bool is_grounded;
 
     struct {
