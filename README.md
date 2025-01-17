@@ -8,7 +8,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
 <img src="readme/1.png" width="400">
 
 > [!TIP]
-> Please also check out it's brother project [Wireframe Editor](https://github.com/LeaoMartelo2/wireframe_editor).
+> Please also check out it's brother project [Wireframe Editor](https://github.com/LeaoMartelo2/wireframe_editor).\
 > A tool for generating Levels for this project.
 
 
@@ -21,17 +21,17 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
     - [gcc](https://gcc.gnu.org/)
     - Any other dependencies are baked in the project itself.
 
- - To compile, just `make -j4` at the project's root.
+ - To compile, just run `make -j4` at the project's root.
  - This will provide you with a 'wireframe' binary.
 
 ### Microsoft Windows
 
- - NOT IMPLEMENTED YET!
+ - Not Implemented.
 
 > [!NOTE]
-> You can cross-compile to microsoft windows from Linux systems
-> Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux requireaments.
-> Run `make -j4 win`, you'll be left out with `wireframe.exe`
+> You can cross-compile from Linux to Microsoft Windows.\
+> Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux requireaments.\
+> Run `make -j4 win`, you'll be left out with `wireframe.exe`\
 
 
 ## Engine structure
@@ -75,5 +75,8 @@ This projects integrates with [LogNest](github.com/LeaoMartelo2/LogNest).
 
 The engine, by default, writes it's log to `latest.log` at the main executable path.
 
+
+<img src="readme/2.png">
+
 For convenience, it's also provided a [Shell script](./log.sh)\
-This script will keep automatically printing the log, while also coloring each log type with a corresponding color.
+This script will keep automatically print the log, while also coloring each log type with a corresponding color.
