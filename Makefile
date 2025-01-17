@@ -5,7 +5,7 @@ FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -peda
 WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O2 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static
 
 SRCDIR = src
-OBJDIR = build/unix
+OBJDIR = build/posix
 WINOBJDIR = build/win32
 
 SRC = $(wildcard $(SRCDIR)/*.cpp)
