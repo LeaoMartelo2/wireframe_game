@@ -73,7 +73,7 @@ Engine Instance
 
 This projects integrates with [LogNest](https://github.com/LeaoMartelo2/LogNest).
 
-The engine, by default, writes it's log to `latest.log` at the main executable path.
+The engine, by default, writes its log to `latest.log` at the main executable path.
 
 
 <img src="readme/2.png">
