@@ -79,4 +79,4 @@ The engine, by default, writes its log to `latest.log` at the main executable pa
 <img src="readme/2.png">
 
 For convenience, it's also provided a [Shell script](./log.sh)\
-This script will keep automatically print the log, while also coloring each log type with a corresponding color.
+This script will automatically print the log, while also coloring each log type with a corresponding color.
