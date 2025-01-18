@@ -8,7 +8,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
 <img src="readme/1.png" width="400">
 
 > [!TIP]
-> Please also check out it's brother project [Wireframe Editor](https://github.com/LeaoMartelo2/wireframe_editor).\
+> Please also check out its brother project [Wireframe Editor](https://github.com/LeaoMartelo2/wireframe_editor).\
 > A tool for generating Levels for this project.
 
 
@@ -30,7 +30,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
 
 > [!NOTE]
 > You can cross-compile from Linux to Microsoft Windows.\
-> Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux requireaments.\
+> Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux dependencies.\
 > Run `make -j4 win`, you'll be left out with `wireframe.exe`
 
 
