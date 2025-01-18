@@ -3,6 +3,7 @@
 
 #include "../raylib/raylib.h"
 #include "include/lognest.h"
+#include <cstdio>
 #include <stdlib.h>
 #include <time.h>
 
@@ -31,6 +32,19 @@ inline void raylib_setup(void) {
 
 inline const char *bool_to_string(bool value) {
     return value ? "true" : "false";
+}
+
+inline bool file_exists(const char *path) {
+    FILE *file = fopen(path, "r");
+    if (file) {
+        fclose(file);
+        // file exists
+        return true;
+    } else {
+        return false;
+    }
+    // if something goes horribly wrong, just say the file dosen't exist.
+    return false;
 }
 
 inline void troll(void) {
@@ -68,4 +82,5 @@ inline void troll(void) {
                   "                          ;;      +                   \n");
     lognest_error("[SYSTEM] Thanks for your attention.");
 }
+
 #endif // !MISC_H_

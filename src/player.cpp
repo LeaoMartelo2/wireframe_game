@@ -5,12 +5,15 @@
 #include "geometry.h"
 #include "include/lognest.h"
 #include "misc.h"
+#include <cstdlib>
 #include <math.h>
 #include <vector>
 
 #define FILL_COLOR GetColor(0x181818FF)
 
 #define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
+
+Model empty_model = {0};
 
 Player::Player() {
     camera = *new Camera3D;
@@ -48,10 +51,15 @@ Player::Player() {
 
     lognest_debug("[Player] Player Bounding Box calculated.");
 
-    viewmodel.model = LoadModel(VIEWMODEL_PATH); // find better solution later
-    viewmodel.viewmodel_pos = Vector3Zero();
+    if (file_exists(VIEWMODEL_PATH)) {
+        viewmodel.model = LoadModel(VIEWMODEL_PATH);
+        lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
+    } else {
+        lognest_error("[Player] Viewmodel could not be loaded from '%s'.", VIEWMODEL_PATH);
+        exit(EXIT_FAILURE);
+    }
 
-    lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
+    viewmodel.viewmodel_pos = Vector3Zero();
 
     misc.show_debug = false;
     misc.noclip = false;
@@ -407,7 +415,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         is_grounded = false;
     }
 
-    if (IsKeyDown(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE)) {
         if (is_grounded) {
             velocity.vertical = 150;
 
