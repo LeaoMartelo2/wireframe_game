@@ -3,7 +3,6 @@
 
 #include "../raylib/raylib.h"
 #include "include/lognest.h"
-#include <cstdio>
 #include <stdlib.h>
 #include <time.h>
 
