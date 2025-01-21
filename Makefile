@@ -1,8 +1,8 @@
 CC = g++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
-FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O2 -std=c++23 -L ./raylib/linux/ -lraylib
-WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O2 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static
+FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/linux/ -lraylib
+WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static
 
 SRCDIR = src
 OBJDIR = build/posix
