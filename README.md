@@ -1,9 +1,9 @@
 # Wireframe Game / Game engine
 
-Game engine originaly made in `C`, now ported to `C++`, using [RayLib](https://github.com/raysan5/raylib).
-The goal of the engine, is to follow simplicity and provide a `Wireframe` visual style.
+Game engine originaly started in `C`, now being developed in `C++`, using [RayLib](https://github.com/raysan5/raylib).
+The goal of the engine, is to be simple and have a `Wireframe` visual style.
 
-Due the simplicity goal, there is little to no use of "modern C++", and most of the C++ code is written in C style.
+Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and most of the C++ code is written in C style.
 
 <img src="readme/1.png" width="400">
 
@@ -21,7 +21,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
     - [gcc](https://gcc.gnu.org/)
     - Any other dependencies are baked in the project itself.
 
- - To compile, just run `make -j4` at the project's root.
+ - To compile, just run `make` at the project's root.
  - This will provide you with a 'wireframe' binary.
 
 ### Microsoft Windows
@@ -31,7 +31,7 @@ Due the simplicity goal, there is little to no use of "modern C++", and most of 
 > [!NOTE]
 > You can cross-compile from Linux to Microsoft Windows.\
 > Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux dependencies.\
-> Run `make -j4 win`, you'll be left out with `wireframe.exe`
+> Run `make win`, you'll be left out with `wireframe.exe`
 
 
 ## Engine structure
@@ -45,13 +45,14 @@ The engine structure goal can be represented as such:
 Engine Instance
  ┃
  ┣ Scene Manager 
+ ┃      ┃
+ ┃      ┣ Player
+ ┃      ┃   ┗ ~ Player data ~
+ ┃      ┃
  ┃      ┣ Scene (1)
  ┃      ┃   ┃
- ┃      ┃   ┣ Player
- ┃      ┃   ┃   ┗ ~ Player relevant data ~
- ┃      ┃   ┃
  ┃      ┃   ┗ Level
- ┃      ┃       ┗ ~ Level data
+ ┃      ┃       ┗ ~ Level data ~
  ┃      ┃
  ┃      ┗ Scene (2)
  ┃          ┃
@@ -61,12 +62,18 @@ Engine Instance
 
  
 
-| Item          | Description                                                      | 
-| ---           | ---                                                              |
-| Scene manager | Manages all the scenes in the game, including menus and gameplay |
-| Scene         | Manages level data, such as level loading, and a player instance |
-| Player        | Player Character                                                 |
-| (Other)       | Used to represent any kind of data                               |
+| Item          | Description                                                          | 
+| ---           | ---                                                                  |
+| Scene manager | Manages all the scenes in the game and the player                    |
+| Scene         | Manages level data, such as the current level and current game logic |
+| Player        | Player Character                                                     |
+| (Other)       | Used to represent generic data in the board                          |
+
+
+This structure allows you to have multiple scenes, each with a different level and even scene specific code \
+The Player being a child of the Scene Manager instead of the current running scene, allows to have player data to be persistent between scenes,\
+otherwise you would have a different player instance for each scene, or need to create player copies, that would frequently get out of sync.\
+Doing it this way, in the other hand, allows you to just pass down a pointer of the player instance at the manager.\
 
 
 ## Logging

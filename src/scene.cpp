@@ -3,16 +3,14 @@
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "player.h"
-#include <chrono>
 #include <fstream>
-#include <thread>
 
 Scene::Scene() : player() {
     lognest_trace("[Scene] Scene constructed.");
 }
 
 Scene::~Scene() {
-    lognest_trace("[Scene] Scene destructed.");
+    lognest_trace("[Scene] Scene destructed. ID: %zu", scene_id);
 }
 
 void Scene::start(const char *filename) {
@@ -127,25 +125,13 @@ void Scene::draw_map_floor(void) {
 
 void Scene::update(void) {
 
-    const int target_tickrate = 60;
-    const std::chrono::milliseconds tick_duration(1000 / target_tickrate);
-
-    auto start = std::chrono::high_resolution_clock::now();
-
-    player.update(map_geometry, map_floor);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-
-    if (elapsed < tick_duration) {
-        std::this_thread::sleep_for(tick_duration - elapsed);
-    }
+    player->update(map_geometry, map_floor);
 
     BeginDrawing();
     {
         ClearBackground(BLACK);
 
-        BeginMode3D(player.camera);
+        BeginMode3D(player->camera);
         {
             /*player.update(map_geometry, map_floor);*/
 
@@ -153,12 +139,12 @@ void Scene::update(void) {
             draw_map_floor();
             draw_map_geometry();
 
-            player.draw();
-            player.debug_3d();
+            player->draw();
+            player->debug_3d();
         }
         EndMode3D();
 
-        player.draw_hud();
+        player->draw_hud();
     }
     EndDrawing();
 }

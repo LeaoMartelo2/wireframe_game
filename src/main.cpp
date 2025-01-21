@@ -1,7 +1,7 @@
 #define LOGNEST_IMPLEMENTATION
 #include "include/lognest.h"
 #include "misc.h"
-#include "scene.h"
+#include "scene_manager.h"
 
 int main(void) {
 
@@ -13,16 +13,14 @@ int main(void) {
     DisableCursor();
 
     {
-        Scene scene;
-
-        scene.start("levels/test");
+        SceneManager scene_manager;
 
         while (!WindowShouldClose()) {
 
-            scene.update();
+            scene_manager.update_current_scene();
         }
 
-        scene.end();
+        scene_manager.end();
 
         CloseWindow();
     }
