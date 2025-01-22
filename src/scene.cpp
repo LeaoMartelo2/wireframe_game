@@ -5,7 +5,7 @@
 #include "player.h"
 #include <fstream>
 
-Scene::Scene() : player() {
+Scene::Scene() {
     lognest_trace("[Scene] Scene constructed.");
 }
 
@@ -13,12 +13,18 @@ Scene::~Scene() {
     lognest_trace("[Scene] Scene destructed. ID: %zu", scene_id);
 }
 
-void Scene::start(const char *filename) {
+void Scene::start() {
 
-    loadmap(filename);
+    loadmap(map_file.c_str());
+    player->pos = start_pos;
 }
 
 void Scene::end(void) {
+}
+
+void Scene::set_map(const char *filename) {
+
+    map_file = filename;
 }
 
 void Scene::loadmap(const char *filename) {

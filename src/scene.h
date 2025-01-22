@@ -13,15 +13,21 @@ class Scene {
 
     size_t scene_id;
 
+    std::string map_file;
+
+    Vector3 start_pos;
+
   private:
     // private members
 
   public:
     Scene();
     ~Scene();
-    void start(const char *filename);
+    void start();
     void update(void);
     void end(void);
+
+    void set_map(const char *filename);
 
     void loadmap(const char *filename);
 

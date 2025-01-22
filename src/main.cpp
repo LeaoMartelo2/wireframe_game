@@ -14,6 +14,7 @@ int main(void) {
 
     {
         SceneManager scene_manager;
+        scene_manager.swap_scene(0);
 
         while (!WindowShouldClose()) {
 

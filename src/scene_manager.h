@@ -9,7 +9,7 @@
 class SceneManager {
   private:
   public:
-    std::vector<Scene> scenes;
+    std::vector<std::shared_ptr<Scene>> scenes;
     Player player;
     size_t current_scene;
 
