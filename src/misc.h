@@ -8,7 +8,7 @@
 
 inline void troll(void);
 
-inline void raylib_setup(void) {
+inline void raylib_pre(void) {
 
     srand(time(NULL));
     int random = rand() % 185 + 1;
@@ -19,14 +19,18 @@ inline void raylib_setup(void) {
 
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
+}
 
-    InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
+inline void raylib_config(void) {
+
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);
 
     SetTargetFPS(60);
     ToggleFullscreen();
     lognest_trace("[Raylib] Enabled Fullscreen.");
+
+    InitAudioDevice();
 }
 
 inline const char *bool_to_string(bool value) {

@@ -7,15 +7,14 @@ int main(void) {
 
     lognest_trace("|=====================-Wireframe Engine Start-=====================|\n");
 
-    raylib_setup();
-    InitAudioDevice();
-
-    DisableCursor();
-
+    raylib_pre();
+    InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
     {
+        raylib_config();
+        DisableCursor();
+
         SceneManager scene_manager;
-        // the first scene id should normally be 0;
-        scene_manager.swap_scene(0);
+        scene_manager.swap_scene(LEVEL_TEST);
 
         while (!WindowShouldClose()) {
 
@@ -23,10 +22,8 @@ int main(void) {
         }
 
         scene_manager.end();
-
-        CloseWindow();
     }
-
+    CloseWindow();
     lognest_trace("[Raylib] Window closed.");
 
     lognest_trace("|=====================-Wireframe Engine End-=======================|\n");

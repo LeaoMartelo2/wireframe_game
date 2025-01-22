@@ -6,6 +6,11 @@
 #include "scene.h"
 #include <vector>
 
+typedef enum : size_t {
+    LEVEL_TEST = 0,
+    LEVEL_SAMPLE,
+} LEVELS;
+
 class SceneManager {
   private:
   public:
