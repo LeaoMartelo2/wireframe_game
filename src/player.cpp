@@ -15,6 +15,9 @@
 Model empty_model = {0};
 
 Player::Player() {
+
+    lognest_trace("[Player] Loading Player data");
+
     camera = *new Camera3D;
     camera.position = Vector3Zero();
     camera.target = Vector3Zero();
@@ -24,7 +27,7 @@ Player::Player() {
     camera_misc.camera_tilt = 0.01f;
     camera_misc.mouse_sens = 0.1f;
 
-    lognest_debug("[Player] Camera created.");
+    lognest_debug(" ┗>[Player] Camera created.");
 
     pos = {150, 20, 50};
     move_speed = 200.0f;
@@ -39,7 +42,7 @@ Player::Player() {
     velocity.sideways = 0;
     velocity.vertical = 0;
 
-    lognest_debug("[Player] Setup default movement variables.");
+    lognest_debug(" ┗>[Player] Setup default movement variables.");
 
     input.forwards = 0.0f;
     input.sideways = 0.0f;
@@ -48,11 +51,11 @@ Player::Player() {
     collision.bounding_box_size = {5, 15, 5};
     collision.bounding_box = calculate_boundingbox();
 
-    lognest_debug("[Player] Player Bounding Box calculated.");
+    lognest_debug(" ┗>[Player] Player Bounding Box calculated.");
 
     if (file_exists(VIEWMODEL_PATH)) {
         viewmodel.model = LoadModel(VIEWMODEL_PATH);
-        lognest_debug("[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
+        lognest_debug(" ┗>[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
     } else {
         lognest_error("[Player] Viewmodel could not be loaded from '%s'.", VIEWMODEL_PATH);
         exit(EXIT_FAILURE);
@@ -64,9 +67,9 @@ Player::Player() {
     misc.noclip = false;
     misc.no_gravity = false;
 
-    lognest_debug("[Player] Player debug-tools loaded.");
+    lognest_debug(" ┗>[Player] Player debug-tools loaded.");
 
-    lognest_trace("[Player] Player constructed");
+    lognest_trace("[Player] Player loaded");
 }
 
 /*Player::~Player() {*/
@@ -350,7 +353,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
     // don't move the real player.
 
     if (!fakeplayer_dbg) {
-        lognest_debug("[Player] Created Geometry collision check hitbox.");
+        lognest_trace("[Player] Created Geometry clipping hitbox");
         fakeplayer_dbg = true;
     }
 
@@ -382,7 +385,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
         fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
 
-        DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);
+        /*DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);*/
 
         if (fake_player.check_collision_geometry(map_geometry)) {
 

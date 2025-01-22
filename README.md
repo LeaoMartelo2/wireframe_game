@@ -23,7 +23,7 @@ Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and mo
     - Any other dependencies are baked in the project itself.
 
  - To compile, just run `make` at the project's root.
- - This will provide you with a 'wireframe' binary.
+ - The final executable is named `wireframe`.
 
 ### Microsoft Windows
 
@@ -33,7 +33,7 @@ Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and mo
 > [!NOTE]
 > You can cross-compile from Linux to Microsoft Windows.\
 > Requires: [x86_64-w64-mingw32-g++](https://www.mingw-w64.org/) + everything from Linux dependencies.\
-> Run `make win`, you'll be left out with `wireframe.exe`
+> Run `make win`, the final executable is named `wireframe.exe`
 
 
 ## Engine structure
