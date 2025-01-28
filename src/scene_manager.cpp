@@ -10,6 +10,13 @@ SceneManager::SceneManager() : player() {
     add_scenes();
 }
 
+SceneManager::~SceneManager() {
+    for (size_t i = 0; i < scenes.size(); ++i) {
+        delete scenes[i];
+        lognest_debug(" ┗>[SceneManager] Cleared scene with ID: %zu", i);
+    }
+}
+
 void SceneManager::end() {
 }
 
@@ -27,6 +34,5 @@ void SceneManager::update_current_scene() {
 
     if (IsKeyPressed(KEY_H)) {
         swap_scene(current_scene + 1);
-        printf("%zu\n", current_scene);
     }
 }

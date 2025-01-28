@@ -1,13 +1,10 @@
-#define LOGNEST_IMPLEMENTATION
-#include "include/lognest.h"
 #include "misc.h"
 #include "scene_manager.h"
 
 int main(void) {
 
-    lognest_trace("|=====================-Wireframe Engine Start-=====================|\n");
-
     raylib_pre();
+
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
     {
         raylib_config();
@@ -24,9 +21,8 @@ int main(void) {
         scene_manager.end();
     }
     CloseWindow();
-    lognest_trace("[Raylib] Window closed.");
 
-    lognest_trace("|=====================-Wireframe Engine End-=======================|\n");
+    raylib_post();
 
     return 0;
 }

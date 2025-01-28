@@ -72,14 +72,6 @@ Player::Player() {
     lognest_trace("[Player] Player loaded");
 }
 
-/*Player::~Player() {*/
-/*lognest_trace("[Player] Player destructor called.");*/
-
-// leaving this disabled as of now, due fake_player being instanced as
-// static makes this be detroyed at program exit
-// leaving multiple logs
-/*}*/
-
 Player::Player(const Player &other) {
 
     pos = other.pos;

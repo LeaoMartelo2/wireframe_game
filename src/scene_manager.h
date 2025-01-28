@@ -14,12 +14,13 @@ typedef enum : size_t {
 class SceneManager {
   private:
   public:
-    std::vector<std::shared_ptr<Scene>> scenes;
+    std::vector<Scene *> scenes;
     Player player;
     size_t current_scene;
 
   public:
     SceneManager();
+    ~SceneManager();
 
     void add_scenes();
     void end();

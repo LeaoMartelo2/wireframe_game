@@ -1,6 +1,9 @@
 #ifndef MISC_H_
 #define MISC_H_
 
+#define LOGNEST_IMPLEMENTATION
+#include "include/lognest.h"
+
 #include "../raylib/raylib.h"
 #include "include/lognest.h"
 #include <stdlib.h>
@@ -9,6 +12,8 @@
 inline void troll(void);
 
 inline void raylib_pre(void) {
+
+    lognest_trace("|=====================-Wireframe Engine Start-=====================|\n");
 
     srand(time(NULL));
     int random = rand() % 185 + 1;
@@ -31,6 +36,12 @@ inline void raylib_config(void) {
     lognest_trace("[Raylib] Enabled Fullscreen.");
 
     InitAudioDevice();
+}
+
+inline void raylib_post(void) {
+
+    lognest_trace("[Raylib] Window closed.\n");
+    lognest_trace("|=====================-Wireframe Engine End-=======================|\n");
 }
 
 inline const char *bool_to_string(bool value) {

@@ -38,4 +38,14 @@ class Scene {
     void draw_map_floor(void);
 };
 
+class Menu : public Scene {
+
+  public:
+    Menu();
+    ~Menu();
+
+    void start(void);
+    void update(void);
+};
+
 #endif // !SCENE_H_

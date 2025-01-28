@@ -10,7 +10,7 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
-    lognest_trace("[Scene] Scene destructed. ID: %zu", scene_id);
+    lognest_trace("[Scene] Scene unloaded. ID: %zu", scene_id);
 }
 
 void Scene::start() {
@@ -29,7 +29,7 @@ void Scene::set_map(const char *filename) {
 
 void Scene::loadmap(const char *filename) {
 
-    lognest_trace("[Scene ID:%zu] Attempting to load Level from from '%s'.", scene_id, filename);
+    lognest_trace("[Scene] ID: %zu Attempting to load Level from from '%s'.", scene_id, filename);
 
     std::ifstream file_geometry(std::string(filename) + "/geometry.json");
     /*lognest_debug(" ┗>[Scene] Trying to load Geometry(ies) from '%s/geometry.json'", filename);*/
@@ -156,4 +156,10 @@ void Scene::update(void) {
         player->draw_hud();
     }
     EndDrawing();
+}
+
+Menu::Menu() {
+}
+
+Menu::~Menu() {
 }
