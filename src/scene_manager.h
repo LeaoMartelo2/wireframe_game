@@ -7,8 +7,9 @@
 #include <vector>
 
 typedef enum : size_t {
-    LEVEL_TEST = 0,
-    LEVEL_SAMPLE,
+    SCENE_MAINMENU = 0,
+    SCENE_LEVEL_SAMPLE,
+    SCENE_LEVEL_TEST2
 } LEVELS;
 
 class SceneManager {

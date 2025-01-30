@@ -22,20 +22,20 @@ class Scene {
 
   public:
     Scene();
-    ~Scene();
-    void start();
-    void update(void);
-    void end(void);
+    virtual ~Scene();
+    virtual void start();
+    virtual void update(void);
+    virtual void end(void);
 
-    void set_map(const char *filename);
+    virtual void set_map(const char *filename);
 
-    void loadmap(const char *filename);
+    virtual void loadmap(const char *filename);
 
   private:
     // private methods
 
-    void draw_map_geometry(void);
-    void draw_map_floor(void);
+    virtual void draw_map_geometry(void);
+    virtual void draw_map_floor(void);
 };
 
 class MainMenu : public Scene {
@@ -47,8 +47,8 @@ class MainMenu : public Scene {
     MainMenu();
     ~MainMenu();
 
-    void start(void);
-    void update(void);
+    void start() override;
+    void update() override;
 
   public:
     size_t scene_id;

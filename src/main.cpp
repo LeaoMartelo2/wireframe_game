@@ -11,7 +11,7 @@ int main(void) {
         DisableCursor();
 
         SceneManager scene_manager;
-        scene_manager.swap_scene(LEVEL_TEST);
+        scene_manager.swap_scene(SCENE_MAINMENU);
 
         while (!WindowShouldClose()) {
 

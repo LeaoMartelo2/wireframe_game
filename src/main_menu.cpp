@@ -7,7 +7,6 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::start() {
-    printf("redefined start\n");
 }
 
 void MainMenu::update() {
