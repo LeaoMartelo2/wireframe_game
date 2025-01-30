@@ -8,7 +8,6 @@ int main(void) {
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
     {
         raylib_config();
-        DisableCursor();
 
         SceneManager scene_manager;
         scene_manager.swap_scene(SCENE_MAINMENU);

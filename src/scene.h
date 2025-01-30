@@ -41,7 +41,8 @@ class Scene {
 class MainMenu : public Scene {
 
   private:
-    Camera2D camera;
+    Camera3D mm_camera;
+    Model menu_model;
 
   public:
     MainMenu();

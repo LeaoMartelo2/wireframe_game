@@ -14,6 +14,8 @@ Scene::~Scene() {
 
 void Scene::start() {
 
+    DisableCursor();
+
     loadmap(map_file.c_str());
     player->pos = start_pos;
 }
