@@ -1,8 +1,9 @@
+.PHONY: clear
 CC = g++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
 FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/linux/ -lraylib
-WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static
+WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 SRCDIR = src
 OBJDIR = build/posix

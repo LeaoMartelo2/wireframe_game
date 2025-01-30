@@ -35,8 +35,6 @@ void MainMenu::start() {
 
 void MainMenu::update() {
 
-    /*UpdateCamera(&mm_camera, CAMERA_FREE);*/
-
     BeginDrawing();
     {
         ClearBackground(BLACK);
