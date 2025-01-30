@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 touch latest.log
 # create file if running the script before the game

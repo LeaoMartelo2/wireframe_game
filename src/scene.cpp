@@ -6,7 +6,6 @@
 #include <fstream>
 
 Scene::Scene() {
-    /*lognest_trace("[Scene] Scene constructed.");*/
 }
 
 Scene::~Scene() {
@@ -156,10 +155,4 @@ void Scene::update(void) {
         player->draw_hud();
     }
     EndDrawing();
-}
-
-Menu::Menu() {
-}
-
-Menu::~Menu() {
 }

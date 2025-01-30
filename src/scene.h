@@ -38,14 +38,20 @@ class Scene {
     void draw_map_floor(void);
 };
 
-class Menu : public Scene {
+class MainMenu : public Scene {
+
+  private:
+    Camera2D camera;
 
   public:
-    Menu();
-    ~Menu();
+    MainMenu();
+    ~MainMenu();
 
     void start(void);
     void update(void);
+
+  public:
+    size_t scene_id;
 };
 
 #endif // !SCENE_H_

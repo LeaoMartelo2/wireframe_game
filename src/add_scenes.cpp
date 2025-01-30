@@ -19,7 +19,7 @@ void SceneManager::add_scenes() {
     level2->start_pos = {150, 20, 50};
     scenes.emplace_back(level2);
 
-    Menu *test_menu = new Menu;
+    MainMenu *test_menu = new MainMenu;
     test_menu->scene_id = 2;
     scenes.emplace_back(test_menu);
 }

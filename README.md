@@ -1,11 +1,6 @@
 # Wireframe Game / Game engine
 
-Game engine originaly started in `C`, now being developed in `C++`, using [RayLib](https://github.com/raysan5/raylib).
-
-The goal of the engine is to follow simplicity, have as little dependencies as possible,
-have the compile process go smooth and easy, and have a `Wireframe` visual style
-
-Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and most of the C++ code is written in C style.
+A game / game engine using [Raylib](https://github.com/raysan5/raylib) with the goal to follow simplicity and have a `"Wireframe"` visual style
 
 <img src="readme/1.png" width="400">
 
@@ -15,6 +10,8 @@ Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and mo
 
 
 ## Compiling
+
+The project is designed in such a way, that compiling should not be a hard task. Thus making compiling extremely convenient and quick.
 
 ### Linux
  - Dependencies
@@ -95,3 +92,27 @@ The engine, by default, writes its log to `latest.log` at the main executable pa
 
 For convenience, it's also provided a [Shell script](./log.sh)\
 This script will automatically print the log, while also coloring each log type with a corresponding color.
+
+
+## Design choices
+
+The project was originally started in `C`, now ported to `C++`
+
+The decision of moving to C++ is due several factors relating to the project structure growing more complex then i would like.
+
+Some of the reasons can be boiled down to:
+ - Dealing with memory was getting extremely "boilerplated" in C.
+ - Easier generics.
+ - Some `light use` of object oriented features prove themselves useful. (keyword `light use`)
+
+
+Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and most of the C++ code is written in C like style.
+
+Some of the highlighted features are:
+ - std::vector - This one is allowed, even though it's using templates, should be used sparingly.
+ - std::string - This one is allowed, use `char *` if possible.
+ - namespacing - Avoid at all costs, otherwise keep to minimum.
+ - Function / Operator overloading - Avoid at all costs, exceptions are different Class constructors(ie. "copy constructor").
+ - auto - Avoid when applicable. 
+ - smart pointers - Keep to a minimum.
+
