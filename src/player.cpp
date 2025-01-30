@@ -534,7 +534,7 @@ void Player::draw() {
 void Player::draw_hud() {
     debug();
 
-    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1.0f, WHITE);
+    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 2, WHITE);
 
     // health /  ammo /  etc
 }

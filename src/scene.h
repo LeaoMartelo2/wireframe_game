@@ -43,6 +43,7 @@ class MainMenu : public Scene {
   private:
     Camera3D mm_camera;
     Model menu_model;
+    Music menu_music;
 
   public:
     MainMenu();

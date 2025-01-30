@@ -1,7 +1,32 @@
 #include "scene.h"
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
+#define MENU_MUSIC "assets/music/menu.mp3"
+#define MENU_CLICK "assets/sounds/snd_button.wav"
 #define FILL_COLOR GetColor(0x181818FF)
+
+void draw_tittle(void) {
+
+    static Sound menu_click = LoadSound(MENU_CLICK);
+
+    static float x = 50;
+    static float y = 50;
+    static float size = 70;
+
+    const char *tittle = "Wireframe Game";
+
+    static int frames_counter = 0;
+    frames_counter += 5;
+
+    if (frames_counter < 200) {
+        if (frames_counter % 4 == 0) {
+            PlaySound(menu_click);
+        }
+    }
+
+    /*DrawText(tittle, x, y, size, WHITE);*/
+    DrawText(TextSubtext(tittle, 0, frames_counter / 10), x, y, size, WHITE);
+}
 
 void main_menu_shotgun(Model *menu_model) {
 
@@ -31,9 +56,14 @@ MainMenu::~MainMenu() {
 
 void MainMenu::start() {
     EnableCursor();
+    menu_music = LoadMusicStream(MENU_MUSIC);
+
+    PlayMusicStream(menu_music);
 }
 
 void MainMenu::update() {
+
+    UpdateMusicStream(menu_music);
 
     BeginDrawing();
     {
@@ -45,7 +75,7 @@ void MainMenu::update() {
         }
         EndMode3D();
 
-        DrawText("Wireframe Game", 50, 50, 70, WHITE);
+        draw_tittle();
     }
     EndDrawing();
 }
