@@ -2,8 +2,12 @@
 CC = g++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
-FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/linux/ -lraylib
-WINDOWS_FLAGS = -Wall -Wextra -Wno-missing-field-initializers -Wno-format-overflow -pedantic -lm -O3 -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
+DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-enum-compare -Wno-unused-parameter
+
+FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -O3 
+
+UNIX_FLAGS = -L ./raylib/linux/ -lraylib
+WINDOWS_FLAGS = -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 SRCDIR = src
 OBJDIR = build/posix
@@ -16,11 +20,11 @@ WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
 
 # Default target for Linux
 main: $(OBJ)
-	$(CC) $^ $(FLAGS) -o wireframe
+	$(CC) $^ $(FLAGS) $(UNIX_FLAGS) -o wireframe
 
 # Windows target
 win: $(WINOBJ)
-	$(WINDOWS_COMPILER) $^ $(WINDOWS_FLAGS) -o wireframe.exe
+	$(WINDOWS_COMPILER) $^ $(FLAGS) $(WINDOWS_FLAGS) -o wireframe.exe
 
 # Compile object files for Linux
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
