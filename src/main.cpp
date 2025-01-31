@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "misc.h"
 #include "scene_manager.h"
 
@@ -12,9 +13,9 @@ int main(void) {
         SceneManager scene_manager;
         scene_manager.swap_scene(SCENE_MAINMENU);
 
-        while (!WindowShouldClose()) {
+        while (!close_application) {
 
-            scene_manager.update_current_scene();
+            scene_manager.update();
         }
 
         scene_manager.end();

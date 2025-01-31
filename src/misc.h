@@ -28,6 +28,8 @@ inline void raylib_pre(void) {
 
 inline void raylib_config(void) {
 
+    SetExitKey(0);
+
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);
 

@@ -8,8 +8,9 @@
 
 typedef enum : size_t {
     SCENE_MAINMENU = 0,
-    SCENE_LEVEL_SAMPLE,
-    SCENE_LEVEL_TEST2
+    SCENE_LEVEL_TEST1,
+    SCENE_LEVEL_TEST2,
+    SCENE_LEVEL_TEST3,
 } LEVELS;
 
 class SceneManager {
@@ -28,7 +29,7 @@ class SceneManager {
 
     void swap_scene(size_t scene_id);
 
-    void update_current_scene();
+    void update();
 };
 
 #endif // !SCENE_MANAGER_H_

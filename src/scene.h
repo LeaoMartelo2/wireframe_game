@@ -39,7 +39,7 @@ class Scene {
 };
 
 class SceneManager;
-// this needs forward declaration, thanks C
+// this needs forward declaration, thanks C++
 
 class MainMenu : public Scene {
 
