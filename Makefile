@@ -4,9 +4,9 @@ WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
 DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-enum-compare -Wno-unused-parameter
 
-FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -O3 
+FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -O3
 
-UNIX_FLAGS = -L ./raylib/linux/ -lraylib
+POSIX_FLAGS = -L ./raylib/linux/ -lraylib
 WINDOWS_FLAGS = -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 SRCDIR = src
@@ -20,7 +20,7 @@ WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
 
 # Default target for Linux
 main: $(OBJ)
-	$(CC) $^ $(FLAGS) $(UNIX_FLAGS) -o wireframe
+	$(CC) $^ $(FLAGS) $(POSIX_FLAGS) -o wireframe
 
 # Windows target
 win: $(WINOBJ)
@@ -29,12 +29,12 @@ win: $(WINOBJ)
 # Compile object files for Linux
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(OBJDIR)
-	$(CC) $(FLAGS) -c $< -o $@
+	$(CC) $(FLAGS) $(POSIX_FLAGS) -c $< -o $@
 
 # Compile object files for Windows
 $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(WINOBJDIR)
-	$(WINDOWS_COMPILER) $(WINDOWS_FLAGS) -c $< -o $@
+	$(WINDOWS_COMPILER) $(FLAGS) $(WINDOWS_FLAGS) -c $< -o $@
 
 # Clean all builds
 clear: 
