@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "scene_manager.h"
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
@@ -16,22 +17,27 @@ void draw_tittle(void) {
     const char *tittle = "Wireframe Game";
 
     static int frames_counter = 0;
-    frames_counter += 5;
+    if (frames_counter < 200) {
+        frames_counter += 5;
+    }
+
+    DrawText(TextSubtext(tittle, 0, frames_counter / 10), x, y, size, WHITE);
 
     if (frames_counter < 200) {
         if (frames_counter % 4 == 0) {
             PlaySound(menu_click);
         }
     }
-
-    /*DrawText(tittle, x, y, size, WHITE);*/
-    DrawText(TextSubtext(tittle, 0, frames_counter / 10), x, y, size, WHITE);
 }
 
 void main_menu_shotgun(Model *menu_model) {
 
-    Vector3 pos = {1, 0, 0.75};
+    static Vector3 pos = {1, 0, 5}; // Z = 0.75
     Vector3 rot_axis = {0, 1, 0.75};
+
+    if (pos.z > 0.75f) {
+        pos.z -= 0.1f;
+    }
 
     static double rot = 0;
     DrawModelEx(*menu_model, pos, rot_axis, rot, Vector3One(), FILL_COLOR);
@@ -41,7 +47,7 @@ void main_menu_shotgun(Model *menu_model) {
 
 MainMenu::MainMenu() {
 
-    mm_camera = *new Camera3D;
+    mm_camera = {0};
     mm_camera.position = Vector3Zero();
     mm_camera.target = Vector3{10, 0, 0};
     mm_camera.up = {0, 1, 0};
@@ -64,6 +70,10 @@ void MainMenu::start() {
 void MainMenu::update() {
 
     UpdateMusicStream(menu_music);
+
+    if (IsKeyPressed(KEY_B)) {
+        parent->swap_scene(SCENE_LEVEL_SAMPLE);
+    }
 
     BeginDrawing();
     {

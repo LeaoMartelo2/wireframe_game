@@ -1,4 +1,3 @@
-#include "scene.h"
 #include "scene_manager.h"
 
 void SceneManager::add_scenes() {
@@ -7,7 +6,7 @@ void SceneManager::add_scenes() {
 
     MainMenu *test_menu = new MainMenu;
     test_menu->scene_id = SCENE_MAINMENU;
-    test_menu->set_map("non_existing");
+    test_menu->parent = this; // Main Menu requires a pointer to its parent Scene Manager
     scenes.emplace_back(test_menu);
 
     Scene *test_level = new Scene;

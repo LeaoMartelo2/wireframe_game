@@ -18,7 +18,7 @@ Player::Player() {
 
     lognest_trace("[Player] Loading Player data");
 
-    camera = *new Camera3D;
+    camera = {0};
     camera.position = Vector3Zero();
     camera.target = Vector3Zero();
     camera.up = {0, 1, 0};

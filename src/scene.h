@@ -38,6 +38,9 @@ class Scene {
     virtual void draw_map_floor(void);
 };
 
+class SceneManager;
+// this needs forward declaration, thanks C
+
 class MainMenu : public Scene {
 
   private:
@@ -54,6 +57,8 @@ class MainMenu : public Scene {
 
   public:
     size_t scene_id;
+
+    SceneManager *parent;
 };
 
 #endif // !SCENE_H_
