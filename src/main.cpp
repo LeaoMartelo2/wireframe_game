@@ -11,7 +11,6 @@ int main(void) {
         raylib_config();
 
         SceneManager scene_manager;
-        scene_manager.swap_scene(SCENE_MAINMENU);
 
         while (!close_application) {
 

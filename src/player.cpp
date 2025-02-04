@@ -16,7 +16,7 @@ Model empty_model = {0};
 
 Player::Player() {
 
-    lognest_trace("[Player] Loading Player data");
+    lognest_trace("[Player] Loading Player data.");
 
     camera = {0};
     camera.position = Vector3Zero();
@@ -69,7 +69,7 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Player debug-tools loaded.");
 
-    lognest_trace("[Player] Player loaded");
+    lognest_trace("[Player] Player loaded.");
 }
 
 Player::Player(const Player &other) {

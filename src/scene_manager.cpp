@@ -4,11 +4,13 @@
 
 SceneManager::SceneManager() : player() {
 
-    lognest_trace("[SceneManager] Scene manager created");
+    lognest_trace("[SceneManager] Scene manager created.");
 
     current_scene = 0;
 
     add_scenes();
+
+    scenes[current_scene]->start();
 }
 
 SceneManager::~SceneManager() {
@@ -23,10 +25,20 @@ void SceneManager::end() {
 
 void SceneManager::swap_scene(size_t scene_id) {
 
+    if (scene_id >= scenes.size()) {
+        lognest_error("[SceneManager] Attempted to load a unexisting scene. "
+                      "Exiting. Tried to load ID: '%zu'",
+                      scene_id);
+        close_application = true;
+        return;
+    }
+
     lognest_trace("[SceneManager] Loading scene with ID: '%zu'", scene_id);
 
     if (scene_id != current_scene) {
         scenes[current_scene]->end();
+    } else {
+        lognest_warn("[SceneManager] Attemped to load a scene that is already loaded. Scene ID: '%zu'", scene_id);
     }
 
     current_scene = scene_id;

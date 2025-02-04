@@ -1,8 +1,8 @@
 #include "globals.h"
 #include "gui.h"
+#include "include/lognest.h"
 #include "scene.h"
 #include "scene_manager.h"
-#include <cstdio>
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
@@ -68,6 +68,8 @@ void main_menu_shotgun(Model *menu_model) {
 
 MainMenu::MainMenu() {
 
+    lognest_trace("[Menu] Loading Main menu data.");
+
     mm_camera = {0};
     mm_camera.position = Vector3Zero();
     mm_camera.target = Vector3{10, 0, 0};
@@ -75,8 +77,12 @@ MainMenu::MainMenu() {
     mm_camera.fovy = 90.0f;
     mm_camera.projection = CAMERA_PERSPECTIVE;
 
+    lognest_debug(" ┗>[Menu] Camera created.");
+
     menu_model = LoadModel(MENU_MODEL);
     menu_click = LoadSound(MENU_CLICK);
+
+    lognest_debug(" ┗>[Menu] Models and sounds loaded.");
 }
 
 MainMenu::~MainMenu() {
@@ -87,19 +93,22 @@ void MainMenu::start() {
     menu_music = LoadMusicStream(MENU_MUSIC);
 
     PlayMusicStream(menu_music);
+    lognest_debug(" ┗>[Menu] Started playing music stream.");
 }
 
 void MainMenu::end() {
     UnloadMusicStream(menu_music);
     UnloadModel(menu_model);
     UnloadSound(menu_click);
+
+    lognest_debug("[Menu] Unloaded models/sounds.");
 }
 
 void MainMenu::update() {
 
     UpdateMusicStream(menu_music);
 
-    static const gui_color_scheme mmenu_buttons = {
+    const gui_color_scheme mmenu_buttons = {
         .default_color = GetColor(0x181818FF),
         .hoovered_color = DARKGRAY,
         .pressed_color = GRAY,

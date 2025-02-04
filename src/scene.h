@@ -58,7 +58,7 @@ class MainMenu : public Scene {
     void update() override;
 
   public:
-    size_t scene_id;
+    /*size_t scene_id;*/
 
     SceneManager *parent;
 };
