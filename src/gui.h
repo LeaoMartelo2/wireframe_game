@@ -46,4 +46,6 @@ void draw_panel(gui_panel *panel);
 
 void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size, Vector2 pos);
 
+int gui_button_on_pannel(gui_panel *panel, const gui_button_t *button, const char *text);
+
 #endif // !GUI_H_

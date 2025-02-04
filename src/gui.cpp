@@ -91,7 +91,7 @@ void draw_panel(gui_panel *panel) {
         .height = panel->exit_size.y,
     };
 
-    if (gui_button(&exit_button, GUI_SQUARE, "<", 50, &gui_transparent)) {
+    if (gui_button(&exit_button, GUI_SQUARE, "<", 100, &gui_transparent)) {
         *panel->toggle = !*panel->toggle;
     }
 }
@@ -103,4 +103,20 @@ void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size
              panel->pos.y + pos.y,
              font_size,
              WHITE);
+}
+
+int gui_button_on_pannel(gui_panel *panel, const gui_button_t *button, const char *text) {
+
+    Rectangle new_bounds = {
+        .x = panel->pos.x + button->bounds.x,
+        .y = panel->pos.y + button->bounds.y,
+        .width = button->bounds.width,
+        .height = button->bounds.height,
+    };
+
+    return gui_button(&new_bounds,
+                      button->button_style,
+                      text,
+                      button->font_size,
+                      button->colors);
 }

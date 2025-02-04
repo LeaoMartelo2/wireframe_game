@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "gui.h"
 #include "include/lognest.h"
+#include "misc.h"
 #include "scene.h"
 #include "scene_manager.h"
 
@@ -64,7 +65,7 @@ void main_menu_shotgun(Model *menu_model) {
     static double rot = 0;
     DrawModelEx(*menu_model, pos, rot_axis, rot, Vector3One(), FILL_COLOR);
     DrawModelWiresEx(*menu_model, pos, rot_axis, rot, Vector3One(), WHITE);
-    ++rot;
+    rot += GetFrameTime() * 60;
 }
 
 MainMenu::MainMenu() {
@@ -111,12 +112,32 @@ void MainMenu::end() {
 void MainMenu::update() {
 
     static bool settings_menu = false;
+    static bool test_cfg = false;
 
     static const gui_color_scheme mmenu_buttons = {
         .default_color = GetColor(0x181818FF),
         .hoovered_color = DARKGRAY,
         .pressed_color = GRAY,
         .text_color = WHITE,
+    };
+
+    static const gui_color_scheme settings_buttons = {
+        .default_color = DARKGRAY,
+        .hoovered_color = GRAY,
+        .pressed_color = ColorBrightness(GRAY, -0.5),
+        .text_color = WHITE,
+    };
+
+    static gui_button_t test_setting = {
+        .bounds = {
+            .x = 50,
+            .y = 160,
+            .width = 100,
+            .height = 50,
+        },
+        .button_style = GUI_SQUARE,
+        .font_size = 20,
+        .colors = &settings_buttons,
     };
 
     static gui_button_t play_button = {
@@ -156,7 +177,7 @@ void MainMenu::update() {
         .color = DARKGRAY,
         .toggle = &settings_menu,
         .exit_pos = {940, 30},
-        .exit_size = {30, 30},
+        .exit_size = {50, 50},
     };
 
     UpdateMusicStream(menu_music);
@@ -167,7 +188,9 @@ void MainMenu::update() {
 
         BeginMode3D(mm_camera);
         {
-            main_menu_shotgun(&menu_model);
+            if (!settings_menu) {
+                main_menu_shotgun(&menu_model);
+            }
         }
         EndMode3D();
 
@@ -198,6 +221,13 @@ void MainMenu::update() {
         if (settings_menu) {
             draw_panel(&settings_pannel);
             draw_text_in_pannel_space(&settings_pannel, "Settings", 50, {30, 30});
+
+            draw_text_in_pannel_space(&settings_pannel, "Test setting", 30, {50, 130});
+            if (gui_button_on_pannel(&settings_pannel, &test_setting,
+                                     TextFormat("%s", bool_to_string(test_cfg)))) {
+                PlaySound(menu_click);
+                test_cfg = !test_cfg;
+            }
         }
     }
     EndDrawing();
