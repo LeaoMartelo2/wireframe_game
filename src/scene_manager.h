@@ -2,16 +2,10 @@
 #define SCENE_MANAGER_H_
 
 #include "geometry.h"
+#include "globals.h"
 #include "player.h"
 #include "scene.h"
 #include <vector>
-
-typedef enum : size_t {
-    SCENE_MAINMENU = 0,
-    SCENE_LEVEL_TEST1,
-    SCENE_LEVEL_TEST2,
-    SCENE_LEVEL_TEST3,
-} LEVELS;
 
 class SceneManager {
   private:

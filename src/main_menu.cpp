@@ -164,7 +164,7 @@ void MainMenu::update() {
 
         if (menu_button(play_button, "Play", 50)) {
             PlaySound(menu_click);
-            parent->swap_scene(SCENE_LEVEL_SAMPLE);
+            parent->swap_scene(SCENE_LEVEL_TEST1);
         }
 
         if (menu_button(quit_button, "Quit", 50)) {
