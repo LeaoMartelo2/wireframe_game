@@ -1,6 +1,8 @@
 #include "globals.h"
+#include "gui.h"
 #include "scene.h"
 #include "scene_manager.h"
+#include <cstdio>
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
@@ -64,50 +66,6 @@ void main_menu_shotgun(Model *menu_model) {
     ++rot;
 }
 
-// sligtly modified implementation of RayGui buttons
-// https://github.com/raysan5/raygui
-int menu_button(Rectangle bounds, const char *text, int font_size) {
-
-    int result = 0;
-
-    static const Color default_color = GetColor(0x181818FF);
-    static const Color hoveringcolor = DARKGRAY;
-    static const Color pressed_color = GRAY;
-
-    Color current_color = default_color;
-
-    Vector2 mouse_pos = GetMousePosition();
-
-    if (CheckCollisionPointRec(mouse_pos, bounds)) {
-        current_color = hoveringcolor;
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            current_color = pressed_color;
-        } else {
-            current_color = hoveringcolor;
-        }
-
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-            result = 1;
-        }
-
-    } else {
-        current_color = default_color;
-    }
-
-    DrawRectangleRec(bounds, current_color);
-    if (text != NULL) {
-        int text_width = MeasureText(text, font_size);
-
-        float text_x = bounds.x + (bounds.width / 2.0f) - (text_width / 2.0f);
-
-        float text_y = bounds.y + bounds.height / 2.0f - font_size / 2.0f;
-
-        DrawText(text, text_x, text_y, font_size, WHITE);
-    }
-
-    return result;
-}
-
 MainMenu::MainMenu() {
 
     mm_camera = {0};
@@ -118,6 +76,7 @@ MainMenu::MainMenu() {
     mm_camera.projection = CAMERA_PERSPECTIVE;
 
     menu_model = LoadModel(MENU_MODEL);
+    menu_click = LoadSound(MENU_CLICK);
 }
 
 MainMenu::~MainMenu() {
@@ -130,24 +89,45 @@ void MainMenu::start() {
     PlayMusicStream(menu_music);
 }
 
+void MainMenu::end() {
+    UnloadMusicStream(menu_music);
+    UnloadModel(menu_model);
+    UnloadSound(menu_click);
+}
+
 void MainMenu::update() {
 
     UpdateMusicStream(menu_music);
 
-    static Sound menu_click = LoadSound(MENU_CLICK);
-
-    static Rectangle play_button = {
-        .x = GetScreenWidth() / 16.0f,
-        .y = GetScreenHeight() / 2.0f,
-        .width = 220,
-        .height = 100,
+    static const gui_color_scheme mmenu_buttons = {
+        .default_color = GetColor(0x181818FF),
+        .hoovered_color = DARKGRAY,
+        .pressed_color = GRAY,
+        .text_color = WHITE,
     };
 
-    static Rectangle quit_button = {
-        .x = GetScreenWidth() / 16.0f,
-        .y = play_button.y + 105,
-        .width = 220,
-        .height = 100,
+    static gui_button_t play_button = {
+        .bounds = {
+            .x = GetScreenWidth() / 16.0f,
+            .y = GetScreenHeight() / 2.0f,
+            .width = 220,
+            .height = 100,
+        },
+        .button_style = GUI_SQUARE,
+        .font_size = 50,
+        .colors = &mmenu_buttons,
+    };
+
+    static gui_button_t quit_button = {
+        .bounds = {
+            .x = GetScreenWidth() / 16.0f,
+            .y = play_button.bounds.y + 105,
+            .width = 220,
+            .height = 100,
+        },
+        .button_style = GUI_SQUARE,
+        .font_size = 50,
+        .colors = &mmenu_buttons,
     };
 
     BeginDrawing();
@@ -162,12 +142,13 @@ void MainMenu::update() {
 
         draw_tittle();
 
-        if (menu_button(play_button, "Play", 50)) {
+        if (gui_button_ex(&play_button, "Play")) {
             PlaySound(menu_click);
             parent->swap_scene(SCENE_LEVEL_TEST1);
         }
 
-        if (menu_button(quit_button, "Quit", 50)) {
+        if (gui_button_ex(&quit_button, "Quit")) {
+            PlaySound(menu_click);
             close_application = true;
         }
     }

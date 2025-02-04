@@ -25,6 +25,10 @@ void SceneManager::swap_scene(size_t scene_id) {
 
     lognest_trace("[SceneManager] Loading scene with ID: '%zu'", scene_id);
 
+    if (scene_id != current_scene) {
+        scenes[current_scene]->end();
+    }
+
     current_scene = scene_id;
 
     scenes[current_scene]->start();

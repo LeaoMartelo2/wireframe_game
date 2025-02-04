@@ -47,12 +47,14 @@ class MainMenu : public Scene {
     Camera3D mm_camera;
     Model menu_model;
     Music menu_music;
+    Sound menu_click;
 
   public:
     MainMenu();
     ~MainMenu();
 
     void start() override;
+    void end() override;
     void update() override;
 
   public:
