@@ -2,7 +2,7 @@
 CC = g++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
-DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-enum-compare -Wno-unused-parameter
+DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow 
 
 FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -O3
 
