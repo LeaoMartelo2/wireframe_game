@@ -3,10 +3,12 @@
 #include "include/lognest.h"
 #include "scene.h"
 #include "scene_manager.h"
+#include <cstdio>
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
 #define MENU_CLICK "assets/sounds/snd_button.wav"
+#define MENU_CONFIG "assets/sprites/menu_settings.png"
 #define FILL_COLOR GetColor(0x181818FF)
 
 void draw_tittle(void) {
@@ -81,6 +83,8 @@ MainMenu::MainMenu() {
 
     menu_model = LoadModel(MENU_MODEL);
     menu_click = LoadSound(MENU_CLICK);
+    menu_music = LoadMusicStream(MENU_MUSIC);
+    mmenu_settings = LoadTexture(MENU_CONFIG);
 
     lognest_debug(" ┗>[Menu] Models and sounds loaded.");
 }
@@ -90,7 +94,6 @@ MainMenu::~MainMenu() {
 
 void MainMenu::start() {
     EnableCursor();
-    menu_music = LoadMusicStream(MENU_MUSIC);
 
     PlayMusicStream(menu_music);
     lognest_debug(" ┗>[Menu] Started playing music stream.");
@@ -101,6 +104,8 @@ void MainMenu::end() {
     UnloadModel(menu_model);
     UnloadSound(menu_click);
 
+    UnloadTexture(mmenu_settings);
+
     lognest_debug("[Menu] Unloaded models/sounds.");
 }
 
@@ -108,13 +113,14 @@ void MainMenu::update() {
 
     UpdateMusicStream(menu_music);
 
-    const gui_color_scheme mmenu_buttons = {
+    static const gui_color_scheme mmenu_buttons = {
         .default_color = GetColor(0x181818FF),
         .hoovered_color = DARKGRAY,
         .pressed_color = GRAY,
         .text_color = WHITE,
     };
 
+    ;
     static gui_button_t play_button = {
         .bounds = {
             .x = GetScreenWidth() / 16.0f,
@@ -139,6 +145,13 @@ void MainMenu::update() {
         .colors = &mmenu_buttons,
     };
 
+    Rectangle settings_bounds = {
+        .x = GetScreenWidth() - 100.0f,
+        .y = GetScreenHeight() - 100.0f,
+        .width = (float)mmenu_settings.width,
+        .height = (float)mmenu_settings.height,
+    };
+
     BeginDrawing();
     {
         ClearBackground(BLACK);
@@ -160,6 +173,14 @@ void MainMenu::update() {
             PlaySound(menu_click);
             close_application = true;
         }
+
+        if (gui_button(&settings_bounds, GUI_SQUARE, "", 50, &gui_transparent)) {
+            PlaySound(menu_click);
+            // settings menu...
+        }
+
+        DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},
+                      0, 0.75, WHITE);
     }
     EndDrawing();
 }

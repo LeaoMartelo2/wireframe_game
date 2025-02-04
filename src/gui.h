@@ -25,6 +25,8 @@ typedef struct {
     const gui_color_scheme *colors;
 } gui_button_t;
 
+extern gui_color_scheme gui_transparent;
+
 // modified implementation of RayGui buttons
 // https://github.com/raysan5/raygui
 int gui_button(const Rectangle *bounds, const int button_style, const char *text, const int font_size, const gui_color_scheme *colors);

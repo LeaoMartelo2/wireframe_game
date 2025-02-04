@@ -48,6 +48,7 @@ class MainMenu : public Scene {
     Model menu_model;
     Music menu_music;
     Sound menu_click;
+    Texture2D mmenu_settings;
 
   public:
     MainMenu();
@@ -58,8 +59,6 @@ class MainMenu : public Scene {
     void update() override;
 
   public:
-    /*size_t scene_id;*/
-
     SceneManager *parent;
 };
 

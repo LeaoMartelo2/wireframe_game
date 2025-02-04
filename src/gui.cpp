@@ -1,5 +1,12 @@
 #include "gui.h"
 
+gui_color_scheme gui_transparent = {
+    .default_color = BLANK,
+    .hoovered_color = BLANK,
+    .pressed_color = BLANK,
+    .text_color = BLANK,
+};
+
 int gui_button(const Rectangle *bounds, const int button_style, const char *text, const int font_size, const gui_color_scheme *colors) {
 
     int result = 0;
