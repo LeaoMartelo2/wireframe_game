@@ -4,7 +4,7 @@ gui_color_scheme gui_transparent = {
     .default_color = BLANK,
     .hoovered_color = BLANK,
     .pressed_color = BLANK,
-    .text_color = BLANK,
+    .text_color = WHITE,
 };
 
 int gui_button(const Rectangle *bounds, const int button_style, const char *text, const int font_size, const gui_color_scheme *colors) {
@@ -70,4 +70,37 @@ int gui_button_ex(const gui_button_t *button, const char *text) {
                       text,
                       button->font_size,
                       button->colors);
+}
+
+void draw_panel(gui_panel *panel) {
+
+    Rectangle the_panel = {
+        .x = panel->pos.x,
+        .y = panel->pos.y,
+        .width = panel->size.x,
+        .height = panel->size.y,
+    };
+
+    DrawRectangleV(panel->pos, panel->size, GetColor(0x181818FF));
+    DrawRectangleLinesEx(the_panel, 5, panel->color);
+
+    Rectangle exit_button = {
+        .x = the_panel.x + panel->exit_pos.x,
+        .y = the_panel.y + panel->exit_pos.y,
+        .width = panel->exit_size.x,
+        .height = panel->exit_size.y,
+    };
+
+    if (gui_button(&exit_button, GUI_SQUARE, "<", 50, &gui_transparent)) {
+        *panel->toggle = !*panel->toggle;
+    }
+}
+
+void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size, Vector2 pos) {
+
+    DrawText(text,
+             panel->pos.x + pos.x,
+             panel->pos.y + pos.y,
+             font_size,
+             WHITE);
 }

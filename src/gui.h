@@ -33,4 +33,17 @@ int gui_button(const Rectangle *bounds, const int button_style, const char *text
 
 int gui_button_ex(const gui_button_t *button, const char *text);
 
+typedef struct {
+    Vector2 pos;
+    Vector2 size;
+    Color color;
+    bool *toggle;
+    Vector2 exit_pos;
+    Vector2 exit_size;
+} gui_panel;
+
+void draw_panel(gui_panel *panel);
+
+void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size, Vector2 pos);
+
 #endif // !GUI_H_

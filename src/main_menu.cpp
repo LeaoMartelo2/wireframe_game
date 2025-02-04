@@ -3,7 +3,6 @@
 #include "include/lognest.h"
 #include "scene.h"
 #include "scene_manager.h"
-#include <cstdio>
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
@@ -111,7 +110,7 @@ void MainMenu::end() {
 
 void MainMenu::update() {
 
-    UpdateMusicStream(menu_music);
+    static bool settings_menu = false;
 
     static const gui_color_scheme mmenu_buttons = {
         .default_color = GetColor(0x181818FF),
@@ -120,7 +119,6 @@ void MainMenu::update() {
         .text_color = WHITE,
     };
 
-    ;
     static gui_button_t play_button = {
         .bounds = {
             .x = GetScreenWidth() / 16.0f,
@@ -145,12 +143,23 @@ void MainMenu::update() {
         .colors = &mmenu_buttons,
     };
 
-    Rectangle settings_bounds = {
+    static Rectangle settings_bounds = {
         .x = GetScreenWidth() - 100.0f,
         .y = GetScreenHeight() - 100.0f,
-        .width = (float)mmenu_settings.width,
-        .height = (float)mmenu_settings.height,
+        .width = (float)mmenu_settings.width * 0.75f,
+        .height = (float)mmenu_settings.height * 0.75f,
     };
+
+    static gui_panel settings_pannel = {
+        .pos = {GetScreenWidth() / 2.0f - 500, GetScreenHeight() / 2.0f - 300},
+        .size = {1000, 600},
+        .color = DARKGRAY,
+        .toggle = &settings_menu,
+        .exit_pos = {940, 30},
+        .exit_size = {30, 30},
+    };
+
+    UpdateMusicStream(menu_music);
 
     BeginDrawing();
     {
@@ -164,23 +173,32 @@ void MainMenu::update() {
 
         draw_tittle();
 
-        if (gui_button_ex(&play_button, "Play")) {
-            PlaySound(menu_click);
-            parent->swap_scene(SCENE_LEVEL_TEST1);
+        if (!settings_menu) {
+            if (gui_button_ex(&play_button, "Play")) {
+                PlaySound(menu_click);
+                parent->swap_scene(SCENE_LEVEL_TEST1);
+            }
+
+            if (gui_button_ex(&quit_button, "Quit")) {
+                PlaySound(menu_click);
+                close_application = true;
+            }
         }
 
-        if (gui_button_ex(&quit_button, "Quit")) {
-            PlaySound(menu_click);
-            close_application = true;
+        {
+            if (gui_button(&settings_bounds, GUI_ROUNDED, "", 50, &gui_transparent)) {
+                PlaySound(menu_click);
+                settings_menu = !settings_menu;
+            }
+
+            DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},
+                          0, 0.75, WHITE);
         }
 
-        if (gui_button(&settings_bounds, GUI_SQUARE, "", 50, &gui_transparent)) {
-            PlaySound(menu_click);
-            // settings menu...
+        if (settings_menu) {
+            draw_panel(&settings_pannel);
+            draw_text_in_pannel_space(&settings_pannel, "Settings", 50, {30, 30});
         }
-
-        DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},
-                      0, 0.75, WHITE);
     }
     EndDrawing();
 }
