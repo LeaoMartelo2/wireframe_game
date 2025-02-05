@@ -13,4 +13,10 @@ typedef enum : size_t {
 
 extern int close_application;
 
+typedef struct {
+    bool fullscreen;
+} settings_t;
+
+extern settings_t g_settings;
+
 #endif // !_GLOBALS_H_

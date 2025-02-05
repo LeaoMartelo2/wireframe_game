@@ -6,7 +6,7 @@ int main(void) {
 
     raylib_pre();
 
-    InitWindow(GetScreenWidth(), GetScreenHeight(), "Wireframe Engine");
+    InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "Wireframe Engine");
     {
         raylib_config();
 

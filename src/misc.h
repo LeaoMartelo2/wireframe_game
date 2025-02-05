@@ -24,11 +24,15 @@ inline void raylib_pre(void) {
 
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
+
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 }
 
 inline void raylib_config(void) {
 
     SetExitKey(0);
+
+    SetWindowMinSize(900, 600);
 
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);

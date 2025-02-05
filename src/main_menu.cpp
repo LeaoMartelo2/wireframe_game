@@ -128,7 +128,7 @@ void MainMenu::update() {
         .text_color = WHITE,
     };
 
-    static gui_button_t test_setting = {
+    static gui_button_t fullscreen_setting = {
         .bounds = {
             .x = 50,
             .y = 160,
@@ -164,7 +164,7 @@ void MainMenu::update() {
         .colors = &mmenu_buttons,
     };
 
-    static Rectangle settings_bounds = {
+    Rectangle settings_bounds = {
         .x = GetScreenWidth() - 100.0f,
         .y = GetScreenHeight() - 100.0f,
         .width = (float)mmenu_settings.width * 0.75f,
@@ -214,19 +214,23 @@ void MainMenu::update() {
                 settings_menu = !settings_menu;
             }
 
-            DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},
-                          0, 0.75, WHITE);
+            /*DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},*/
+            /*0, 0.75, WHITE);*/
+
+            DrawTextureEx(mmenu_settings, {settings_bounds.x, settings_bounds.y}, 0, 0.75, WHITE);
         }
 
         if (settings_menu) {
             draw_panel(&settings_pannel);
             draw_text_in_pannel_space(&settings_pannel, "Settings", 50, {30, 30});
 
-            draw_text_in_pannel_space(&settings_pannel, "Test setting", 30, {50, 130});
-            if (gui_button_on_pannel(&settings_pannel, &test_setting,
-                                     TextFormat("%s", bool_to_string(test_cfg)))) {
+            draw_text_in_pannel_space(&settings_pannel, "FullScreen", 30, {50, 130});
+            if (gui_button_on_pannel(&settings_pannel, &fullscreen_setting,
+                                     TextFormat("%s", bool_to_string(g_settings.fullscreen)))) {
                 PlaySound(menu_click);
-                test_cfg = !test_cfg;
+                g_settings.fullscreen = !g_settings.fullscreen;
+                ToggleFullscreen();
+                MaximizeWindow();
             }
         }
     }
