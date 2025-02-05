@@ -30,7 +30,9 @@
         .colors = color,                                                      \
     };
 
-#define true_or_false_string(boolean) TextFormat("%s", bool_to_string_c(boolean))
+#define bool2string(boolean) TextFormat("%s", bool_to_string_c(boolean))
+
+#define bool2enabledisable(boolean) TextFormat("%s", enabled_disabled_cstr(boolean))
 
 void draw_tittle(void) {
 
@@ -181,8 +183,11 @@ void MainMenu::update() {
 
     button_create(fullscreen_setting, 20, &settings_buttons, 50, 160, 100, 50);
     button_create(camera_tilt_setting, 20, &settings_buttons, 50, 260, 100, 50);
+    button_create(play_music_setting, 20, &settings_buttons, 50, 360, 100, 50);
 
-    UpdateMusicStream(menu_music);
+    if (g_settings.play_music) {
+        UpdateMusicStream(menu_music);
+    }
 
     BeginDrawing();
     {
@@ -225,7 +230,7 @@ void MainMenu::update() {
 
             text_settings("Fullscreen");
             if (gui_button_on_pannel(&settings_pannel, &fullscreen_setting,
-                                     true_or_false_string(g_settings.fullscreen))) {
+                                     bool2enabledisable(g_settings.fullscreen))) {
                 PlaySound(menu_click);
                 g_settings.fullscreen = !g_settings.fullscreen;
                 ToggleFullscreen();
@@ -234,9 +239,15 @@ void MainMenu::update() {
 
             text_settings("Camera Tilt");
             if (gui_button_on_pannel(&settings_pannel, &camera_tilt_setting,
-                                     true_or_false_string(g_settings.camera_tilt))) {
+                                     bool2enabledisable(g_settings.camera_tilt))) {
                 PlaySound(menu_click);
                 g_settings.camera_tilt = !g_settings.camera_tilt;
+            }
+
+            text_settings("Music");
+            if (gui_button_on_pannel(&settings_pannel, &play_music_setting, bool2enabledisable(g_settings.play_music))) {
+                PlaySound(menu_click);
+                g_settings.play_music = !g_settings.play_music;
             }
         }
     }

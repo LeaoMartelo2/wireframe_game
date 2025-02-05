@@ -16,6 +16,7 @@ extern int close_application;
 typedef struct {
     bool fullscreen;
     bool camera_tilt;
+    bool play_music;
 } settings_t;
 
 extern settings_t g_settings;

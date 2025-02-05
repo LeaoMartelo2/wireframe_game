@@ -58,6 +58,10 @@ inline const char *bool_to_string_c(bool value) {
     return value ? "True" : "False";
 }
 
+inline const char *enabled_disabled_cstr(bool value) {
+    return value ? "Enabled" : "Disabled";
+}
+
 inline bool file_exists(const char *path) {
     FILE *file = fopen(path, "r");
     if (file) {
