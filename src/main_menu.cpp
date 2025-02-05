@@ -11,6 +11,25 @@
 #define MENU_CONFIG "assets/sprites/menu_settings.png"
 #define FILL_COLOR GetColor(0x181818FF)
 
+#define text_settings(text)                                                  \
+    do {                                                                     \
+        draw_text_in_pannel_space(&settings_pannel, text, 30, {50, offset}); \
+        offset += 100;                                                       \
+    } while (0);
+
+#define button_create(setting, text_size, color, posX, posY, width_, height_) \
+    gui_button_t setting = {                                                  \
+        .bounds = {                                                           \
+            .x = posX,                                                        \
+            .y = posY,                                                        \
+            .width = width_,                                                  \
+            .height = height_,                                                \
+        },                                                                    \
+        .button_style = GUI_SQUARE,                                           \
+        .font_size = text_size,                                               \
+        .colors = color,                                                      \
+    };
+
 void draw_tittle(void) {
 
     static Sound menu_click = LoadSound(MENU_CLICK);
@@ -111,14 +130,42 @@ void MainMenu::end() {
 
 void MainMenu::update() {
 
-    static bool settings_menu = false;
-    static bool test_cfg = false;
-
     static const gui_color_scheme mmenu_buttons = {
         .default_color = GetColor(0x181818FF),
         .hoovered_color = DARKGRAY,
         .pressed_color = GRAY,
         .text_color = WHITE,
+    };
+
+    // main menu buttons
+    button_create(play_button, 50, &mmenu_buttons,
+                  GetScreenWidth() / 16.0f, GetScreenHeight() / 2.0f, 220, 100);
+
+    button_create(quit_button, 50, &mmenu_buttons,
+                  GetScreenWidth() / 16.0f, play_button.bounds.y + 105, 220, 100);
+
+    // settings menu open button
+    static bool settings_menu = false;
+
+    // needed for the texture of the button
+    Rectangle settings_bounds = {
+        .x = GetScreenWidth() - 100.0f,
+        .y = GetScreenHeight() - 100.0f,
+        .width = (float)mmenu_settings.width * 0.75f,
+        .height = (float)mmenu_settings.height * 0.75f,
+    };
+
+    button_create(settings_toggle, 0, &gui_transparent, settings_bounds.x, settings_bounds.y,
+                  settings_bounds.width, settings_bounds.height);
+
+    // settings pannel
+    gui_panel settings_pannel = {
+        .pos = {GetScreenWidth() / 2.0f - 500, GetScreenHeight() / 2.0f - 300},
+        .size = {1000, 600},
+        .color = DARKGRAY,
+        .toggle = &settings_menu,
+        .exit_pos = {940, 30},
+        .exit_size = {50, 50},
     };
 
     static const gui_color_scheme settings_buttons = {
@@ -128,57 +175,10 @@ void MainMenu::update() {
         .text_color = WHITE,
     };
 
-    static gui_button_t fullscreen_setting = {
-        .bounds = {
-            .x = 50,
-            .y = 160,
-            .width = 100,
-            .height = 50,
-        },
-        .button_style = GUI_SQUARE,
-        .font_size = 20,
-        .colors = &settings_buttons,
-    };
+    // buttons inside settings pannel
 
-    static gui_button_t play_button = {
-        .bounds = {
-            .x = GetScreenWidth() / 16.0f,
-            .y = GetScreenHeight() / 2.0f,
-            .width = 220,
-            .height = 100,
-        },
-        .button_style = GUI_SQUARE,
-        .font_size = 50,
-        .colors = &mmenu_buttons,
-    };
-
-    static gui_button_t quit_button = {
-        .bounds = {
-            .x = GetScreenWidth() / 16.0f,
-            .y = play_button.bounds.y + 105,
-            .width = 220,
-            .height = 100,
-        },
-        .button_style = GUI_SQUARE,
-        .font_size = 50,
-        .colors = &mmenu_buttons,
-    };
-
-    Rectangle settings_bounds = {
-        .x = GetScreenWidth() - 100.0f,
-        .y = GetScreenHeight() - 100.0f,
-        .width = (float)mmenu_settings.width * 0.75f,
-        .height = (float)mmenu_settings.height * 0.75f,
-    };
-
-    static gui_panel settings_pannel = {
-        .pos = {GetScreenWidth() / 2.0f - 500, GetScreenHeight() / 2.0f - 300},
-        .size = {1000, 600},
-        .color = DARKGRAY,
-        .toggle = &settings_menu,
-        .exit_pos = {940, 30},
-        .exit_size = {50, 50},
-    };
+    button_create(fullscreen_setting, 20, &settings_buttons, 50, 160, 100, 50);
+    button_create(camera_tilt_setting, 20, &settings_buttons, 50, 260, 100, 50);
 
     UpdateMusicStream(menu_music);
 
@@ -209,28 +209,32 @@ void MainMenu::update() {
         }
 
         {
-            if (gui_button(&settings_bounds, GUI_ROUNDED, "", 50, &gui_transparent)) {
+            if (gui_button_ex(&settings_toggle, "")) {
                 PlaySound(menu_click);
                 settings_menu = !settings_menu;
             }
-
-            /*DrawTextureEx(mmenu_settings, Vector2{GetScreenWidth() - 100.0f, GetScreenHeight() - 100.0f},*/
-            /*0, 0.75, WHITE);*/
-
             DrawTextureEx(mmenu_settings, {settings_bounds.x, settings_bounds.y}, 0, 0.75, WHITE);
         }
 
         if (settings_menu) {
+            float offset = 130;
             draw_panel(&settings_pannel);
             draw_text_in_pannel_space(&settings_pannel, "Settings", 50, {30, 30});
 
-            draw_text_in_pannel_space(&settings_pannel, "FullScreen", 30, {50, 130});
+            text_settings("Fullscreen");
             if (gui_button_on_pannel(&settings_pannel, &fullscreen_setting,
-                                     TextFormat("%s", bool_to_string(g_settings.fullscreen)))) {
+                                     TextFormat("%s", bool_to_string_c(g_settings.fullscreen)))) {
                 PlaySound(menu_click);
                 g_settings.fullscreen = !g_settings.fullscreen;
                 ToggleFullscreen();
                 MaximizeWindow();
+            }
+
+            text_settings("Camera Tilt");
+            if (gui_button_on_pannel(&settings_pannel, &camera_tilt_setting,
+                                     TextFormat("%s", bool_to_string_c(g_settings.camera_tilt)))) {
+                PlaySound(menu_click);
+                g_settings.camera_tilt = !g_settings.camera_tilt;
             }
         }
     }

@@ -7,7 +7,7 @@ gui_color_scheme gui_transparent = {
     .text_color = WHITE,
 };
 
-int gui_button(const Rectangle *bounds, const int button_style, const char *text, const int font_size, const gui_color_scheme *colors) {
+int gui_button(Rectangle *bounds, int button_style, const char *text, int font_size, const gui_color_scheme *colors) {
 
     int result = 0;
 
@@ -63,7 +63,7 @@ int gui_button(const Rectangle *bounds, const int button_style, const char *text
     return result;
 }
 
-int gui_button_ex(const gui_button_t *button, const char *text) {
+int gui_button_ex(gui_button_t *button, const char *text) {
 
     return gui_button(&button->bounds,
                       button->button_style,
@@ -105,7 +105,7 @@ void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size
              WHITE);
 }
 
-int gui_button_on_pannel(gui_panel *panel, const gui_button_t *button, const char *text) {
+int gui_button_on_pannel(gui_panel *panel, gui_button_t *button, const char *text) {
 
     Rectangle new_bounds = {
         .x = panel->pos.x + button->bounds.x,
