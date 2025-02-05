@@ -30,6 +30,8 @@
         .colors = color,                                                      \
     };
 
+#define true_or_false_string(boolean) TextFormat("%s", bool_to_string_c(boolean))
+
 void draw_tittle(void) {
 
     static Sound menu_click = LoadSound(MENU_CLICK);
@@ -223,7 +225,7 @@ void MainMenu::update() {
 
             text_settings("Fullscreen");
             if (gui_button_on_pannel(&settings_pannel, &fullscreen_setting,
-                                     TextFormat("%s", bool_to_string_c(g_settings.fullscreen)))) {
+                                     true_or_false_string(g_settings.fullscreen))) {
                 PlaySound(menu_click);
                 g_settings.fullscreen = !g_settings.fullscreen;
                 ToggleFullscreen();
@@ -232,7 +234,7 @@ void MainMenu::update() {
 
             text_settings("Camera Tilt");
             if (gui_button_on_pannel(&settings_pannel, &camera_tilt_setting,
-                                     TextFormat("%s", bool_to_string_c(g_settings.camera_tilt)))) {
+                                     true_or_false_string(g_settings.camera_tilt))) {
                 PlaySound(menu_click);
                 g_settings.camera_tilt = !g_settings.camera_tilt;
             }
