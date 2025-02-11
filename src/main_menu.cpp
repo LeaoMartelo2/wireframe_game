@@ -159,7 +159,7 @@ void MainMenu::update() {
         .height = (float)mmenu_settings.height * 0.75f,
     };
 
-    button_create(settings_toggle, 0, &gui_transparent, settings_bounds.x, settings_bounds.y,
+    button_create(settings_toggle, 1, &gui_transparent, settings_bounds.x, settings_bounds.y,
                   settings_bounds.width, settings_bounds.height);
 
     // settings pannel
@@ -234,7 +234,6 @@ void MainMenu::update() {
                 PlaySound(menu_click);
                 g_settings.fullscreen = !g_settings.fullscreen;
                 ToggleFullscreen();
-                MaximizeWindow();
             }
 
             text_settings("Camera Tilt");
@@ -245,7 +244,9 @@ void MainMenu::update() {
             }
 
             text_settings("Music");
-            if (gui_button_on_pannel(&settings_pannel, &play_music_setting, bool2enabledisable(g_settings.play_music))) {
+            if (gui_button_on_pannel(&settings_pannel, &play_music_setting,
+                                     bool2enabledisable(g_settings.play_music))) {
+
                 PlaySound(menu_click);
                 g_settings.play_music = !g_settings.play_music;
             }
