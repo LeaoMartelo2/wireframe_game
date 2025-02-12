@@ -84,7 +84,8 @@ class Player {
     void calculate_velocity(void);
     Vector3 move_forward(float distance);
     Vector3 move_right(float distance);
-    void move_vertical(float distance);
+    Vector3 move_vertical(float distance);
+    Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
     void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
     void update_camera(void);

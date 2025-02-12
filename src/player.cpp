@@ -200,10 +200,10 @@ Vector3 Player::move_forward(float distance) {
 
     forward = Vector3Scale(forward, distance);
 
-    update_camera();
-    camera.target = Vector3Add(camera.target, forward);
+    /*update_camera();*/
+    /*camera.target = Vector3Add(camera.target, forward);*/
 
-    return Vector3Add(pos, forward);
+    return forward;
 }
 
 Vector3 Player::move_right(float distance) {
@@ -213,22 +213,32 @@ Vector3 Player::move_right(float distance) {
     right.y = 0;
     right = Vector3Scale(right, distance);
 
-    update_camera();
-    camera.target = Vector3Add(camera.target, right);
+    /*update_camera();*/
+    /*camera.target = Vector3Add(camera.target, right);*/
 
-    return Vector3Add(pos, right);
+    return right;
 }
 
-void Player::move_vertical(float distance) {
+Vector3 Player::move_vertical(float distance) {
 
     Vector3 up = get_up();
 
     up = Vector3Scale(up, distance);
 
-    pos = Vector3Add(pos, up);
-    update_camera();
+    /*pos = Vector3Add(pos, up);*/
+    /*update_camera();*/
 
-    camera.target = Vector3Add(camera.target, up);
+    /*camera.target = Vector3Add(camera.target, up);*/
+
+    return up;
+}
+
+Vector3 Player::new_pos(float distance_foward, float distance_right) {
+
+    Vector3 forward = move_forward(distance_foward);
+    Vector3 right = move_right(distance_right);
+
+    return Vector3Add(forward, right);
 }
 
 void Player::update_gravity() {
@@ -350,12 +360,15 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     collision.bounding_box = calculate_boundingbox();
     calculate_velocity();
-    Vector3 move_a = move_forward(velocity.forwards * delta_time);
-    Vector3 move_b = move_right(-velocity.sideways * delta_time);
+    Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
+    Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
+    Vector3 move_c = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
 
-    Vector3 move_c = Vector3Add(move_a, move_b);
+    /*lognest_error("%.2f", move_c.x);*/
 
-    DrawCube(move_c, 5, 5, 5, ORANGE);
+    DrawLine3D(pos, move_a, GREEN);
+    DrawLine3D(pos, move_b, BLUE);
+    DrawLine3D(pos, move_c, RED);
 
     if (check_collision_floor(map_floor)) {
         is_grounded = true;
