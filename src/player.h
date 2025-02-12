@@ -82,8 +82,8 @@ class Player {
     // private methods
     void get_input(void);
     void calculate_velocity(void);
-    void move_forward(float distance);
-    void move_right(float distance);
+    Vector3 move_forward(float distance);
+    Vector3 move_right(float distance);
     void move_vertical(float distance);
     void update_gravity();
     void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);

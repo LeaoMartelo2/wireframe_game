@@ -191,7 +191,7 @@ Vector3 Player::get_right() {
     return Vector3Normalize(Vector3CrossProduct(forward, up));
 }
 
-void Player::move_forward(float distance) {
+Vector3 Player::move_forward(float distance) {
 
     Vector3 forward = get_forward();
 
@@ -200,22 +200,23 @@ void Player::move_forward(float distance) {
 
     forward = Vector3Scale(forward, distance);
 
-    pos = Vector3Add(pos, forward);
     update_camera();
     camera.target = Vector3Add(camera.target, forward);
+
+    return Vector3Add(pos, forward);
 }
 
-void Player::move_right(float distance) {
+Vector3 Player::move_right(float distance) {
 
     Vector3 right = get_right();
 
     right.y = 0;
     right = Vector3Scale(right, distance);
 
-    pos = Vector3Add(pos, right);
     update_camera();
-
     camera.target = Vector3Add(camera.target, right);
+
+    return Vector3Add(pos, right);
 }
 
 void Player::move_vertical(float distance) {
@@ -338,17 +339,6 @@ void Player::calculate_velocity() {
 
 void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
 
-    static bool fakeplayer_dbg = false;
-
-    static Player fake_player(*this);
-    // create a "fake" player, calculate its movement first, if it colides with something
-    // don't move the real player.
-
-    if (!fakeplayer_dbg) {
-        lognest_trace("[Player] Created Geometry clipping hitbox");
-        fakeplayer_dbg = true;
-    }
-
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
 
@@ -358,48 +348,14 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     get_input();
 
-    // create a "fake" player, calculate its movement first, if it colides with something
-    // don't move the real player.
-    //
-    // only check for collisions if NOT in noclip
-
-    if (!misc.noclip) {
-
-        fake_player.camera.target = camera.target;
-        fake_player.camera.position = camera.position;
-        fake_player.camera.up = camera.up;
-        fake_player.pos = pos;
-
-        fake_player.get_input();
-        fake_player.calculate_velocity();
-        fake_player.move_forward(fake_player.velocity.forwards * delta_time);
-        fake_player.move_right(-fake_player.velocity.sideways * delta_time);
-
-        fake_player.collision.bounding_box = fake_player.calculate_boundingbox();
-
-        /*DrawBoundingBox(fake_player.collision.bounding_box, ORANGE);*/
-
-        if (fake_player.check_collision_geometry(map_geometry)) {
-
-            fake_player.pos = pos;
-
-            velocity.forwards = 0.0f;
-            velocity.sideways = 0.0f;
-
-            fake_player.velocity.vertical = 0;
-            fake_player.velocity.sideways = 0;
-
-            input.forwards = 0.0f;
-            input.sideways = 0.0f;
-
-            return;
-        }
-    }
-
     collision.bounding_box = calculate_boundingbox();
     calculate_velocity();
-    move_forward(velocity.forwards * delta_time);
-    move_right(-velocity.sideways * delta_time);
+    Vector3 move_a = move_forward(velocity.forwards * delta_time);
+    Vector3 move_b = move_right(-velocity.sideways * delta_time);
+
+    Vector3 move_c = Vector3Add(move_a, move_b);
+
+    DrawCube(move_c, 5, 5, 5, ORANGE);
 
     if (check_collision_floor(map_floor)) {
         is_grounded = true;
