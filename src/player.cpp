@@ -114,9 +114,9 @@ BoundingBox Player::calculate_boundingbox() {
 
 bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos) {
 
-    /*if (misc.noclip) {*/
-    /*return false;*/
-    /*}*/
+    if (misc.noclip) {
+        return false;
+    }
 
     /*for (size_t i = 0; map_geometry.size(); ++i) {*/
     for (auto i : map_geometry) {
@@ -134,7 +134,7 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vecto
 
         BoundingBox geometry_bounding_box = {negative_other, positive_other};
 
-        Vector3 cube_size = {5, 15, 5};
+        Vector3 cube_size = collision.bounding_box_size;
 
         Vector3 c_negative_other = {cube_pos.x - cube_size.x / 2,
                                     cube_pos.y - cube_size.y / 2,
@@ -187,7 +187,6 @@ bool Player::check_collision_floor(std::vector<Floor> &map_floor) {
 void Player::update_camera() {
     camera.position = pos;
     camera.position.y = pos.y + 7;
-    /*camera.up.y = 1.0f;*/
 }
 
 Vector3 Player::get_forward() {
@@ -214,9 +213,6 @@ Vector3 Player::move_forward(float distance) {
 
     forward = Vector3Scale(forward, distance);
 
-    /*update_camera();*/
-    /*camera.target = Vector3Add(camera.target, forward);*/
-
     return forward;
 }
 
@@ -226,9 +222,6 @@ Vector3 Player::move_right(float distance) {
 
     right.y = 0;
     right = Vector3Scale(right, distance);
-
-    /*update_camera();*/
-    /*camera.target = Vector3Add(camera.target, right);*/
 
     return right;
 }
@@ -252,7 +245,6 @@ Vector3 Player::new_pos(float distance_foward, float distance_right) {
     Vector3 forward = move_forward(distance_foward);
     Vector3 right = move_right(distance_right);
 
-    /*camera.target = Vector3Add(camera.target, Vector3Add(forward, right));*/
     camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
 
     return Vector3Add(forward, right);
@@ -377,45 +369,52 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     collision.bounding_box = calculate_boundingbox();
     calculate_velocity();
-    Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
-    Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
-    Vector3 move_c = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
+    Vector3 predicted_pos = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
 
-    static Vector3 wire_cube = pos;
+    static Vector3 move_step = pos;
     static Vector3 contact_point;
-    static float step = 0.0f;
+    static float lerp_step = 0.0f;
+    static const float step_size = 0.05f;
 
-    wire_cube = Vector3Lerp(pos, move_c, step);
-    if (check_collision_geometry(map_geometry, wire_cube)) {
-        lognest_trace("colided");
-        contact_point = wire_cube;
-        step = 0;
+    move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
+    if (check_collision_geometry(map_geometry, move_step)) {
+        contact_point = move_step;
+        lerp_step = 0;
         velocity.forwards = 0;
         velocity.sideways = 0;
 
     } else {
 
-        pos = wire_cube;
+        pos = move_step;
 
-        if (step < 1.0f) {
-            step += 0.05;
-            step = Clamp(step, 0.0f, 1.0f);
+        if (lerp_step < 1.0f) {
+            lerp_step += step_size;
+            lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
         }
     }
 
-    DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
+    // show last collision point
+    // DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
 
-    DrawCube(pos, 0.4, 0.4, 0.4, GREEN);
-    DrawLine3D(pos, move_a, GREEN);
-    DrawCube(move_a, 0.4, 0.4, 0.4, GREEN);
+    // motion vector visualization
+    //
+    // Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
+    // Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
+    //
+    // const float msize = 0.4;
+    // const float msize2 = 0.5;
 
-    DrawCube(pos, 0.4, 0.4, 0.4, BLUE);
-    DrawLine3D(pos, move_b, BLUE);
-    DrawCube(move_b, 0.4, 0.4, 0.4, BLUE);
+    // DrawCube(pos, msize, msize, msize, GREEN);
+    // DrawLine3D(pos, move_a, GREEN);
+    // DrawCube(move_a, msize, msize, msize, GREEN);
 
-    DrawCube(pos, 0.5, 0.5, 0.5, RED);
-    DrawLine3D(pos, move_c, RED);
-    DrawCube(move_c, 0.5, 0.5, 0.5, RED);
+    // DrawCube(pos, msize, msize, msize, BLUE);
+    // DrawLine3D(pos, move_b, BLUE);
+    // DrawCube(move_b, msize, msize, msize, BLUE);
+
+    // DrawCube(pos, msize2, msize2, msize2, RED);
+    // DrawLine3D(pos, predicted_pos, RED);
+    // DrawCube(predicted_pos, msize2, msize2, msize2, RED);
 
     if (check_collision_floor(map_floor)) {
         is_grounded = true;
@@ -463,9 +462,8 @@ void Player::update_viewmodel() {
 
 void Player::draw_viewmodel() {
 
-    DrawCube(camera.target, 5, 5, 5, ORANGE);
-
-    return;
+    /*DrawCube(camera.target, 5, 5, 5, ORANGE);*/
+    /*return;*/
 
     rlPushMatrix();
     rlTranslatef(viewmodel.viewmodel_pos.x,
