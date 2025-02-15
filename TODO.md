@@ -8,7 +8,7 @@
 
  - [ ] add a distance parameter to collision checking (no need to check collision on something far away)
 
- - [ ] lerp player movimentation instad of raw discrete steps
+ - [X] lerp player movimentation instad of raw discrete steps
 
  - [ ] make settings persist between game loads
 
