@@ -14,7 +14,7 @@ void SceneManager::add_scenes() {
     test_level->set_map("levels/test");
     test_level->player = &player;
     test_level->scene_id = SCENE_LEVEL_TEST1;
-    test_level->start_pos = {150, 20, 50};
+    test_level->start_pos = {105, 15, 50};
     scenes.emplace_back(test_level);
 
     Scene *level2 = new Scene;

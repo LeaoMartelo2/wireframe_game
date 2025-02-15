@@ -4,7 +4,7 @@ WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
 DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow
 
-FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -O3 -pedantic -lm
+FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -ggdb -pedantic -lm
 
 POSIX_FLAGS = -L ./raylib/linux/ -lraylib
 WINDOWS_FLAGS = -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
@@ -19,7 +19,7 @@ OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
 
 # Default target for Linux
-main: $(OBJ)
+wireframe: $(OBJ)
 	$(CC) $^ $(FLAGS) $(POSIX_FLAGS) -o wireframe
 
 # Windows target
