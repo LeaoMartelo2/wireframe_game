@@ -376,11 +376,11 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     collision.bounding_box = calculate_boundingbox();
     calculate_velocity();
-    Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
-    Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
-    Vector3 move_c = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
+    static Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
+    static Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
+    static Vector3 move_c = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
 
-    Vector3 wire_cube = pos;
+    static Vector3 wire_cube = pos;
     static Vector3 contact_point;
     static float step = 0.0f;
 
@@ -391,8 +391,6 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         step = 0;
         velocity.forwards = 0;
         velocity.sideways = 0;
-        /*input.forwards = 0;*/
-        /*input.sideways = 0;*/
 
     } else {
 
@@ -406,18 +404,18 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
 
-    DrawCube(pos, 0.4, 0.4, 0.4, GREEN);
-    DrawLine3D(pos, move_a, GREEN);
-    DrawCube(move_a, 0.4, 0.4, 0.4, GREEN);
-
-    DrawCube(pos, 0.4, 0.4, 0.4, BLUE);
-    DrawLine3D(pos, move_b, BLUE);
-    DrawCube(move_b, 0.4, 0.4, 0.4, BLUE);
-
-    DrawCube(pos, 0.5, 0.5, 0.5, RED);
-    DrawLine3D(pos, move_c, RED);
-    DrawCube(move_c, 0.5, 0.5, 0.5, RED);
-
+    /*DrawCube(pos, 0.4, 0.4, 0.4, GREEN);*/
+    /*DrawLine3D(pos, move_a, GREEN);*/
+    /*DrawCube(move_a, 0.4, 0.4, 0.4, GREEN);*/
+    /**/
+    /*DrawCube(pos, 0.4, 0.4, 0.4, BLUE);*/
+    /*DrawLine3D(pos, move_b, BLUE);*/
+    /*DrawCube(move_b, 0.4, 0.4, 0.4, BLUE);*/
+    /**/
+    /*DrawCube(pos, 0.5, 0.5, 0.5, RED);*/
+    /*DrawLine3D(pos, move_c, RED);*/
+    /*DrawCube(move_c, 0.5, 0.5, 0.5, RED);*/
+    /**/
     if (check_collision_floor(map_floor)) {
         is_grounded = true;
     } else {
