@@ -135,7 +135,7 @@ void Scene::draw_map_floor(void) {
 
 void Scene::update(void) {
 
-    player->update(map_geometry, map_floor);
+    /*player->update(map_geometry, map_floor);*/
 
     BeginDrawing();
     {
@@ -143,7 +143,7 @@ void Scene::update(void) {
 
         BeginMode3D(player->camera);
         {
-            /*player->update(map_geometry, map_floor);*/
+            player->update(map_geometry, map_floor);
 
             /*draw_reference_point();*/
             draw_map_floor();
