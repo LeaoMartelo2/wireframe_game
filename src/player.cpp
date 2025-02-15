@@ -389,14 +389,14 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         lognest_trace("colided");
         contact_point = wire_cube;
         step = 0;
+        velocity.forwards = 0;
+        velocity.sideways = 0;
+        /*input.forwards = 0;*/
+        /*input.sideways = 0;*/
 
     } else {
 
         pos = wire_cube;
-        velocity.forwards = 0;
-        velocity.sideways = 0;
-        input.forwards = 0;
-        input.sideways = 0;
 
         if (step < 1.0f) {
             step += 0.05;
