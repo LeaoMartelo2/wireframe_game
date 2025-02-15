@@ -67,7 +67,7 @@ class Player {
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
     bool check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos);
-    bool check_collision_floor(std::vector<Floor> &map_floor);
+    bool check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_pos);
 
     Vector3 get_forward(void);
     Vector3 get_up(void);
@@ -85,6 +85,7 @@ class Player {
     Vector3 move_forward(float distance);
     Vector3 move_right(float distance);
     Vector3 move_vertical(float distance);
+    void noclip_move_vertical(float distance);
     Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
     void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
