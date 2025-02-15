@@ -112,11 +112,11 @@ BoundingBox Player::calculate_boundingbox() {
     return player_bounding_box;
 }
 
-bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry) {
+bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos) {
 
-    if (misc.noclip) {
-        return false;
-    }
+    /*if (misc.noclip) {*/
+    /*return false;*/
+    /*}*/
 
     /*for (size_t i = 0; map_geometry.size(); ++i) {*/
     for (auto i : map_geometry) {
@@ -134,7 +134,21 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry) {
 
         BoundingBox geometry_bounding_box = {negative_other, positive_other};
 
-        if (CheckCollisionBoxes(collision.bounding_box, geometry_bounding_box)) {
+        Vector3 cube_size = {5, 15, 5};
+
+        Vector3 c_negative_other = {cube_pos.x - cube_size.x / 2,
+                                    cube_pos.y - cube_size.y / 2,
+                                    cube_pos.z - cube_size.z / 2};
+
+        Vector3 c_positive_other = {cube_pos.x + cube_size.x / 2,
+                                    cube_pos.y + cube_size.y / 2,
+                                    cube_pos.z + cube_size.z / 2};
+
+        BoundingBox cube_bbox = {c_negative_other, c_positive_other};
+
+        DrawBoundingBox(cube_bbox, YELLOW);
+
+        if (CheckCollisionBoxes(cube_bbox, geometry_bounding_box)) {
             return true;
         }
     }
@@ -237,6 +251,8 @@ Vector3 Player::new_pos(float distance_foward, float distance_right) {
 
     Vector3 forward = move_forward(distance_foward);
     Vector3 right = move_right(distance_right);
+
+    camera.target = Vector3Add(camera.target, Vector3Add(forward, right));
 
     return Vector3Add(forward, right);
 }
@@ -364,11 +380,43 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
     Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
     Vector3 move_c = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
 
-    /*lognest_error("%.2f", move_c.x);*/
+    Vector3 wire_cube = pos;
+    static Vector3 contact_point;
+    static float step = 0.0f;
 
+    wire_cube = Vector3Lerp(pos, move_c, step);
+    if (check_collision_geometry(map_geometry, wire_cube)) {
+        lognest_trace("colided");
+        contact_point = wire_cube;
+        step = 0;
+
+    } else {
+
+        pos = wire_cube;
+        velocity.forwards = 0;
+        velocity.sideways = 0;
+        input.forwards = 0;
+        input.sideways = 0;
+
+        if (step < 1.0f) {
+            step += 0.05;
+            step = Clamp(step, 0.0f, 1.0f);
+        }
+    }
+
+    DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
+
+    DrawCube(pos, 0.4, 0.4, 0.4, GREEN);
     DrawLine3D(pos, move_a, GREEN);
+    DrawCube(move_a, 0.4, 0.4, 0.4, GREEN);
+
+    DrawCube(pos, 0.4, 0.4, 0.4, BLUE);
     DrawLine3D(pos, move_b, BLUE);
+    DrawCube(move_b, 0.4, 0.4, 0.4, BLUE);
+
+    DrawCube(pos, 0.5, 0.5, 0.5, RED);
     DrawLine3D(pos, move_c, RED);
+    DrawCube(move_c, 0.5, 0.5, 0.5, RED);
 
     if (check_collision_floor(map_floor)) {
         is_grounded = true;
@@ -416,6 +464,10 @@ void Player::update_viewmodel() {
 
 void Player::draw_viewmodel() {
 
+    DrawCube(camera.target, 5, 5, 5, ORANGE);
+
+    return;
+
     rlPushMatrix();
     rlTranslatef(viewmodel.viewmodel_pos.x,
                  viewmodel.viewmodel_pos.y,
@@ -433,8 +485,6 @@ void Player::draw_viewmodel() {
     DrawModel(viewmodel.model, Vector3Zero(), 1, FILL_COLOR);
     DrawModelWires(viewmodel.model, Vector3Zero(), 1, WHITE);
     rlPopMatrix();
-
-    /*DrawCube(camera.target, 5, 5, 5, ORANGE);*/
 }
 
 void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {

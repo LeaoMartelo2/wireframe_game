@@ -66,7 +66,7 @@ class Player {
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
-    bool check_collision_geometry(std::vector<Geometry> &map_geometry);
+    bool check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos);
     bool check_collision_floor(std::vector<Floor> &map_floor);
 
     Vector3 get_forward(void);

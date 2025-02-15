@@ -19,7 +19,7 @@ OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
 
 # Default target for Linux
-main: $(OBJ)
+wireframe: $(OBJ)
 	$(CC) $^ $(FLAGS) $(POSIX_FLAGS) -o wireframe
 
 # Windows target
