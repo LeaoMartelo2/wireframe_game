@@ -253,6 +253,7 @@ Vector3 Player::new_pos(float distance_foward, float distance_right) {
     Vector3 right = move_right(distance_right);
 
     /*camera.target = Vector3Add(camera.target, Vector3Add(forward, right));*/
+    camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
 
     return Vector3Add(forward, right);
 }
@@ -394,7 +395,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
     } else {
 
-        /*pos = wire_cube;*/
+        pos = wire_cube;
 
         if (step < 1.0f) {
             step += 0.05;
@@ -496,9 +497,10 @@ void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map
 
     update_gravity();
 
-    update_camera();
     move(map_geometry, map_floor);
     update_viewmodel();
+
+    update_camera();
 
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;
