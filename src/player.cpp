@@ -187,7 +187,7 @@ bool Player::check_collision_floor(std::vector<Floor> &map_floor) {
 void Player::update_camera() {
     camera.position = pos;
     camera.position.y = pos.y + 7;
-    camera.up.y = 1.0f;
+    /*camera.up.y = 1.0f;*/
 }
 
 Vector3 Player::get_forward() {
