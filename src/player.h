@@ -88,6 +88,8 @@ class Player {
     Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
     void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void camera_yaw(float angle);
+    void camera_pitch(float angle);
     void update_camera(void);
     void update_viewmodel(void);
     void draw_viewmodel(void);

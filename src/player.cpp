@@ -184,6 +184,46 @@ bool Player::check_collision_floor(std::vector<Floor> &map_floor) {
     return false;
 }
 
+// Modified implementation of CameraYaw from rcamera.h
+// https://github.com/raysan5/raylib
+void Player::camera_yaw(float angle) {
+
+    Vector3 up = GetCameraUp(&camera);
+
+    Vector3 target_pos = Vector3Subtract(camera.target, camera.position);
+    target_pos = Vector3RotateByAxisAngle(target_pos, up, angle);
+
+    camera.target = Vector3Add(camera.position, target_pos);
+}
+
+// Modified implementation of CameraPitch from rcamera.h
+// https://github.com/raysan5/raylib
+void Player::camera_pitch(float angle) {
+
+    Vector3 up = GetCameraUp(&camera);
+
+    Vector3 target_pos = Vector3Subtract(camera.target, camera.position);
+
+    float max_ang_up = Vector3Angle(up, target_pos);
+    max_ang_up -= 0.15f;
+    if (angle > max_ang_up) {
+        angle = max_ang_up;
+    }
+
+    float max_ang_down = Vector3Angle(Vector3Negate(up), target_pos);
+    max_ang_down *= -1.0f;
+    max_ang_down += 0.15f;
+    if (angle < max_ang_down) {
+        angle = max_ang_down;
+    }
+
+    Vector3 right = GetCameraRight(&camera);
+
+    target_pos = Vector3RotateByAxisAngle(target_pos, right, angle);
+
+    camera.target = Vector3Add(camera.position, target_pos);
+}
+
 void Player::update_camera() {
     camera.position = pos;
     camera.position.y = pos.y + 7;
@@ -361,9 +401,8 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
 
-    CameraYaw(&camera, -mouse_pos_delta.x * camera_misc.mouse_sens * delta_time, false);
-    CameraPitch(&camera, -mouse_pos_delta.y * camera_misc.mouse_sens * delta_time,
-                true, false, false);
+    camera_yaw(-mouse_pos_delta.x * camera_misc.mouse_sens * delta_time);
+    camera_pitch(-mouse_pos_delta.y * camera_misc.mouse_sens * delta_time);
 
     get_input();
 
@@ -462,8 +501,8 @@ void Player::update_viewmodel() {
 
 void Player::draw_viewmodel() {
 
-    /*DrawCube(camera.target, 5, 5, 5, ORANGE);*/
-    /*return;*/
+    /*DrawCube(pos + get_forward() * 10, 5, 5, 5, RED);*/
+    /*DrawCube(pos + (get_up() * 15), 5, 5, 5, BLUE);*/
 
     rlPushMatrix();
     rlTranslatef(viewmodel.viewmodel_pos.x,
