@@ -2,7 +2,7 @@
 
 A game / game engine using [Raylib](https://github.com/raysan5/raylib) with the goal to follow simplicity and have a `"Wireframe"` visual style
 
-<img src="readme/1.png" width="400">
+<img src="readme/1.png">
 
 > [!TIP]
 > Please also check out its brother project [Wireframe Editor](https://github.com/LeaoMartelo2/wireframe_editor).\
