@@ -121,6 +121,10 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vecto
     /*for (size_t i = 0; map_geometry.size(); ++i) {*/
     for (auto i : map_geometry) {
 
+        if (Vector3Distance(cube_pos, i.pos) > 1000) {
+            continue;
+        }
+
         Vector3 other_pos = i.pos;
         Vector3 other_size = i.size;
 
@@ -190,7 +194,7 @@ bool Player::check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_p
 
         if (CheckCollisionBoxes(cube_bbox, floor_bounding_box)) {
 
-            DrawBoundingBox(cube_bbox, YELLOW);
+            /*DrawBoundingBox(cube_bbox, YELLOW);*/
             return true;
         }
     }

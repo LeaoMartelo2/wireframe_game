@@ -6,7 +6,7 @@
 
  - [ ] add triggers for in game level loading
 
- - [ ] add a distance parameter to collision checking (no need to check collision on something far away)
+ - [X] add a distance parameter to collision checking (no need to check collision on something far away)
 
  - [X] lerp player movimentation instad of raw discrete steps
 
