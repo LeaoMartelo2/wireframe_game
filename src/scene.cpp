@@ -145,7 +145,6 @@ void Scene::update(void) {
         {
             /*player->update(map_geometry, map_floor);*/
 
-            /*draw_reference_point();*/
             draw_map_floor();
             draw_map_geometry();
 

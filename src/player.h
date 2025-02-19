@@ -51,6 +51,11 @@ class Player {
     } viewmodel;
 
     struct {
+        long health;
+        long ammo;
+    } gameplay;
+
+    struct {
         bool show_debug;
         bool noclip;
         bool no_gravity;
@@ -59,8 +64,6 @@ class Player {
   public:
     // public methods
     Player();
-    Player(const Player &other);
-    /*~Player();*/
 
     void update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
     void draw(void);
@@ -72,6 +75,9 @@ class Player {
     Vector3 get_forward(void);
     Vector3 get_up(void);
     Vector3 get_right(void);
+
+    void damage(long ammount);
+    void give_ammo(long ammount);
 
     void debug(void);
     void debug_3d(void);

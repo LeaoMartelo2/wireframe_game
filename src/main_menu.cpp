@@ -203,6 +203,11 @@ void MainMenu::update() {
 
         draw_tittle();
 
+        if (IsKeyPressed(KEY_ENTER)) {
+            PlaySound(menu_click);
+            parent->swap_scene(SCENE_LEVEL_TEST1);
+        }
+
         if (!settings_menu) {
             if (gui_button_ex(&play_button, "Play")) {
                 PlaySound(menu_click);

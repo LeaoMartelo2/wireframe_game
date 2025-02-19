@@ -29,13 +29,13 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Camera created.");
 
-    pos = {150, 20, 50};
-    move_speed = 200.0f;
+    /*pos = {150, 20, 50};*/
+    move_speed = 300.0f;
     side_speed = 180.0f;
-    air_boost = 1.10f;
+    air_boost = 1.02f;
     acc_rate = 0.15f;
     gravity = 9.806f;
-    max_acell = 250.0f;
+    max_acell = 2000.0f;
     is_grounded = false;
 
     velocity.forwards = 0;
@@ -63,6 +63,9 @@ Player::Player() {
 
     viewmodel.viewmodel_pos = Vector3Zero();
 
+    gameplay.health = 250;
+    gameplay.ammo = 20;
+
     misc.show_debug = false;
     misc.noclip = false;
     misc.no_gravity = false;
@@ -70,29 +73,6 @@ Player::Player() {
     lognest_debug(" ┗>[Player] Player debug-tools loaded.");
 
     lognest_trace("[Player] Player loaded.");
-}
-
-Player::Player(const Player &other) {
-
-    pos = other.pos;
-    move_speed = other.move_speed;
-    acc_rate = other.acc_rate;
-
-    camera.target = other.camera.target;
-
-    camera_misc = other.camera_misc;
-
-    collision.bounding_box_size = {5, 15, 5};
-    /*collision.bounding_box = other.collision.bounding_box;*/
-    move_speed = other.move_speed;
-    acc_rate = other.acc_rate;
-    side_speed = other.side_speed;
-    air_boost = other.air_boost;
-    is_grounded = other.is_grounded;
-    velocity.forwards = other.velocity.forwards;
-    velocity.sideways = other.velocity.sideways;
-
-    input = other.input;
 }
 
 BoundingBox Player::calculate_boundingbox() {
@@ -482,8 +462,6 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         }
     }
 
-    collision.bounding_box = calculate_boundingbox();
-
 #if 0
 
     // show last collision point
@@ -529,6 +507,8 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
             noclip_move_vertical(200 * delta_time);
         }
     }
+
+    collision.bounding_box = calculate_boundingbox();
 }
 
 void Player::update_viewmodel() {
@@ -600,6 +580,15 @@ void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map
     }
 }
 
+void Player::damage(long ammount) {
+
+    gameplay.health += ammount;
+}
+
+void Player::give_ammo(long ammount) {
+    gameplay.ammo += ammount;
+}
+
 void Player::debug() {
     if (!misc.show_debug) {
         return;
@@ -639,5 +628,9 @@ void Player::draw_hud() {
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 2, WHITE);
 
-    // health /  ammo /  etc
+    /*DrawText(TextFormat("%d", gameplay.health),*/
+    /*(GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));*/
+
+    /*DrawText(TextFormat("%d", gameplay.ammo),*/
+    /*(GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);*/
 }
