@@ -32,88 +32,64 @@ void Scene::loadmap(const char *filename) {
 
     lognest_trace("[Scene] ID: %zu Attempting to load Level from from '%s'.", scene_id, filename);
 
-    std::ifstream file_geometry(std::string(filename) + "/geometry.json");
-    /*lognest_debug(" ┗>[Scene] Trying to load Geometry(ies) from '%s/geometry.json'", filename);*/
+    std::ifstream file_level(std::string(filename) + "/level.json");
 
-    if (!file_geometry.is_open()) {
-        lognest_error("[Scene] Could not open file '%s/geometry.json' whilist attemping to load Geometries.",
+    if (!file_level.is_open()) {
+        lognest_error("[Scene] Could not open file '%s/level.json' whilist attemping to load level.",
                       filename);
     } else {
 
         nlohmann::json j;
 
-        file_geometry >> j;
+        file_level >> j;
 
         int i = 0;
         for (const auto &item : j) {
-            Geometry geometry;
 
-            geometry.size.x = item["size"]["x"];
-            geometry.size.y = item["size"]["y"];
-            geometry.size.z = item["size"]["z"];
+            if (item["type"] == "geometry") {
+                Geometry geometry;
 
-            geometry.pos.x = item["pos"]["x"];
-            geometry.pos.y = item["pos"]["y"];
-            geometry.pos.z = item["pos"]["z"];
+                geometry.size.x = item["size"]["x"];
+                geometry.size.y = item["size"]["y"];
+                geometry.size.z = item["size"]["z"];
 
-            geometry.mesh = GenMeshCube(geometry.size.x,
-                                        geometry.size.y,
-                                        geometry.size.z);
+                geometry.pos.x = item["pos"]["x"];
+                geometry.pos.y = item["pos"]["y"];
+                geometry.pos.z = item["pos"]["z"];
 
-            geometry.model = LoadModelFromMesh(geometry.mesh);
+                geometry.mesh = GenMeshCube(geometry.size.x,
+                                            geometry.size.y,
+                                            geometry.size.z);
 
-            map_geometry.emplace_back(geometry);
+                geometry.model = LoadModelFromMesh(geometry.mesh);
 
-            /*lognest_debug("[Scene] Loaded a geometry from '%s/geometry.json'. "*/
-            /*"%d Entry(ies) loaded so far.",*/
-            /*filename, ++i);*/
+                map_geometry.emplace_back(geometry);
+            }
+
+            if (item["type"] == "floor") {
+                Floor floor;
+
+                floor.size.x = item["size"]["x"];
+                floor.size.y = item["size"]["y"];
+                floor.size.z = item["size"]["z"];
+
+                floor.pos.x = item["pos"]["x"];
+                floor.pos.y = item["pos"]["y"];
+                floor.pos.z = item["pos"]["z"];
+
+                floor.mesh = GenMeshCube(floor.size.x,
+                                         floor.size.y,
+                                         floor.size.z);
+
+                floor.model = LoadModelFromMesh(floor.mesh);
+
+                map_floor.emplace_back(floor);
+            }
+
             ++i;
         }
 
-        lognest_debug(" ┗>[Scene] Sucessfully loaded '%d' Geometries from '%s/geometry.json' in the scene.",
-                      i, filename);
-    }
-
-    std::ifstream file_floor(std::string(filename) + "/floor.json");
-    /*lognest_debug(" ┗>[Scene] Trying to load Floor Tiles from '%s/floor.json'", filename);*/
-
-    if (!file_floor.is_open()) {
-        lognest_error("[Scene] Could not open file '%s/floor.json' whilist attemping to load Floor.",
-                      filename);
-    } else {
-
-        nlohmann::json floor;
-
-        file_floor >> floor;
-
-        int i = 0;
-        for (const auto &item : floor) {
-
-            Floor floor;
-
-            floor.size.x = item["size"]["x"];
-            floor.size.y = item["size"]["y"];
-            floor.size.z = item["size"]["z"];
-
-            floor.pos.x = item["pos"]["x"];
-            floor.pos.y = item["pos"]["y"];
-            floor.pos.z = item["pos"]["z"];
-
-            floor.mesh = GenMeshCube(floor.size.x,
-                                     floor.size.y,
-                                     floor.size.z);
-
-            floor.model = LoadModelFromMesh(floor.mesh);
-
-            map_floor.emplace_back(floor);
-
-            /*lognest_debug("[Scene] Loaded a Floor tile from '%s/floor.json' in the scene. "*/
-            /*"%d Entry(ies) loaded so far.",*/
-            /*filename, ++i);*/
-            ++i;
-        }
-
-        lognest_debug(" ┗>[Scene] Sucessfully loaded '%d' Floor tiles from '%s/floor.json' in the scene.",
+        lognest_debug(" ┗>[Scene] Sucessfully loaded '%d' entries from '%s/level.json' in the scene.",
                       i, filename);
     }
 }
