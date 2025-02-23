@@ -33,6 +33,23 @@ The project is designed in such a way, that compiling should not be a hard task.
 > Run `make win`, the final executable is named `wireframe.exe`
 
 
+### Debug builds
+
+You can pass the following argument to make:
+`make DEBUG=1`
+to get a debug build of the project, differences in the debug build are:
+
+ - Visual representation of the player's bounding box on where the collision happened.
+ - Visual representation of movement/direction vector
+
+ as well as getting a message on screen all times indicating its a debug build.
+
+Some issues with the debug build:
+ - The camera de-syncs withe the player:
+    This is due the order game updates happen in the debug build. The camera will only get updated on the next frame, relative to the player's update, instead of waiting for the previous iteration to update itself.
+ - Some weird visual artifacts:
+    This is due the order of updates being different than expected on debug builds again. Some parts of the screen drawing code do not expect `BeginMode3D()` to be enabled at that time, but they're are required for other debug build features.
+
 ## Engine structure
 
 > [!IMPORTANT]
