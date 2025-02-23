@@ -201,6 +201,10 @@ void MainMenu::update() {
         }
         EndMode3D();
 
+#ifdef DEBUG
+        DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 250, 20, WHITE);
+#endif // DEBUG
+
         draw_tittle();
 
         if (IsKeyPressed(KEY_ENTER)) {

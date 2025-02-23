@@ -111,7 +111,9 @@ void Scene::draw_map_floor(void) {
 
 void Scene::update(void) {
 
+#ifndef DEBUG
     player->update(map_geometry, map_floor);
+#endif // !DEBUG
 
     BeginDrawing();
     {
@@ -119,7 +121,9 @@ void Scene::update(void) {
 
         BeginMode3D(player->camera);
         {
-            /*player->update(map_geometry, map_floor);*/
+#ifdef DEBUG
+            player->update(map_geometry, map_floor);
+#endif // DEBUG
 
             draw_map_floor();
             draw_map_geometry();

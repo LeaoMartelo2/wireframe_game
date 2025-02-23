@@ -132,7 +132,10 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vecto
 
         if (CheckCollisionBoxes(cube_bbox, geometry_bounding_box)) {
 
-            /*DrawBoundingBox(cube_bbox, YELLOW);*/
+#ifdef DEBUG
+            DrawBoundingBox(cube_bbox, YELLOW);
+#endif // DEBUG
+
             return true;
         }
     }
@@ -174,7 +177,10 @@ bool Player::check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_p
 
         if (CheckCollisionBoxes(cube_bbox, floor_bounding_box)) {
 
-            /*DrawBoundingBox(cube_bbox, YELLOW);*/
+#ifdef DEBUG
+            DrawBoundingBox(cube_bbox, YELLOW);
+#endif // DEBUG
+
             return true;
         }
     }
@@ -462,7 +468,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
         }
     }
 
-#if 0
+#ifdef DEBUG
 
     // show last collision point
     // DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
@@ -627,6 +633,10 @@ void Player::draw_hud() {
     debug();
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 2, WHITE);
+
+#ifdef DEBUG
+    DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
+#endif // DEBUG
 
     /*DrawText(TextFormat("%d", gameplay.health),*/
     /*(GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));*/

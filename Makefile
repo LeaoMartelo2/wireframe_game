@@ -6,6 +6,10 @@ DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow
 
 FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -O3 -ggdb -pedantic -lm
 
+ifdef DEBUG
+	FLAGS += -DDEBUG
+endif
+
 POSIX_FLAGS = -L ./raylib/linux/ -lraylib
 WINDOWS_FLAGS = -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
