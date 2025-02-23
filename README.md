@@ -105,7 +105,7 @@ This projects integrates with [LogNest](https://github.com/LeaoMartelo2/LogNest)
 The engine, by default, writes its log to `latest.log` at the main executable path.
 
 
-<img src="readme/2.png">
+<img src="readme/2_2.png">
 
 For convenience, it's also provided a copy off [nestreader](https://github.com/LeaoMartelo2/nestreader)\
 The CLI tool will automatically print the log, while also coloring each log type with a corresponding color.
