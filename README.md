@@ -44,7 +44,7 @@ to get a debug build of the project, differences in the debug build are:
 
  as well as getting a message on screen all times indicating its a debug build.
 
-Some issues with the debug build:
+#### Some issues with the debug build:
  - The camera de-syncs withe the player:
     This is due the order game updates happen in the debug build. The camera will only get updated on the next frame, relative to the player's update, instead of waiting for the previous iteration to update itself.
  - Some weird visual artifacts:
