@@ -101,7 +101,7 @@ bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vecto
     /*for (size_t i = 0; map_geometry.size(); ++i) {*/
     for (auto i : map_geometry) {
 
-        if (Vector3Distance(cube_pos, i.pos) > 1000) {
+        if (Vector3Distance(cube_pos, i.pos) > 10000) {
             continue;
         }
 
