@@ -16,6 +16,7 @@ class Scene {
     std::string map_file;
 
     Vector3 start_pos;
+    Vector3 looking_at;
 
   private:
     // private members

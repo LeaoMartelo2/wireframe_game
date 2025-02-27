@@ -18,6 +18,7 @@ void Scene::start() {
 
     loadmap(map_file.c_str());
     player->pos = start_pos;
+    player->camera.target = looking_at;
 }
 
 void Scene::end(void) {
@@ -84,6 +85,16 @@ void Scene::loadmap(const char *filename) {
                 floor.model = LoadModelFromMesh(floor.mesh);
 
                 map_floor.emplace_back(floor);
+            }
+
+            if (item["type"] == "spawnpoint") {
+                start_pos.x = item["pos"]["x"];
+                start_pos.y = item["pos"]["y"];
+                start_pos.z = item["pos"]["z"];
+
+                looking_at.x = item["looking_at"]["x"];
+                looking_at.y = item["looking_at"]["y"];
+                looking_at.z = item["looking_at"]["z"];
             }
 
             ++i;
