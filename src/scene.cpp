@@ -45,6 +45,8 @@ void Scene::loadmap(const char *filename) {
         file_level >> j;
 
         int i = 0;
+        int geometry_count = 0;
+        int ground_count = 0;
         for (const auto &item : j) {
 
             if (item["type"] == "geometry") {
@@ -58,13 +60,8 @@ void Scene::loadmap(const char *filename) {
                 geometry.pos.y = item["pos"]["y"];
                 geometry.pos.z = item["pos"]["z"];
 
-                geometry.mesh = GenMeshCube(geometry.size.x,
-                                            geometry.size.y,
-                                            geometry.size.z);
-
-                geometry.model = LoadModelFromMesh(geometry.mesh);
-
                 map_geometry.emplace_back(geometry);
+                geometry_count++;
             }
 
             if (item["type"] == "floor") {
@@ -78,13 +75,8 @@ void Scene::loadmap(const char *filename) {
                 floor.pos.y = item["pos"]["y"];
                 floor.pos.z = item["pos"]["z"];
 
-                floor.mesh = GenMeshCube(floor.size.x,
-                                         floor.size.y,
-                                         floor.size.z);
-
-                floor.model = LoadModelFromMesh(floor.mesh);
-
                 map_floor.emplace_back(floor);
+                ground_count++;
             }
 
             if (item["type"] == "spawnpoint") {
@@ -126,6 +118,11 @@ void Scene::update(void) {
     player->update(map_geometry, map_floor);
 #endif // !DEBUG
 
+    Trigger teste;
+
+    teste.size = {10, 10, 10};
+    teste.pos = {50, 50, 50};
+
     BeginDrawing();
     {
         ClearBackground(BLACK);
@@ -141,6 +138,8 @@ void Scene::update(void) {
 
             player->draw();
             player->debug_3d();
+
+            debug_draw_trigger(&teste);
         }
         EndMode3D();
 

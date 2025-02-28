@@ -30,7 +30,7 @@ Player::Player() {
     lognest_debug(" ┗>[Player] Camera created.");
 
     /*pos = {150, 20, 50};*/
-    move_speed = 300.0f;
+    move_speed = 250.0f;
     side_speed = 180.0f;
     air_boost = 1.02f;
     acc_rate = 0.15f;
@@ -498,7 +498,7 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
 
 #endif
 
-    if (IsKeyPressed(KEY_SPACE) && !misc.noclip) {
+    if (IsKeyDown(KEY_SPACE) && !misc.noclip) {
         if (is_grounded) {
             velocity.vertical = 150;
         }

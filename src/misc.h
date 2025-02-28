@@ -80,7 +80,7 @@ inline bool file_exists(const char *path) {
 inline void troll(void) {
 
     lognest_error("[SYSTEM] ATTENTION:\n"
-                  "                       ;:::::;                       \n"
+                  "                       ;:::::;                        \n"
                   "                    :::::::::::::.:;                  \n"
                   "                    ::::::::::::::::::.               \n"
                   "                  .::::::::::::::::::::::             \n"

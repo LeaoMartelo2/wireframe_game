@@ -9,8 +9,6 @@
 typedef struct Geometry {
     Vector3 size;
     Vector3 pos;
-    Mesh mesh;
-    Model model;
 } Geometry;
 
 void geometry_draw(Geometry *geometry);
@@ -29,10 +27,15 @@ void draw_reference_point(void);
 typedef struct Floor {
     Vector3 size;
     Vector3 pos;
-    Mesh mesh;
-    Model model;
 } Floor;
 
 void floor_draw(Floor *floor);
+
+typedef struct Trigger {
+    Vector3 pos;
+    Vector3 size;
+} Trigger;
+
+void debug_draw_trigger(Trigger *trigger);
 
 #endif // !GEOMETRY_H_
