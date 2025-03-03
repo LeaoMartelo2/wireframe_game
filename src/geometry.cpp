@@ -21,9 +21,3 @@ void floor_draw(Floor *floor) {
     DrawCubeV(floor->pos, floor->size, GetColor(0x181818FF));
     DrawCubeWiresV(floor->pos, floor->size, RED);
 }
-
-void debug_draw_trigger(Trigger *trigger) {
-
-    DrawCubeV(trigger->pos, trigger->size, ColorAlpha(ORANGE, 0.3f));
-    DrawCubeWiresV(trigger->pos, trigger->size, ORANGE);
-}
