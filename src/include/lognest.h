@@ -14,6 +14,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #include <string.h>
 #include <time.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /* CHANGE WHERE THE LOGS GETS SENT
  * DEFAULT VALUE: "latest.log"
  * (PATH RELATIVE TO THE EXECUTABLE)*/
@@ -34,6 +38,10 @@ void _lognest_debug_raw(const char *file, const char *format, ...);
 void lognest_to_file(const char *file, const char *level, const char *format, va_list args);
 
 void get_timestamp(char *buffer, size_t len);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #ifdef LOGNEST_IMPLEMENTATION
 

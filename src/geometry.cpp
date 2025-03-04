@@ -1,5 +1,4 @@
 #include "geometry.h"
-#include <cmath>
 
 void draw_reference_point() {
     float distance = 10000.0f;

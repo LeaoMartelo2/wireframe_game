@@ -3,7 +3,6 @@
 
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
-#include <stdlib.h>
 
 typedef struct Geometry {
     Vector3 size;
