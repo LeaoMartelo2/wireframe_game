@@ -1,4 +1,5 @@
 #include "geometry.h"
+#include <cmath>
 
 void draw_reference_point() {
     float distance = 10000.0f;
@@ -8,73 +9,129 @@ void draw_reference_point() {
     DrawLine3D(Vector3Zero(), {0, 0, distance}, BLUE);
 }
 
-void geometry_outline(Geometry *geometry, float outline, Color color) {
+void geometry_outline(Geometry *geometry, float size, Color color) {
 
     Vector3 right_front = geometry->pos;
     right_front.x -= geometry->size.x / 2.0;
     right_front.z += geometry->size.z / 2.0;
 
-    DrawCube(right_front, outline, geometry->size.y, outline, color);
+    DrawCube(right_front, size, geometry->size.y, size, color);
 
     // left front
     DrawCube({geometry->pos.x + geometry->size.x / 2, right_front.y, right_front.z},
-             outline, geometry->size.y, outline, color);
+             size, geometry->size.y, size, color);
 
     // right back
     DrawCube({right_front.x, right_front.y, geometry->pos.z - geometry->size.z / 2},
-             outline, geometry->size.y, outline, color);
+             size, geometry->size.y, size, color);
 
     // left back
     DrawCube({geometry->pos.x + geometry->size.x / 2, right_front.y, geometry->pos.z - geometry->size.z / 2},
-             outline, geometry->size.y, outline, color);
+             size, geometry->size.y, size, color);
 
     Vector3 top_right = geometry->pos;
     top_right.y += geometry->size.y / 2;
     top_right.x -= geometry->size.x / 2;
 
-    DrawCube(top_right, outline, outline, geometry->size.z, color);
+    DrawCube(top_right, size, size, geometry->size.z, color);
 
     // bottom right
     DrawCube({top_right.x, geometry->pos.y - geometry->size.y / 2, top_right.z},
-             outline, outline, geometry->size.z, color);
+             size, size, geometry->size.z, color);
 
     // top left
     DrawCube({geometry->pos.x + geometry->size.x / 2, top_right.y, top_right.z},
-             outline, outline, geometry->size.z, color);
+             size, size, geometry->size.z, color);
 
     // bottom left
     DrawCube({geometry->pos.x + geometry->size.x / 2, geometry->pos.y - geometry->size.y / 2, top_right.z},
-             outline, outline, geometry->size.z, color);
+             size, size, geometry->size.z, color);
 
     Vector3 top_front = geometry->pos;
     top_front.z += geometry->size.z / 2;
     top_front.y += geometry->size.y / 2;
 
-    DrawCube(top_front, geometry->size.x, outline, outline, color);
+    DrawCube(top_front, geometry->size.x, size, size, color);
 
     // bottom front
     DrawCube({top_front.x, geometry->pos.y - geometry->size.y / 2, top_front.z},
-             geometry->size.x, outline, outline, color);
+             geometry->size.x, size, size, color);
 
     // top back
     DrawCube({top_front.x, top_front.y, geometry->pos.z - geometry->size.z / 2},
-             geometry->size.x, outline, outline, color);
+             geometry->size.x, size, size, color);
 
     // bottom back
 
     DrawCube({top_front.x, geometry->pos.y - geometry->size.y / 2, geometry->pos.z - geometry->size.z / 2},
-             geometry->size.x, outline, outline, color);
+             geometry->size.x, size, size, color);
 }
 
 void geometry_draw(Geometry *geometry) {
 
     DrawCubeV(geometry->pos, geometry->size, DARKGRAY);
-    /*DrawCubeWiresV(geometry->pos, geometry->size, RED);*/
     geometry_outline(geometry, 0.3f, RED);
 }
 
+void floor_outline(Floor *floor, float size, Color color) {
+
+    Vector3 right_front = floor->pos;
+    right_front.x -= floor->size.x / 2.0;
+    right_front.z += floor->size.z / 2.0;
+
+    DrawCube(right_front, size, floor->size.y, size, color);
+
+    // left front
+    DrawCube({floor->pos.x + floor->size.x / 2, right_front.y, right_front.z},
+             size, floor->size.y, size, color);
+
+    // right back
+    DrawCube({right_front.x, right_front.y, floor->pos.z - floor->size.z / 2},
+             size, floor->size.y, size, color);
+
+    // left back
+    DrawCube({floor->pos.x + floor->size.x / 2, right_front.y, floor->pos.z - floor->size.z / 2},
+             size, floor->size.y, size, color);
+
+    Vector3 top_right = floor->pos;
+    top_right.y += floor->size.y / 2;
+    top_right.x -= floor->size.x / 2;
+
+    DrawCube(top_right, size, size, floor->size.z, color);
+
+    // bottom right
+    DrawCube({top_right.x, floor->pos.y - floor->size.y / 2, top_right.z},
+             size, size, floor->size.z, color);
+
+    // top left
+    DrawCube({floor->pos.x + floor->size.x / 2, top_right.y, top_right.z},
+             size, size, floor->size.z, color);
+
+    // bottom left
+    DrawCube({floor->pos.x + floor->size.x / 2, floor->pos.y - floor->size.y / 2, top_right.z},
+             size, size, floor->size.z, color);
+
+    Vector3 top_front = floor->pos;
+    top_front.z += floor->size.z / 2;
+    top_front.y += floor->size.y / 2;
+
+    DrawCube(top_front, floor->size.x, size, size, color);
+
+    // bottom front
+    DrawCube({top_front.x, floor->pos.y - floor->size.y / 2, top_front.z},
+             floor->size.x, size, size, color);
+
+    // top back
+    DrawCube({top_front.x, top_front.y, floor->pos.z - floor->size.z / 2},
+             floor->size.x, size, size, color);
+
+    // bottom back
+
+    DrawCube({top_front.x, floor->pos.y - floor->size.y / 2, floor->pos.z - floor->size.z / 2},
+             floor->size.x, size, size, color);
+}
+
 void floor_draw(Floor *floor) {
-    /*DrawModel(floor->model, floor->pos, 1.0f, GetColor(0x181818FF));*/
     DrawCubeV(floor->pos, floor->size, GetColor(0x181818FF));
-    DrawCubeWiresV(floor->pos, floor->size, RED);
+    floor_outline(floor, 0.3f, RED);
 }
