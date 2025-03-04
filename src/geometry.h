@@ -10,6 +10,7 @@ typedef struct Geometry {
     Vector3 pos;
 } Geometry;
 
+void geometry_outline(Geometry *geometry, float outline, Color color);
 void geometry_draw(Geometry *geometry);
 
 typedef struct Prop {
