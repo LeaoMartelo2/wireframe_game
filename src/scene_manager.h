@@ -19,6 +19,7 @@ class SceneManager {
     ~SceneManager();
 
     void add_scenes();
+    size_t add_scene_by_name(const char *filename);
     void end();
 
     void swap_scene(size_t scene_id);

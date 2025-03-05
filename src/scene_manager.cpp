@@ -46,11 +46,30 @@ void SceneManager::swap_scene(size_t scene_id) {
     scenes[current_scene]->start();
 }
 
+size_t SceneManager::add_scene_by_name(const char *filename) {
+
+    Scene *new_scene = new Scene;
+    new_scene->set_map(filename);
+    new_scene->player = &player;
+    scenes.emplace_back(new_scene);
+    size_t id = scenes.size() - 1;
+
+    scenes[id]->scene_id = id;
+
+    return id;
+}
+
 void SceneManager::update() {
     scenes[current_scene]->update();
 
     if (IsKeyPressed(KEY_H)) {
         swap_scene(current_scene + 1);
+    }
+
+    if (IsKeyPressed(KEY_K)) {
+
+        size_t new_scene = add_scene_by_name("levels/level4");
+        swap_scene(new_scene);
     }
 
     if (WindowShouldClose()) {
