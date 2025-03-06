@@ -25,7 +25,9 @@ void Scene::start() {
 
     teste.size = {10, 10, 10};
     teste.pos = {50, 50, 50};
-    teste.type = TRIGGER_TELEPORT;
+    teste.type = TRIGGER_GOTO_SCENE;
+    teste.info.levelname = (char *)"levels/level4";
+    teste.info.scene_id = 2;
     teste.info.teleport = {0, 100, 0};
 
     map_trigger.emplace_back(teste);

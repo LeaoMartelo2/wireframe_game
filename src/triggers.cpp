@@ -55,7 +55,7 @@ void update_trigger(Scene *parent, Trigger *trigger, Player *player) {
 
         case TRIGGER_TELEPORT: {
 
-            lognest_trace("[Trigger] Type: Teleport. Attempting to teleport player to: %.2f, %.2f, %.2f",
+            lognest_trace("[Trigger] Type: Teleport. Teleporting player to: %.2f, %.2f, %.2f",
                           trigger->info.teleport.x, trigger->info.teleport.y, trigger->info.teleport.z);
 
             player->set_pos(trigger->info.teleport);
@@ -63,14 +63,19 @@ void update_trigger(Scene *parent, Trigger *trigger, Player *player) {
         } break;
 
         case TRIGGER_LOADLEVEL: {
-            size_t new_scene = sm->add_scene_by_name("levels/level4");
 
-            if (new_scene != sm->current_scene) {
-                sm->swap_scene(new_scene);
-            }
+            lognest_trace("[Trigger] Type: LoadLevel. Attempting to load level '%s'", trigger->info.levelname);
+
+            size_t new_scene = sm->add_scene_by_name(trigger->info.levelname);
+
+            sm->swap_scene(new_scene);
+
         } break;
 
         case TRIGGER_GOTO_SCENE: {
+
+            lognest_trace("[Trigger] Attempting to load Scene with ID: %zu", trigger->info.scene_id);
+            sm->swap_scene(trigger->info.scene_id);
 
         } break;
 

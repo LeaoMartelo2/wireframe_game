@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 class Scene;
+// thanks C
 
 typedef enum {
     TRIGGER_TELEPORT = 0,
