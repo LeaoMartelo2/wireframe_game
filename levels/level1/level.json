@@ -63,5 +63,28 @@
             "z": 50.0
         },
         "type": "spawnpoint"
+    },
+    {
+        "pos": {
+            "x": 50,
+            "y": 50,
+            "z":50
+        },
+        "size": {
+            "x":10,
+            "y":10,
+            "z":10
+        },
+        "trigger_type": "load_level",
+        "info": {
+            "teleport": {
+                "x": 0,
+                "y": 100,
+                "z": 0
+            },
+            "scene_id": 2,
+            "level_name": "levels/level4"
+        },
+        "type": "trigger"
     }
 ]

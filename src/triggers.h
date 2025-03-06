@@ -4,6 +4,7 @@
 #include "../raylib/raylib.h"
 #include "player.h"
 #include <stddef.h>
+#include <string>
 
 class Scene;
 // thanks C
@@ -16,14 +17,13 @@ typedef enum {
 
 typedef struct {
     Vector3 teleport;
-    char *levelname;
+    std::string levelname;
     size_t scene_id;
 } trigger_info;
 
 typedef struct Trigger {
     Vector3 pos;
     Vector3 size;
-    size_t id;
     int type;
     trigger_info info;
 } Trigger;

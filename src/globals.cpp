@@ -7,3 +7,7 @@ settings_t g_settings = {
     .camera_tilt = true,
     .play_music = true,
 };
+
+debug_t g_debug = {
+    .draw_triggers = false,
+};

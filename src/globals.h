@@ -21,4 +21,10 @@ typedef struct {
 
 extern settings_t g_settings;
 
+typedef struct {
+    bool draw_triggers;
+} debug_t;
+
+extern debug_t g_debug;
+
 #endif // !_GLOBALS_H_

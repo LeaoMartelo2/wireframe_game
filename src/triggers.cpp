@@ -6,6 +6,9 @@
 
 void debug_draw_trigger(Trigger *trigger) {
 
+    if (!g_debug.draw_triggers)
+        return;
+
     DrawCubeV(trigger->pos, trigger->size, ColorAlpha(ORANGE, 0.3f));
     DrawCubeWiresV(trigger->pos, trigger->size, ORANGE);
 }
@@ -64,9 +67,10 @@ void update_trigger(Scene *parent, Trigger *trigger, Player *player) {
 
         case TRIGGER_LOADLEVEL: {
 
-            lognest_trace("[Trigger] Type: LoadLevel. Attempting to load level '%s'", trigger->info.levelname);
+            lognest_trace("[Trigger] Type: LoadLevel. Attempting to load level '%s'",
+                          trigger->info.levelname.c_str());
 
-            size_t new_scene = sm->add_scene_by_name(trigger->info.levelname);
+            size_t new_scene = sm->add_scene_by_name(trigger->info.levelname.c_str());
 
             sm->swap_scene(new_scene);
 

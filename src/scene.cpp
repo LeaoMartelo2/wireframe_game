@@ -21,16 +21,16 @@ void Scene::start() {
     player->pos = start_pos;
     player->camera.target = looking_at;
 
-    Trigger teste;
-
-    teste.size = {10, 10, 10};
-    teste.pos = {50, 50, 50};
-    teste.type = TRIGGER_GOTO_SCENE;
-    teste.info.levelname = (char *)"levels/level4";
-    teste.info.scene_id = 2;
-    teste.info.teleport = {0, 100, 0};
-
-    map_trigger.emplace_back(teste);
+    /*Trigger teste;*/
+    /**/
+    /*teste.size = {10, 10, 10};*/
+    /*teste.pos = {50, 50, 50};*/
+    /*teste.type = TRIGGER_GOTO_SCENE;*/
+    /*teste.info.levelname = (char *)"levels/level4";*/
+    /*teste.info.scene_id = 2;*/
+    /*teste.info.teleport = {0, 100, 0};*/
+    /**/
+    /*map_trigger.emplace_back(teste);*/
 }
 
 void Scene::end(void) {
@@ -57,8 +57,6 @@ void Scene::loadmap(const char *filename) {
         file_level >> j;
 
         int i = 0;
-        int geometry_count = 0;
-        int ground_count = 0;
         for (const auto &item : j) {
 
             if (item["type"] == "geometry") {
@@ -73,7 +71,6 @@ void Scene::loadmap(const char *filename) {
                 geometry.pos.z = item["pos"]["z"];
 
                 map_geometry.emplace_back(geometry);
-                geometry_count++;
             }
 
             if (item["type"] == "floor") {
@@ -88,7 +85,6 @@ void Scene::loadmap(const char *filename) {
                 floor.pos.z = item["pos"]["z"];
 
                 map_floor.emplace_back(floor);
-                ground_count++;
             }
 
             if (item["type"] == "spawnpoint") {
@@ -99,6 +95,40 @@ void Scene::loadmap(const char *filename) {
                 looking_at.x = item["looking_at"]["x"];
                 looking_at.y = item["looking_at"]["y"];
                 looking_at.z = item["looking_at"]["z"];
+            }
+
+            if (item["type"] == "trigger") {
+                Trigger trigger;
+
+                trigger.pos.x = item["pos"]["x"];
+                trigger.pos.y = item["pos"]["y"];
+                trigger.pos.z = item["pos"]["z"];
+
+                trigger.size.x = item["size"]["x"];
+                trigger.size.y = item["size"]["y"];
+                trigger.size.z = item["size"]["z"];
+
+                if (item["trigger_type"] == "teleport") {
+                    trigger.type = TRIGGER_TELEPORT;
+
+                    trigger.info.teleport.x = item["info"]["teleport"]["x"];
+                    trigger.info.teleport.y = item["info"]["teleport"]["y"];
+                    trigger.info.teleport.z = item["info"]["teleport"]["z"];
+                }
+
+                if (item["trigger_type"] == "goto_scene") {
+                    trigger.type = TRIGGER_GOTO_SCENE;
+
+                    trigger.info.scene_id = item["info"]["scene_id"];
+                }
+
+                if (item["trigger_type"] == "load_level") {
+                    trigger.type = TRIGGER_LOADLEVEL;
+
+                    trigger.info.levelname = item["info"]["level_name"];
+                }
+
+                map_trigger.emplace_back(trigger);
             }
 
             ++i;
