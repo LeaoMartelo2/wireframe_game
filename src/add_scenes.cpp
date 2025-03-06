@@ -11,7 +11,7 @@ void SceneManager::add_scenes() {
     scenes.emplace_back(test_menu);
 
     Scene *test_level = new Scene;
-    test_level->set_map("levels/test");
+    test_level->set_map("levels/level1");
     test_level->player = &player;
     test_level->scene_id = SCENE_LEVEL_TEST1;
     scenes.emplace_back(test_level);

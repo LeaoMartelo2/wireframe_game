@@ -12,6 +12,8 @@ class Scene {
   public:
     std::vector<Geometry> map_geometry;
     std::vector<Floor> map_floor;
+    std::vector<Trigger> map_triggers;
+
     Player *player;
 
     size_t scene_id;
