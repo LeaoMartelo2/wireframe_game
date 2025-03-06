@@ -71,6 +71,7 @@ size_t SceneManager::add_scene_by_name(const char *filename) {
         Scene *new_scene = new Scene;
         new_scene->set_map(filename);
         new_scene->player = &player;
+        new_scene->parent = this;
         scenes.emplace_back(new_scene);
         size_t id = scenes.size() - 1;
 

@@ -3,6 +3,7 @@
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "player.h"
+#include "triggers.h"
 #include <fstream>
 
 Scene::Scene() {
@@ -19,6 +20,15 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->pos = start_pos;
     player->camera.target = looking_at;
+
+    Trigger teste;
+
+    teste.size = {10, 10, 10};
+    teste.pos = {50, 50, 50};
+    teste.type = TRIGGER_TELEPORT;
+    teste.info.teleport = {0, 100, 0};
+
+    map_trigger.emplace_back(teste);
 }
 
 void Scene::end(void) {
@@ -112,16 +122,29 @@ void Scene::draw_map_floor(void) {
     }
 }
 
+void Scene::update_map_triggers(void) {
+
+    /*for(size_t = 0; i<map_trigger.size(); ++i){ */
+    for (Trigger i : map_trigger) {
+        update_trigger(this, &i, player);
+    }
+}
+
+void Scene::debug_draw_map_triggers(void) {
+
+    for (Trigger i : map_trigger) {
+
+        debug_draw_trigger(&i);
+    }
+}
+
 void Scene::update(void) {
 
 #ifndef DEBUG
     player->update(map_geometry, map_floor);
 #endif // !DEBUG
 
-    Trigger teste;
-
-    teste.size = {10, 10, 10};
-    teste.pos = {50, 50, 50};
+    update_map_triggers();
 
     BeginDrawing();
     {
@@ -138,8 +161,7 @@ void Scene::update(void) {
 
             player->draw();
             player->debug_3d();
-
-            debug_draw_trigger(&teste);
+            debug_draw_map_triggers();
         }
         EndMode3D();
 

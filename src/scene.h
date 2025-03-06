@@ -8,11 +8,16 @@
 #include <string>
 #include <vector>
 
+class SceneManager;
+// this needs forward declaration, thanks C++
+
 class Scene {
   public:
+    SceneManager *parent;
+
     std::vector<Geometry> map_geometry;
     std::vector<Floor> map_floor;
-    std::vector<Trigger> map_triggers;
+    std::vector<Trigger> map_trigger;
 
     Player *player;
 
@@ -40,12 +45,12 @@ class Scene {
   private:
     // private methods
 
+    virtual void update_map_triggers(void);
+    virtual void debug_draw_map_triggers();
+
     virtual void draw_map_geometry(void);
     virtual void draw_map_floor(void);
 };
-
-class SceneManager;
-// this needs forward declaration, thanks C++
 
 class MainMenu : public Scene {
 

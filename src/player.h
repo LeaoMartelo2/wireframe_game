@@ -76,6 +76,9 @@ class Player {
     Vector3 get_up(void);
     Vector3 get_right(void);
 
+    void set_pos(Vector3 new_pos);
+    void set_looking_at(Vector3 new_pos);
+
     void damage(long ammount);
     void give_ammo(long ammount);
 

@@ -586,6 +586,17 @@ void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map
     }
 }
 
+void Player::set_pos(Vector3 new_pos) {
+    pos = new_pos;
+
+    lognest_debug(" ┗> [Player] Teleported to %.2f, %.2f, %.2f",
+                  new_pos.x, new_pos.y, new_pos.z);
+}
+
+void Player::set_looking_at(Vector3 new_pos) {
+    camera.target = new_pos;
+}
+
 void Player::damage(long ammount) {
 
     gameplay.health += ammount;
