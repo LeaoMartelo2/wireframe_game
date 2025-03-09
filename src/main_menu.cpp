@@ -119,7 +119,7 @@ void MainMenu::start() {
     EnableCursor();
 
     PlayMusicStream(menu_music);
-    lognest_debug(" ┗>[Menu] Started playing music stream.");
+    lognest_debug("[Menu] Started playing music stream.");
 }
 
 void MainMenu::end() {
@@ -148,8 +148,23 @@ void MainMenu::update() {
     button_create(quit_button, 50, &mmenu_buttons,
                   GetScreenWidth() / 16.0f, play_button.bounds.y + 105, 220, 100);
 
+    button_create(custom_level, 25, &mmenu_buttons,
+                  GetScreenWidth() / 16.0f, quit_button.bounds.y + 125, 220, 85);
+
     // settings menu open button
     static bool settings_menu = false;
+
+    // custom levels menu
+    static bool levels_menu = false;
+
+    gui_panel levels_pannel = {
+        .pos = {GetScreenWidth() / 2.0f - 500, GetScreenHeight() / 2.0f - 300},
+        .size = {1000, 600},
+        .color = DARKGRAY,
+        .toggle = &levels_menu,
+        .exit_pos = {940, 30},
+        .exit_size = {50, 50},
+    };
 
     // needed for the texture of the button
     Rectangle settings_bounds = {
@@ -207,12 +222,13 @@ void MainMenu::update() {
 
         draw_tittle();
 
-        if (IsKeyPressed(KEY_ENTER)) {
-            PlaySound(menu_click);
-            parent->swap_scene(SCENE_LEVEL_TEST1);
-        }
+        if (!settings_menu & !levels_menu) {
 
-        if (!settings_menu) {
+            if (IsKeyPressed(KEY_ENTER)) {
+                PlaySound(menu_click);
+                parent->swap_scene(SCENE_LEVEL_TEST1);
+            }
+
             if (gui_button_ex(&play_button, "Play")) {
                 PlaySound(menu_click);
                 parent->swap_scene(SCENE_LEVEL_TEST1);
@@ -221,6 +237,11 @@ void MainMenu::update() {
             if (gui_button_ex(&quit_button, "Quit")) {
                 PlaySound(menu_click);
                 close_application = true;
+            }
+
+            if (gui_button_ex(&custom_level, "Custom Levels")) {
+                PlaySound(menu_click);
+                levels_menu = !levels_menu;
             }
         }
 
@@ -259,6 +280,10 @@ void MainMenu::update() {
                 PlaySound(menu_click);
                 g_settings.play_music = !g_settings.play_music;
             }
+        }
+
+        if (levels_menu) {
+            draw_panel(&levels_pannel);
         }
     }
     EndDrawing();
