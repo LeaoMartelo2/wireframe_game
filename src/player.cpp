@@ -532,8 +532,6 @@ void Player::update_viewmodel() {
 
 void Player::draw_viewmodel() {
 
-    DrawCube(pos + (get_up() * 15), 5, 5, 5, BLUE);
-
     rlPushMatrix();
     rlTranslatef(viewmodel.viewmodel_pos.x,
                  viewmodel.viewmodel_pos.y,
