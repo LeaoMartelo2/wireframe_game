@@ -29,7 +29,6 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Camera created.");
 
-    /*pos = {150, 20, 50};*/
     move_speed = 250.0f;
     side_speed = 180.0f;
     air_boost = 1.02f;
@@ -532,9 +531,6 @@ void Player::update_viewmodel() {
 }
 
 void Player::draw_viewmodel() {
-
-    /*DrawCube(pos + get_forward() * 10, 5, 5, 5, RED);*/
-    /*DrawCube(pos + (get_up() * 15), 5, 5, 5, BLUE);*/
 
     rlPushMatrix();
     rlTranslatef(viewmodel.viewmodel_pos.x,

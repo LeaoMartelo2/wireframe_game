@@ -20,17 +20,6 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->pos = start_pos;
     player->camera.target = looking_at;
-
-    /*Trigger teste;*/
-    /**/
-    /*teste.size = {10, 10, 10};*/
-    /*teste.pos = {50, 50, 50};*/
-    /*teste.type = TRIGGER_GOTO_SCENE;*/
-    /*teste.info.levelname = (char *)"levels/level4";*/
-    /*teste.info.scene_id = 2;*/
-    /*teste.info.teleport = {0, 100, 0};*/
-    /**/
-    /*map_trigger.emplace_back(teste);*/
 }
 
 void Scene::end(void) {

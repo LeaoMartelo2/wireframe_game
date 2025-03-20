@@ -20,7 +20,6 @@ class SceneManager {
 
     void add_scenes();
     size_t get_scene_id_by_level(const char *levelname);
-    ;
     size_t add_scene_by_name(const char *filename);
     void end();
 
