@@ -4,7 +4,7 @@ WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
 DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow
 
-FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -O3 -pedantic -lm
+FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm
 
 ifdef DEBUG
 	FLAGS += -DDEBUG
