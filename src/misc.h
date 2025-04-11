@@ -77,6 +77,7 @@ inline bool file_exists(const char *path) {
     return false;
 }
 
+/* this is very very trollega */
 inline void troll(void) {
 
     lognest_error("[SYSTEM] ATTENTION:\n"
