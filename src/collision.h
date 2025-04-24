@@ -7,13 +7,22 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string>
+#include <vector>
 
 class Collider {
   public:
-    Vector3 *transformed_points;
-    Vector3 *not_transformed;
+    // array of points defining the transfortmed collider
+    /*Vector3 *transformed_points;*/
+    std::vector<Vector3> transformed_points;
+    // array of points defining the collider
+    /*Vector3 *not_transformed;*/
+    std::vector<Vector3> not_transformed;
     int num_points;
-    Vector3 *normals;
+    // normals array
+    /*Vector3 *normals;*/
+    std::vector<Vector3> normals;
+    void add_normal(Vector3 normal);
+
     int num_normals;
 
     Vector3 size;
@@ -29,6 +38,13 @@ class Collider {
     /* make these purely virtual functions */
     virtual void draw(void) = 0;
 };
+
+void get_normals(Mesh mesh, std::vector<Vector3> *normals);
+void setup_collider_mesh(Collider *c, Mesh mesh);
+void get_min_max(Collider *b, Vector3 axis, float *min, float *max);
+Vector3 get_middle_point(std::vector<Vector3> *verticies, int num_verticies);
+bool check_collision(Collider *a, Collider *b, Vector3 *normal);
+void update_collider(Vector3 parent, Collider *c);
 
 class Geometry : public Collider {
 

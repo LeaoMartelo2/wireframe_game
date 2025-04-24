@@ -441,29 +441,29 @@ void Player::move() {
     /*    velocity.forwards = 0;*/
     /*    velocity.sideways = 0;*/
     /*    velocity.vertical = 0;*/
-    /**/
+
     /*} else {*/
-    /**/
-    /*    pos.x = move_step.x;*/
-    /*    pos.z = move_step.z;*/
-    /**/
-    /*    if (check_collision_floor(map_floor, v_step)) {*/
-    /*        is_grounded = true;*/
-    /*    } else {*/
-    /*        if (!misc.noclip) {*/
-    /*            pos.y = v_step.y;*/
-    /*            is_grounded = false;*/
-    /*        }*/
-    /*    }*/
-    /**/
-    /*    if (lerp_step < 1.0f) {*/
-    /*        lerp_step += step_size;*/
-    /*        lerp_step = Clamp(lerp_step, 0.0f, 1.0f);*/
-    /*    }*/
-    /*    if (vlerp_step < 1.0f) {*/
-    /*        vlerp_step += step_size;*/
-    /*        vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);*/
-    /*    }*/
+
+    pos.x = move_step.x;
+    pos.z = move_step.z;
+
+    /*if (check_collision_floor(map_floor, v_step)) {*/
+    is_grounded = true;
+    /*} else {*/
+    if (!misc.noclip) {
+        pos.y = v_step.y;
+        is_grounded = false;
+    }
+    /*}*/
+
+    if (lerp_step < 1.0f) {
+        lerp_step += step_size;
+        lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
+    }
+    if (vlerp_step < 1.0f) {
+        vlerp_step += step_size;
+        vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);
+    }
     /*}*/
 
 #ifdef DEBUG

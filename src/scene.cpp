@@ -61,8 +61,6 @@ void Scene::loadmap(const char *filename) {
                 geometry->populate();
 
                 map_colliders.push_back(geometry);
-
-                lognest_warn("pushed geometry");
             }
 
             if (item["type"] == "floor") {
@@ -79,8 +77,6 @@ void Scene::loadmap(const char *filename) {
                 floor->populate();
 
                 map_colliders.push_back(floor);
-
-                lognest_warn("pushed floor");
             }
 
             if (item["type"] == "spawnpoint") {
@@ -127,8 +123,6 @@ void Scene::loadmap(const char *filename) {
                 trigger->populate();
 
                 map_colliders.push_back(trigger);
-
-                lognest_warn("pushed trigger");
             }
 
             ++i;
@@ -171,11 +165,8 @@ void Scene::loadmap(const char *filename) {
 /**/
 void Scene::draw_scene_colliders(void) {
 
-    lognest_warn("start draw_scene");
-
     for (Collider *i : map_colliders) {
         i->draw();
-        lognest_warn("drawn collider\n");
     }
 }
 
@@ -183,7 +174,6 @@ void Scene::update(void) {
 
 #ifndef DEBUG
 
-    lognest_warn("before player update");
     player->update();
 #endif // !DEBUG
 

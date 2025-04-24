@@ -1,5 +1,7 @@
 #include "collision.h"
-#include "include/lognest.h"
+
+#define GEOMETRY_COLOR DARKGRAY
+#define FLOOR_COLOR GetColor(0x181818FF)
 
 void draw_reference_point() {
     float distance = 10000.0f;
@@ -11,21 +13,17 @@ void draw_reference_point() {
 
 void Geometry::draw(void) {
 
-    DrawModel(model, pos, 1, WHITE);
-
-    lognest_warn("single geometry drawn");
+    DrawModel(model, pos, 1, GEOMETRY_COLOR);
+    DrawModelWires(model, pos, 1, RED);
 }
 
 void Floor::draw(void) {
 
-    DrawModel(model, pos, 1, WHITE);
-
-    lognest_warn("single floor drawn");
+    DrawModel(model, pos, 1, FLOOR_COLOR);
+    DrawModelWires(model, pos, 1, RED);
 }
 
 void Trigger::draw(void) {
 
     DrawModel(model, pos, 1, ColorAlpha(ORANGE, 0.5));
-
-    lognest_warn("single trigger drawn");
 }
