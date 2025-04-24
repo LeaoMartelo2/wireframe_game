@@ -4,7 +4,7 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
-#include "geometry.h"
+#include "collision.h"
 #include <vector>
 
 class Player {
@@ -45,6 +45,8 @@ class Player {
         BoundingBox bounding_box;
     } collision;
 
+    /*Collider collider;*/
+
     struct {
         Model model;
         Vector3 viewmodel_pos;
@@ -65,7 +67,7 @@ class Player {
     // public methods
     Player();
 
-    void update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void update();
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
@@ -97,7 +99,7 @@ class Player {
     void noclip_move_vertical(float distance);
     Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
-    void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void move();
 
     void camera_yaw(float angle);
     void camera_pitch(float angle);

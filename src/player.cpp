@@ -2,7 +2,6 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
-#include "geometry.h"
 #include "include/lognest.h"
 #include "misc.h"
 #include <math.h>
@@ -403,7 +402,7 @@ void Player::calculate_velocity() {
     velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
 }
 
-void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
+void Player::move() {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
@@ -436,36 +435,36 @@ void Player::move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_f
     move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
     v_step = Vector3Lerp(pos, v_pred, vlerp_step);
 
-    if (check_collision_geometry(map_geometry, move_step)) {
-        contact_point = move_step;
-        lerp_step = 0;
-        velocity.forwards = 0;
-        velocity.sideways = 0;
-        velocity.vertical = 0;
-
-    } else {
-
-        pos.x = move_step.x;
-        pos.z = move_step.z;
-
-        if (check_collision_floor(map_floor, v_step)) {
-            is_grounded = true;
-        } else {
-            if (!misc.noclip) {
-                pos.y = v_step.y;
-                is_grounded = false;
-            }
-        }
-
-        if (lerp_step < 1.0f) {
-            lerp_step += step_size;
-            lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
-        }
-        if (vlerp_step < 1.0f) {
-            vlerp_step += step_size;
-            vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);
-        }
-    }
+    /*if (check_collision_geometry(map_geometry, move_step)) {*/
+    /*    contact_point = move_step;*/
+    /*    lerp_step = 0;*/
+    /*    velocity.forwards = 0;*/
+    /*    velocity.sideways = 0;*/
+    /*    velocity.vertical = 0;*/
+    /**/
+    /*} else {*/
+    /**/
+    /*    pos.x = move_step.x;*/
+    /*    pos.z = move_step.z;*/
+    /**/
+    /*    if (check_collision_floor(map_floor, v_step)) {*/
+    /*        is_grounded = true;*/
+    /*    } else {*/
+    /*        if (!misc.noclip) {*/
+    /*            pos.y = v_step.y;*/
+    /*            is_grounded = false;*/
+    /*        }*/
+    /*    }*/
+    /**/
+    /*    if (lerp_step < 1.0f) {*/
+    /*        lerp_step += step_size;*/
+    /*        lerp_step = Clamp(lerp_step, 0.0f, 1.0f);*/
+    /*    }*/
+    /*    if (vlerp_step < 1.0f) {*/
+    /*        vlerp_step += step_size;*/
+    /*        vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);*/
+    /*    }*/
+    /*}*/
 
 #ifdef DEBUG
 
@@ -551,7 +550,7 @@ void Player::draw_viewmodel() {
     rlPopMatrix();
 }
 
-void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor) {
+void Player::update() {
 
     if (misc.noclip) {
         misc.no_gravity = true;
@@ -562,7 +561,7 @@ void Player::update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map
 
     update_gravity();
 
-    move(map_geometry, map_floor);
+    move();
     update_viewmodel();
 
     update_camera();

@@ -1,9 +1,8 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "geometry.h"
+#include "collision.h"
 #include "player.h"
-#include "triggers.h"
 #include <string.h>
 #include <string>
 #include <vector>
@@ -18,6 +17,8 @@ class Scene {
     std::vector<Geometry> map_geometry;
     std::vector<Floor> map_floor;
     std::vector<Trigger> map_trigger;
+
+    std::vector<Collider *> map_colliders;
 
     Player *player;
 
@@ -45,11 +46,13 @@ class Scene {
   private:
     // private methods
 
-    virtual void update_map_triggers(void);
-    virtual void debug_draw_map_triggers();
+    /*virtual void update_map_triggers(void);*/
+    /*virtual void debug_draw_map_triggers();*/
 
-    virtual void draw_map_geometry(void);
-    virtual void draw_map_floor(void);
+    /*virtual void draw_map_geometry(void);*/
+    /*virtual void draw_map_floor(void);*/
+
+    virtual void draw_scene_colliders(void);
 };
 
 class MainMenu : public Scene {
