@@ -17,9 +17,9 @@ void Collider::add_normal(Vector3 normal) {
 void get_normals(Mesh mesh, std::vector<Vector3> *normals) {
 
     for (int i = 0; i < mesh.vertexCount; i += 3) {
-        normals->push_back((Vector3){mesh.normals[i],
-                                     mesh.normals[i + 1],
-                                     mesh.normals[i + 2]});
+        normals->push_back({mesh.normals[i],
+                            mesh.normals[i + 1],
+                            mesh.normals[i + 2]});
     }
 }
 
@@ -30,9 +30,9 @@ void setup_collider_mesh(Collider *c, Mesh mesh) {
     int vertex = 0;
 
     for (int i = 0; i < c->num_points; i++) {
-        c->not_transformed.push_back((Vector3){mesh.vertices[vertex],
-                                               mesh.vertices[vertex + 1],
-                                               mesh.vertices[vertex + 2]});
+        c->not_transformed.push_back({mesh.vertices[vertex],
+                                      mesh.vertices[vertex + 1],
+                                      mesh.vertices[vertex + 2]});
         vertex += 3;
     }
 
@@ -73,14 +73,14 @@ Vector3 get_middle_point(std::vector<Vector3> *verticies, int num_verticies) {
         z += verticies[i].data()->z;
     }
 
-    return (Vector3){x / num_verticies,
-                     y / num_verticies,
-                     z / num_verticies};
+    return {x / num_verticies,
+            y / num_verticies,
+            z / num_verticies};
 }
 
 bool check_collision(Collider *a, Collider *b, Vector3 *normal) {
 
-    *normal = (Vector3){0, 0, 0};
+    *normal = {0, 0, 0};
     float depth = FLT_MAX; // init depth as max it can be
 
     for (int i = 0; i < a->num_normals; i++) {
@@ -88,7 +88,7 @@ bool check_collision(Collider *a, Collider *b, Vector3 *normal) {
         float min2, max2;
 
         get_min_max(a, a->normals[i], &min2, &max2);
-        get_min_max(b, a->normals[i], &min1, &max2);
+        get_min_max(b, a->normals[i], &min1, &max1);
 
         if (max1 < min2 || max2 < min1) {
             return false; // no collision on this axis
