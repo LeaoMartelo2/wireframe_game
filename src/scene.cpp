@@ -154,7 +154,9 @@ void Scene::draw_scene_colliders() {
 
 void Scene::update(void) {
 
+#ifndef DEBUG
     player->update(map_colliders);
+#endif // !DEBUG
 
     /*update_map_triggers();*/
 

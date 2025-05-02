@@ -48,9 +48,16 @@ Player::Player() {
     input.up_down = 0.0f;
 
     collision.bounding_box_size = {5, 15, 5};
-    collision.bounding_box = calculate_boundingbox();
+    // collision.bounding_box = calculate_boundingbox();
 
-    Collider player_collider;
+    player_collider.size = {5, 15, 5};
+    player_collider.pos = pos;
+    player_collider.color = GREEN;
+    player_collider.outline_color = RED;
+
+    player_collider.populate();
+
+    lognest_warn("%d", player_collider.mesh.vertexCount);
 
     lognest_debug(" ┗>[Player] Player Bounding Box calculated.");
 
@@ -320,34 +327,42 @@ void Player::move(const std::vector<Collider> &map_colliders) {
     get_input();
 
     calculate_velocity();
-    Vector3 predicted_pos = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
+    player_collider.pos = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
 
     static Vector3 move_v;
 
     move_v = move_vertical(velocity.vertical * delta_time);
 
-    DrawCube(pos, 0.3, 0.3, 0.3, BLUE);
-    DrawCube(move_v, 0.5, 0.5, 0.5, RED);
+    player_collider.pos = Vector3Add(player_collider.pos, move_v);
 
-    static Vector3 move_step = pos;
-    static Vector3 contact_point;
-    static float lerp_step = 0.0f;
+    // DrawCube(pos, 0.3, 0.3, 0.3, BLUE);
+    // DrawCube(move_v, 0.5, 0.5, 0.5, RED);
+
+    // static Vector3 move_step = pos;
+    // static Vector3 contact_point;
+    // static float lerp_step = 0.0f;
     static float vlerp_step = 0.0f;
-    static const float step_size = 0.05f;
+    // static const float step_size = 0.05f;
 
-    Vector3 v_pred = predicted_pos + move_v;
+    // Vector3 v_pred = predicted_pos + move_v;
 
     static Vector3 v_step = pos;
 
-    move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
-    v_step = Vector3Lerp(pos, v_pred, vlerp_step);
+    // move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
+    // v_step = Vector3Lerp(pos, v_pred, vlerp_step);
 
-    pos.x = move_step.x;
-    pos.z = move_step.z;
+    // pos.x = move_step.x;
+    // pos.z = move_step.z;
 
-    pos.y = v_step.y;
+    // pos.y = v_step.y;
 
-    player_collider.pos = pos;
+    // player_collider.pos = pos;
+
+    if (IsKeyPressed(KEY_B)) {
+        player_collider.pos = pos;
+    }
+
+    player_collider.is_colliding = false;
 
     for (auto &map_collider : map_colliders) {
 
@@ -360,6 +375,7 @@ void Player::move(const std::vector<Collider> &map_colliders) {
             if (collider_check_collision(player_collider, map_collider, &mtv_data)) {
 
                 player_collider.is_colliding = true;
+                lognest_warn("is colliding");
                 // map_collider.is_colliding = true; /* its a const reference ??? */
 
                 Vector3 mtv_direction = Vector3Normalize(mtv_data.axis);
@@ -372,28 +388,28 @@ void Player::move(const std::vector<Collider> &map_colliders) {
                 }
 
                 player_collider.pos = Vector3Add(player_collider.pos, translation);
-                pos = player_collider.pos;
+                velocity.vertical = 0.0f;
+                is_grounded = true;
             }
         }
     }
 
-    /*if (check_collision_floor(map_floor, v_step)) {*/
-    // is_grounded = true;
-    /*} else {*/
+    pos = player_collider.pos;
+
     if (!misc.noclip) {
         pos.y = v_step.y;
         is_grounded = false;
     }
     /*}*/
 
-    if (lerp_step < 1.0f) {
-        lerp_step += step_size;
-        lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
-    }
-    if (vlerp_step < 1.0f) {
-        vlerp_step += step_size;
-        vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);
-    }
+    // if (lerp_step < 1.0f) {
+    //     lerp_step += step_size;
+    //     lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
+    // }
+    // if (vlerp_step < 1.0f) {
+    //     vlerp_step += step_size;
+    //     vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);
+    // }
     /*}*/
 
 #ifdef DEBUG
@@ -409,20 +425,20 @@ void Player::move(const std::vector<Collider> &map_colliders) {
     const float msize = 0.4;
     const float msize2 = 0.5;
 
-    DrawCube(pos, msize, msize, msize, GREEN);
-    DrawLine3D(pos, move_a, GREEN);
-    DrawCube(move_a, msize, msize, msize, GREEN);
-
-    DrawCube(pos, msize, msize, msize, BLUE);
-    DrawLine3D(pos, move_b, BLUE);
-    DrawCube(move_b, msize, msize, msize, BLUE);
-
-    DrawCube(pos, msize2, msize2, msize2, RED);
-    DrawLine3D(pos, predicted_pos, RED);
-    DrawCube(predicted_pos, msize2, msize2, msize2, RED);
-
-    DrawCube(v_pred, 1, 1, 1, ORANGE);
-    DrawLine3D(pos, v_pred, ORANGE);
+    // DrawCube(pos, msize, msize, msize, GREEN);
+    // DrawLine3D(pos, move_a, GREEN);
+    // DrawCube(move_a, msize, msize, msize, GREEN);
+    //
+    // DrawCube(pos, msize, msize, msize, BLUE);
+    // DrawLine3D(pos, move_b, BLUE);
+    // DrawCube(move_b, msize, msize, msize, BLUE);
+    //
+    // DrawCube(pos, msize2, msize2, msize2, RED);
+    // DrawLine3D(pos, predicted_pos, RED);
+    // DrawCube(predicted_pos, msize2, msize2, msize2, RED);
+    //
+    // DrawCube(v_pred, 1, 1, 1, ORANGE);
+    // DrawLine3D(pos, v_pred, ORANGE);
 
 #endif
 
@@ -492,6 +508,10 @@ void Player::update(const std::vector<Collider> &map_colliders) {
     update_gravity();
 
     move(map_colliders);
+
+    // DrawModel(player_collider.model, player_collider.pos, 1, player_collider.color);
+    DrawSphere(player_collider.pos, 1.5, GREEN);
+
     update_viewmodel();
 
     update_camera();
@@ -539,11 +559,13 @@ void Player::debug() {
     DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
                         "Input:\n -> Forward: %f\n -> Sideways: %f\n"
                         "Velocity:\n -> Forward: %.2f\n -> Vertical: %.2f\n -> Sideways: %.2f\n"
-                        "Grounded: %s\n",
+                        "Grounded: %s\n"
+                        "is_colliding: %s",
                         pos.x, pos.y, pos.z,
                         input.forwards, input.sideways,
                         velocity.forwards, velocity.vertical, velocity.sideways,
-                        bool_to_string(is_grounded)),
+                        bool_to_string(is_grounded),
+                        bool_to_string(player_collider.is_colliding)),
              10, 10,
              20, WHITE);
     if (misc.noclip) {
