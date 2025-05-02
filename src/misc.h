@@ -34,7 +34,7 @@ inline void raylib_config(void) {
 
     SetWindowMinSize(900, 600);
 
-    MaximizeWindow();
+    // MaximizeWindow();
 
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);

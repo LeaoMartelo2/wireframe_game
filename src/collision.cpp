@@ -1,148 +1,78 @@
 #include "collision.h"
-#include <cfloat>
-#include <cstdlib>
+#include <cmath>
+#include <float.h>
+#include <stddef.h>
+#include <stdlib.h>
 
+Collider::Collider() {};
 Collider::~Collider() {};
 
-void Collider::populate(void) {
+void Collider::populate() {
 
+    half_extents = {size.x / 2, size.y / 2, size.z / 2};
     mesh = GenMeshCube(size.x, size.y, size.z);
     model = LoadModelFromMesh(mesh);
+    rotation = MatrixIdentity();
 }
 
-void Collider::add_normal(Vector3 normal) {
-    normals.push_back(normal);
+float Collider::get_projection_radius(Vector3 axis) const {
+
+    Vector3 local_x = {rotation.m0, rotation.m4, rotation.m8};
+    Vector3 local_y = {rotation.m1, rotation.m5, rotation.m9};
+    Vector3 local_z = {rotation.m2, rotation.m6, rotation.m10};
+
+    return fabs(Vector3DotProduct(local_x, axis)) * half_extents.x +
+           fabs(Vector3DotProduct(local_y, axis)) * half_extents.y +
+           fabs(Vector3DotProduct(local_z, axis)) * half_extents.z;
 }
 
-void get_normals(Mesh mesh, std::vector<Vector3> *normals) {
-
-    for (int i = 0; i < mesh.vertexCount; i += 3) {
-        normals->push_back({mesh.normals[i],
-                            mesh.normals[i + 1],
-                            mesh.normals[i + 2]});
-    }
+float Collider::get_max_radius() const {
+    return Vector3Length(half_extents);
 }
 
-void setup_collider_mesh(Collider *c, Mesh mesh) {
+void Collider::draw() const {
 
-    c->num_points = mesh.vertexCount;
-
-    int vertex = 0;
-
-    for (int i = 0; i < c->num_points; i++) {
-        c->not_transformed.push_back({mesh.vertices[vertex],
-                                      mesh.vertices[vertex + 1],
-                                      mesh.vertices[vertex + 2]});
-        vertex += 3;
-    }
-
-    c->num_normals = mesh.triangleCount;
-    get_normals(mesh, &c->normals);
+    DrawModel(model, pos, 1.0, color);
+    DrawModelWires(model, pos, 1.0, outline_color);
 }
 
-void get_min_max(Collider *b, Vector3 axis, float *min, float *max) {
+bool collider_check_collision(const Collider &collider1, const Collider &collider2, MTV *mtv) {
 
-    *min = Vector3DotProduct(b->transformed_points[0], axis);
-    *max = *min; // initialize max with same value as min
+    Vector3 axes[3] = {
+        {1, 0, 0}, /* x axis */
+        {0, 1, 0}, /* y axis */
+        {0, 0, 1}, /* z axis*/
+    };
 
-    for (int i = 1; i < b->num_points; i++) {
+    float min_overlap = INFINITY;
+    Vector3 min_axis = {0};
 
-        float dot = Vector3DotProduct(b->transformed_points[i], axis);
+    for (int k = 0; k < 3; k++) {
+        Vector3 axis = axes[k];
 
-        // if dot smaller than min, thats the new min
-        if (dot < *min) {
-            *min = dot;
+        float proj1 = Vector3DotProduct(collider1.pos, axis);
+        float radius1 = collider1.get_projection_radius(axis);
+        float min1 = proj1 - radius1;
+        float max1 = proj1 + radius1;
+
+        float proj2 = Vector3DotProduct(collider2.pos, axis);
+        float radius2 = collider2.get_projection_radius(axis);
+        float min2 = proj2 - radius2;
+        float max2 = proj2 + radius2;
+
+        float overlap = fminf(max1, max2) - fmaxf(min1, min2);
+
+        if (overlap <= 0) {
+            return false;
         }
 
-        // if dot is bigger than max, thats the new max
-
-        if (dot > *max) {
-            *max = dot;
-        }
-    }
-}
-
-Vector3 get_middle_point(std::vector<Vector3> *verticies, int num_verticies) {
-
-    float x, y, z;
-
-    for (int i = 0; i < num_verticies; i++) {
-
-        x += verticies[i].data()->x;
-        y += verticies[i].data()->y;
-        z += verticies[i].data()->z;
-    }
-
-    return {x / num_verticies,
-            y / num_verticies,
-            z / num_verticies};
-}
-
-bool check_collision(Collider *a, Collider *b, Vector3 *normal) {
-
-    *normal = {0, 0, 0};
-    float depth = FLT_MAX; // init depth as max it can be
-
-    for (int i = 0; i < a->num_normals; i++) {
-        float min1, max1;
-        float min2, max2;
-
-        get_min_max(a, a->normals[i], &min2, &max2);
-        get_min_max(b, a->normals[i], &min1, &max1);
-
-        if (max1 < min2 || max2 < min1) {
-            return false; // no collision on this axis
-        } else {
-            float axis_depth = fminf(max2 - min1, max1 - min2);
-
-            if (axis_depth < depth) {
-                depth = axis_depth;
-                *normal = a->normals[i];
-            }
+        if (overlap < min_overlap) {
+            min_overlap = overlap;
+            min_axis = axis;
         }
     }
 
-    for (int i = 0; i < b->num_normals; i++) {
-        float min1, max1;
-        float min2, max2;
-
-        get_min_max(a, b->normals[i], &min2, &max2);
-        get_min_max(b, b->normals[i], &min1, &max1);
-
-        if (max1 < min2 || max2 < min1) {
-            return false; // no collision on this axis
-        } else {
-            float axis_depth = fminf(max2 - min1, max1 - min2);
-
-            if (axis_depth < depth) {
-                depth = axis_depth;
-                *normal = b->normals[i];
-            }
-        }
-    }
-
-    Vector3 direction = Vector3Subtract(get_middle_point(&a->transformed_points, a->num_points),
-                                        get_middle_point(&b->transformed_points, b->num_points));
-
-    if (Vector3DotProduct(direction, *normal) < 0.0f) {
-        *normal = Vector3Negate(*normal);
-    }
-    *normal = Vector3Scale(*normal, depth);
+    mtv->axis = min_axis;
+    mtv->depth = min_overlap;
     return true;
 }
-
-void update_collider(Vector3 parent, Collider *c) {
-
-    for (int i = 0; i < c->num_points; i++) {
-        c->transformed_points[i] = Vector3Add(c->not_transformed[i], parent);
-    }
-}
-
-Geometry::Geometry() {};
-Geometry::~Geometry() {};
-
-Floor::Floor() {};
-Floor::~Floor() {};
-
-Trigger::Trigger() {};
-Trigger::~Trigger() {};

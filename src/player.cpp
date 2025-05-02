@@ -2,6 +2,7 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
+#include "collision.h"
 #include "include/lognest.h"
 #include "misc.h"
 #include <math.h>
@@ -49,6 +50,8 @@ Player::Player() {
     collision.bounding_box_size = {5, 15, 5};
     collision.bounding_box = calculate_boundingbox();
 
+    Collider player_collider;
+
     lognest_debug(" ┗>[Player] Player Bounding Box calculated.");
 
     if (file_exists(VIEWMODEL_PATH)) {
@@ -88,102 +91,6 @@ BoundingBox Player::calculate_boundingbox() {
     BoundingBox player_bounding_box = {negative, positive};
 
     return player_bounding_box;
-}
-
-bool Player::check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos) {
-
-    if (misc.noclip) {
-        return false;
-    }
-
-    /*for (size_t i = 0; map_geometry.size(); ++i) {*/
-    for (auto i : map_geometry) {
-
-        if (Vector3Distance(cube_pos, i.pos) > 10000) {
-            continue;
-        }
-
-        Vector3 other_pos = i.pos;
-        Vector3 other_size = i.size;
-
-        Vector3 negative_other = {other_pos.x - other_size.x / 2,
-                                  other_pos.y - other_size.y / 2,
-                                  other_pos.z - other_size.z / 2};
-
-        Vector3 positive_other = {other_pos.x + other_size.x / 2,
-                                  other_pos.y + other_size.y / 2,
-                                  other_pos.z + other_size.z / 2};
-
-        BoundingBox geometry_bounding_box = {negative_other, positive_other};
-
-        Vector3 cube_size = collision.bounding_box_size;
-
-        Vector3 c_negative_other = {cube_pos.x - cube_size.x / 2,
-                                    cube_pos.y - cube_size.y / 2,
-                                    cube_pos.z - cube_size.z / 2};
-
-        Vector3 c_positive_other = {cube_pos.x + cube_size.x / 2,
-                                    cube_pos.y + cube_size.y / 2,
-                                    cube_pos.z + cube_size.z / 2};
-
-        BoundingBox cube_bbox = {c_negative_other, c_positive_other};
-
-        if (CheckCollisionBoxes(cube_bbox, geometry_bounding_box)) {
-
-#ifdef DEBUG
-            DrawBoundingBox(cube_bbox, YELLOW);
-#endif // DEBUG
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Player::check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_pos) {
-
-    if (misc.noclip) {
-        return false;
-    }
-
-    for (auto i : map_floor) {
-        Vector3 other_pos = i.pos;
-        Vector3 other_size = i.size;
-
-        Vector3 negative_other = {other_pos.x - other_size.x / 2,
-                                  other_pos.y - other_size.y / 2,
-                                  other_pos.z - other_size.z / 2};
-
-        Vector3 positive_other = {other_pos.x + other_size.x / 2,
-                                  other_pos.y + other_size.y / 2,
-                                  other_pos.z + other_size.z / 2};
-
-        BoundingBox floor_bounding_box = {negative_other, positive_other};
-
-        Vector3 cube_size = collision.bounding_box_size;
-
-        Vector3 c_negative_other = {cube_pos.x - cube_size.x / 2,
-                                    cube_pos.y - cube_size.y / 2,
-                                    cube_pos.z - cube_size.z / 2};
-
-        Vector3 c_positive_other = {cube_pos.x + cube_size.x / 2,
-                                    cube_pos.y + cube_size.y / 2,
-                                    cube_pos.z + cube_size.z / 2};
-
-        BoundingBox cube_bbox = {c_negative_other, c_positive_other};
-
-        if (CheckCollisionBoxes(cube_bbox, floor_bounding_box)) {
-
-#ifdef DEBUG
-            DrawBoundingBox(cube_bbox, YELLOW);
-#endif // DEBUG
-
-            return true;
-        }
-    }
-
-    return false;
 }
 
 // Modified implementation of CameraYaw from rcamera.h
@@ -402,7 +309,7 @@ void Player::calculate_velocity() {
     velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
 }
 
-void Player::move() {
+void Player::move(const std::vector<Collider> &map_colliders) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
@@ -435,20 +342,43 @@ void Player::move() {
     move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
     v_step = Vector3Lerp(pos, v_pred, vlerp_step);
 
-    /*if (check_collision_geometry(map_geometry, move_step)) {*/
-    /*    contact_point = move_step;*/
-    /*    lerp_step = 0;*/
-    /*    velocity.forwards = 0;*/
-    /*    velocity.sideways = 0;*/
-    /*    velocity.vertical = 0;*/
-
-    /*} else {*/
-
     pos.x = move_step.x;
     pos.z = move_step.z;
 
+    pos.y = v_step.y;
+
+    player_collider.pos = pos;
+
+    for (auto &map_collider : map_colliders) {
+
+        float dist = Vector3Distance(player_collider.pos, map_collider.pos);
+
+        if (dist < player_collider.get_max_radius() + map_collider.get_max_radius()) {
+
+            MTV mtv_data;
+
+            if (collider_check_collision(player_collider, map_collider, &mtv_data)) {
+
+                player_collider.is_colliding = true;
+                // map_collider.is_colliding = true; /* its a const reference ??? */
+
+                Vector3 mtv_direction = Vector3Normalize(mtv_data.axis);
+                Vector3 translation = Vector3Scale(mtv_direction, mtv_data.depth);
+                Vector3 to_player = Vector3Subtract(player_collider.pos, map_collider.pos);
+
+                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+
+                    translation = Vector3Negate(translation);
+                }
+
+                player_collider.pos = Vector3Add(player_collider.pos, translation);
+                pos = player_collider.pos;
+            }
+        }
+    }
+
     /*if (check_collision_floor(map_floor, v_step)) {*/
-    is_grounded = true;
+    // is_grounded = true;
     /*} else {*/
     if (!misc.noclip) {
         pos.y = v_step.y;
@@ -550,7 +480,7 @@ void Player::draw_viewmodel() {
     rlPopMatrix();
 }
 
-void Player::update() {
+void Player::update(const std::vector<Collider> &map_colliders) {
 
     if (misc.noclip) {
         misc.no_gravity = true;
@@ -561,7 +491,7 @@ void Player::update() {
 
     update_gravity();
 
-    move();
+    move(map_colliders);
     update_viewmodel();
 
     update_camera();

@@ -14,11 +14,11 @@ class Scene {
   public:
     SceneManager *parent;
 
-    std::vector<Geometry> map_geometry;
-    std::vector<Floor> map_floor;
-    std::vector<Trigger> map_trigger;
+    // std::vector<Geometry> map_geometry;
+    // std::vector<Floor> map_floor;
+    // std::vector<Trigger> map_trigger;
 
-    std::vector<Collider *> map_colliders;
+    std::vector<Collider> map_colliders;
 
     Player *player;
 

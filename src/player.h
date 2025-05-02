@@ -45,7 +45,7 @@ class Player {
         BoundingBox bounding_box;
     } collision;
 
-    /*Collider collider;*/
+    Collider player_collider;
 
     struct {
         Model model;
@@ -67,12 +67,12 @@ class Player {
     // public methods
     Player();
 
-    void update();
+    void update(const std::vector<Collider> &map_colliders);
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
-    bool check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos);
-    bool check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_pos);
+    // bool check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos);
+    // bool check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_pos);
 
     Vector3 get_forward(void);
     Vector3 get_up(void);
@@ -99,7 +99,7 @@ class Player {
     void noclip_move_vertical(float distance);
     Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
-    void move();
+    void move(const std::vector<Collider> &map_colliders);
 
     void camera_yaw(float angle);
     void camera_pitch(float angle);

@@ -3,87 +3,44 @@
 
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
+#include "../raylib/rlgl.h"
 #include <float.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 
+// minimal translaction vector
+typedef struct MTV {
+    Vector3 axis;
+    float depth;
+} MTV;
+
+// Collider = Oriented Bounding Box
 class Collider {
   public:
-    // array of points defining the transfortmed collider
-    /*Vector3 *transformed_points;*/
-    std::vector<Vector3> transformed_points;
-    // array of points defining the collider
-    /*Vector3 *not_transformed;*/
-    std::vector<Vector3> not_transformed;
-    int num_points;
-    // normals array
-    /*Vector3 *normals;*/
-    std::vector<Vector3> normals;
-    void add_normal(Vector3 normal);
-
-    int num_normals;
-
-    Vector3 size;
-    Vector3 pos;
+    Vector3 pos;          /* center of the OBB */
+    Vector3 size;         /* width, height, lenght */
+    Vector3 half_extents; /* half dimensions, so dosent have to recalculate it every time  */
+    Matrix rotation;
+    bool is_colliding = false;
     Mesh mesh;
     Model model;
+    Color color;
+    Color outline_color;
 
-    virtual ~Collider();
+    Collider();
+    ~Collider();
 
-    /* Populate Mesh and Model data */
-    void populate(void);
+    /* initialize mesh, model data, and miscelanious */
+    void populate();
 
-    /* make these purely virtual functions */
-    virtual void draw(void) = 0;
+    float get_projection_radius(Vector3 axis) const; /* calculate projection radious onto an axis */
+    float get_max_radius() const;                    /* max radious for broad collision check */
+    void draw() const;
 };
 
-void get_normals(Mesh mesh, std::vector<Vector3> *normals);
-void setup_collider_mesh(Collider *c, Mesh mesh);
-void get_min_max(Collider *b, Vector3 axis, float *min, float *max);
-Vector3 get_middle_point(std::vector<Vector3> *verticies, int num_verticies);
-bool check_collision(Collider *a, Collider *b, Vector3 *normal);
-void update_collider(Vector3 parent, Collider *c);
-
-class Geometry : public Collider {
-
-  public:
-    Geometry();
-    ~Geometry();
-
-    void draw(void) override;
-};
-
-class Floor : public Collider {
-  public:
-    Floor();
-    ~Floor();
-
-    void draw(void) override;
-};
-
-typedef enum {
-    TRIGGER_TELEPORT = 0,
-    TRIGGER_LOADLEVEL,
-    TRIGGER_GOTO_SCENE
-} TRIGGER_TYPES;
-
-typedef struct {
-    Vector3 teleport;
-    std::string levelname;
-    size_t scene_id;
-} trigger_info;
-
-class Trigger : public Collider {
-
-  public:
-    int type;
-    trigger_info info;
-
-    Trigger();
-    ~Trigger();
-    void draw(void) override;
-};
+/* SAT collision optimized for axis-aligned checks */
+bool collider_check_collision(const Collider &collider1, const Collider &collider2, MTV *mtv);
 
 #endif // !COLLISION_H_

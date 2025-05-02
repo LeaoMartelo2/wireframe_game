@@ -5,6 +5,10 @@
 #include "player.h"
 #include <fstream>
 
+#define GEOMETRY_COLOR GRAY;
+#define FLOOR_COLOR GetColor(0x181818FF)
+#define OUTLINE_COLOR RED
+
 Scene::Scene() {
 }
 
@@ -48,33 +52,39 @@ void Scene::loadmap(const char *filename) {
         for (const auto &item : j) {
 
             if (item["type"] == "geometry") {
-                Geometry *geometry = new Geometry();
 
-                geometry->size.x = item["size"]["x"];
-                geometry->size.y = item["size"]["y"];
-                geometry->size.z = item["size"]["z"];
+                Collider geometry;
 
-                geometry->pos.x = item["pos"]["x"];
-                geometry->pos.y = item["pos"]["y"];
-                geometry->pos.z = item["pos"]["z"];
+                geometry.size.x = item["size"]["x"];
+                geometry.size.y = item["size"]["y"];
+                geometry.size.z = item["size"]["z"];
 
-                geometry->populate();
+                geometry.pos.x = item["pos"]["x"];
+                geometry.pos.y = item["pos"]["y"];
+                geometry.pos.z = item["pos"]["z"];
+
+                geometry.populate();
+                geometry.color = GEOMETRY_COLOR;
+                geometry.outline_color = OUTLINE_COLOR;
 
                 map_colliders.push_back(geometry);
             }
 
             if (item["type"] == "floor") {
-                Floor *floor = new Floor();
 
-                floor->size.x = item["size"]["x"];
-                floor->size.y = item["size"]["y"];
-                floor->size.z = item["size"]["z"];
+                Collider floor;
 
-                floor->pos.x = item["pos"]["x"];
-                floor->pos.y = item["pos"]["y"];
-                floor->pos.z = item["pos"]["z"];
+                floor.size.x = item["size"]["x"];
+                floor.size.y = item["size"]["y"];
+                floor.size.z = item["size"]["z"];
 
-                floor->populate();
+                floor.pos.x = item["pos"]["x"];
+                floor.pos.y = item["pos"]["y"];
+                floor.pos.z = item["pos"]["z"];
+
+                floor.populate();
+                floor.color = FLOOR_COLOR;
+                floor.outline_color = OUTLINE_COLOR;
 
                 map_colliders.push_back(floor);
             }
@@ -90,39 +100,41 @@ void Scene::loadmap(const char *filename) {
             }
 
             if (item["type"] == "trigger") {
-                Trigger *trigger = new Trigger();
+                continue;
 
-                trigger->pos.x = item["pos"]["x"];
-                trigger->pos.y = item["pos"]["y"];
-                trigger->pos.z = item["pos"]["z"];
-
-                trigger->size.x = item["size"]["x"];
-                trigger->size.y = item["size"]["y"];
-                trigger->size.z = item["size"]["z"];
-
-                if (item["trigger_type"] == "teleport") {
-                    trigger->type = TRIGGER_TELEPORT;
-
-                    trigger->info.teleport.x = item["info"]["teleport"]["x"];
-                    trigger->info.teleport.y = item["info"]["teleport"]["y"];
-                    trigger->info.teleport.z = item["info"]["teleport"]["z"];
-                }
-
-                if (item["trigger_type"] == "goto_scene") {
-                    trigger->type = TRIGGER_GOTO_SCENE;
-
-                    trigger->info.scene_id = item["info"]["scene_id"];
-                }
-
-                if (item["trigger_type"] == "load_level") {
-                    trigger->type = TRIGGER_LOADLEVEL;
-
-                    trigger->info.levelname = item["info"]["level_name"];
-                }
-
-                trigger->populate();
-
-                map_colliders.push_back(trigger);
+                //     trigger->pos.x = item["pos"]["x"];
+                //     trigger->pos.y = item["pos"]["y"];
+                //     trigger->pos.z = item["pos"]["z"];
+                //
+                //     trigger->size.x = item["size"]["x"];
+                //     trigger->size.y = item["size"]["y"];
+                //     trigger->size.z = item["size"]["z"];
+                //
+                //     if (item["trigger_type"] == "teleport") {
+                //         trigger->type = TRIGGER_TELEPORT;
+                //
+                //         trigger->info.teleport.x = item["info"]["teleport"]["x"];
+                //         trigger->info.teleport.y = item["info"]["teleport"]["y"];
+                //         trigger->info.teleport.z = item["info"]["teleport"]["z"];
+                //     }
+                //
+                //     if (item["trigger_type"] == "goto_scene") {
+                //         trigger->type = TRIGGER_GOTO_SCENE;
+                //
+                //         trigger->info.scene_id = item["info"]["scene_id"];
+                //     }
+                //
+                //     if (item["trigger_type"] == "load_level") {
+                //         trigger->type = TRIGGER_LOADLEVEL;
+                //
+                //         trigger->info.levelname = item["info"]["level_name"];
+                //     }
+                //
+                //     trigger->populate();
+                //
+                //     setup_collider_mesh(trigger, trigger->model.meshes[0]);
+                //
+                //     map_colliders.push_back(trigger);
             }
 
             ++i;
@@ -133,49 +145,16 @@ void Scene::loadmap(const char *filename) {
     }
 }
 
-/*void Scene::draw_map_geometry(void) {*/
-/**/
-/*    for (size_t i = 0; i < map_geometry.size(); ++i) {*/
-/**/
-/*        geometry_draw(&map_geometry[i]);*/
-/*    }*/
-/*}*/
+void Scene::draw_scene_colliders() {
 
-/*void Scene::draw_map_floor(void) {*/
-/**/
-/*    for (size_t i = 0; i < map_floor.size(); ++i) {*/
-/*        floor_draw(&map_floor[i]);*/
-/*    }*/
-/*}*/
-
-/*void Scene::update_map_triggers(void) {*/
-/**/
-/*    for (Trigger i : map_trigger) {*/
-/*        update_trigger(this, &i, player);*/
-/*    }*/
-/*}*/
-
-/*void Scene::debug_draw_map_triggers(void) {*/
-/**/
-/*    for (Trigger i : map_trigger) {*/
-/**/
-/*        debug_draw_trigger(&i);*/
-/*    }*/
-/*}*/
-/**/
-void Scene::draw_scene_colliders(void) {
-
-    for (Collider *i : map_colliders) {
-        i->draw();
+    for (const auto &collider : map_colliders) {
+        collider.draw();
     }
 }
 
 void Scene::update(void) {
 
-#ifndef DEBUG
-
-    player->update();
-#endif // !DEBUG
+    player->update(map_colliders);
 
     /*update_map_triggers();*/
 
@@ -186,7 +165,7 @@ void Scene::update(void) {
         BeginMode3D(player->camera);
         {
 #ifdef DEBUG
-            player->update();
+            player->update(map_colliders);
 #endif // DEBUG
 
             /*draw_map_floor();*/
