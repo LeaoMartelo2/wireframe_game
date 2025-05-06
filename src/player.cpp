@@ -3,6 +3,7 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "collision.h"
+#include "globals.h"
 #include "include/lognest.h"
 #include "misc.h"
 #include <math.h>
@@ -269,6 +270,12 @@ void Player::move(const std::vector<Collider> &map_colliders) {
 
         /* check collision */
         for (auto &map_collider : map_colliders) {
+
+            /* skip collision checking entirely if the object is too far away */
+            float distance = Vector3Distance(collider.pos, map_collider.pos);
+            if (distance > g_settings.coll_distance) {
+                continue;
+            }
 
             MTV mtv;
             if (collider_check_collision(collider, map_collider, &mtv)) {

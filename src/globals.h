@@ -17,6 +17,9 @@ typedef struct {
     bool fullscreen;
     bool camera_tilt;
     bool play_music;
+
+    float draw_distance;
+    float coll_distance;
 } settings_t;
 
 extern settings_t g_settings;

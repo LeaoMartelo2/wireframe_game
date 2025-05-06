@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "collision.h"
+#include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "player.h"
@@ -148,6 +149,13 @@ void Scene::loadmap(const char *filename) {
 void Scene::draw_scene_colliders() {
 
     for (const auto &collider : map_colliders) {
+
+        /* don't draw the geometry if its too far away */
+        float distance = Vector3Distance(player->collider.pos, collider.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
         collider.draw();
     }
 }
