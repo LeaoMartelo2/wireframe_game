@@ -11,8 +11,6 @@
 
 #define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
 
-Model empty_model = {0};
-
 Player::Player() {
 
     lognest_trace("[Player] Loading Player data.");
@@ -23,7 +21,7 @@ Player::Player() {
     camera.up = {0, 1, 0};
     camera.fovy = 90.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-    camera_misc.camera_tilt = 0.01f;
+    camera_misc.camera_tilt = 0.0f;
     camera_misc.mouse_sens = 0.1f;
 
     lognest_debug(" ┗>[Player] Camera created.");
@@ -31,29 +29,23 @@ Player::Player() {
     move_speed = 150.0f;
     side_speed = 120.0f;
     jump_speed = 28.0f;
-    air_boost = 1.02f;
     acc_rate = 0.15f;
     gravity = 40.0f;
-    max_acell = 200.0f;
     is_grounded = false;
 
     velocity = {0, 0, 0};
-
-    lognest_debug(" ┗>[Player] Setup default movement variables.");
 
     input.forwards = 0.0f;
     input.sideways = 0.0f;
     input.up_down = 0.0f;
 
-    player_size = {5, 15, 5};
+    lognest_debug(" ┗>[Player] Calculated movement values.");
 
     collider.size = {5, 15, 5};
-    collider.color = BLANK;
-    collider.outline_color = GREEN;
 
     collider.populate();
 
-    lognest_debug(" ┗>[Player] Player collider calculated.");
+    lognest_debug(" ┗>[Player] Player collision calculated.");
 
     if (file_exists(VIEWMODEL_PATH)) {
         viewmodel.model = LoadModel(VIEWMODEL_PATH);
@@ -135,56 +127,6 @@ Vector3 Player::get_right() {
     Vector3 up = get_up();
 
     return Vector3Normalize(Vector3CrossProduct(forward, up));
-}
-
-Vector3 Player::move_forward(float distance) {
-
-    Vector3 forward = get_forward();
-
-    forward.y = 0;
-    forward = Vector3Normalize(forward);
-
-    forward = Vector3Scale(forward, distance);
-
-    return forward;
-}
-
-Vector3 Player::move_right(float distance) {
-
-    Vector3 right = get_right();
-
-    right.y = 0;
-    right = Vector3Scale(right, distance);
-
-    return right;
-}
-
-Vector3 Player::move_vertical(float distance) {
-
-    Vector3 up = get_up();
-
-    up = Vector3Scale(up, distance);
-
-    return up;
-}
-
-void Player::noclip_move_vertical(float distance) {
-
-    Vector3 up = get_up();
-
-    up = Vector3Scale(up, distance);
-
-    collider.pos = Vector3Add(collider.pos, up);
-}
-
-Vector3 Player::new_pos(float distance_foward, float distance_right) {
-
-    Vector3 forward = move_forward(distance_foward);
-    Vector3 right = move_right(distance_right);
-
-    camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
-
-    return Vector3Add(forward, right);
 }
 
 void Player::update_gravity() {
@@ -273,24 +215,6 @@ void Player::get_input() {
     }
 }
 
-void Player::calculate_velocity() {
-
-    static float scale = 1.0f;
-
-    scale = is_grounded ? 1.0f : air_boost;
-
-    // velocity.forwards = move_speed * input.forwards * scale;
-    // velocity.forwards = Clamp(velocity.forwards, -move_speed * scale, move_speed * scale);
-
-    // x = move_speed * (-1 ... 1) <-- this leaves us with a percentage of total max speed
-    // based on how long the player held the directional key
-    // as in: slight tap = move slowly; held the key for a bit = fullspeed
-    // makes movement more natural to controll
-
-    // velocity.sideways = side_speed * input.sideways * scale;
-    // velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
-}
-
 void Player::jump() {
 
     if (is_grounded) {
@@ -314,46 +238,60 @@ void Player::move(const std::vector<Collider> &map_colliders) {
     Vector3 movement = {0, 0, 0};
 
     Vector3 forward = Vector3Normalize(get_forward());
-    forward.y = 0;
     Vector3 right = Vector3Normalize(get_right());
-    right.y = 0;
+
+    // allow player to go vertical looking up and down if noclipping
+    if (!misc.noclip) {
+        right.y = 0;
+        forward.y = 0;
+    }
 
     get_input();
 
     movement += forward * move_speed * input.forwards * delta_time;
-    movement += right * side_speed * input.sideways * -1 * delta_time;
+    movement += right * side_speed * input.sideways * -1 * delta_time; /* sideways speed is inverted */
+
+    // movement += direction * move speed * (-1 ... 1) * delta_time
+    //                                        ^ this leaves us with a percentage of total max speed
+    // based on how long the player held the directional key
+    // as in: slight tap = move slowly; held the key for a bit = fullspeed
 
     collider.pos = Vector3Add(collider.pos, movement);
     camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
+    // ^ move camera target along with the player
 
     update_gravity();
 
     collider.is_colliding = false;
 
-    /* check collision */
-    for (auto &map_collider : map_colliders) {
+    /* skip collision checking if noclipping */
+    if (!misc.noclip) {
 
-        MTV mtv;
-        if (collider_check_collision(collider, map_collider, &mtv)) {
+        /* check collision */
+        for (auto &map_collider : map_colliders) {
 
-            collider.is_colliding = true;
+            MTV mtv;
+            if (collider_check_collision(collider, map_collider, &mtv)) {
 
-            /* compute translation from collision */
-            Vector3 mtv_direction = Vector3Normalize(mtv.axis);
-            Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
-            Vector3 to_player = Vector3Subtract(collider.pos, map_collider.pos);
+                collider.is_colliding = true;
 
-            if (Vector3DotProduct(to_player, mtv_direction) < 0) {
-                translation = Vector3Negate(translation);
-            }
+                /* compute translation from collision */
+                Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+                Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+                Vector3 to_player = Vector3Subtract(collider.pos, map_collider.pos);
 
-            /* then apply it */
-            collider.pos = Vector3Add(collider.pos, translation);
+                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                    translation = Vector3Negate(translation);
+                }
 
-            /* check if its vertical from above (set grounded if true) */
-            if (mtv.axis.y == 1 && translation.y > 0) {
-                is_grounded = true;
-                velocity.y = 0;
+                /* then apply it */
+                collider.pos = Vector3Add(collider.pos, translation);
+
+                /* check if its vertical from above (set grounded if true) */
+                if (mtv.axis.y == 1 && translation.y > 0) {
+                    is_grounded = true;
+                    velocity.y = 0;
+                }
             }
         }
     }
@@ -407,14 +345,11 @@ void Player::update(const std::vector<Collider> &map_colliders) {
     }
 
     update_gravity();
+    /* don't even question why this has to be called twice */
 
     move(map_colliders);
 
-    // DrawModel(player_collider.model, player_collider.pos, 1, player_collider.color);
-    DrawSphere(collider.pos, 1.5, GREEN);
-
     update_viewmodel();
-
     update_camera();
 
     if (IsKeyPressed(KEY_F3)) {
@@ -485,6 +420,9 @@ void Player::debug_3d() {
     if (!misc.show_debug) {
         return;
     }
+    /* @TODO:
+     * fix this not drawing at the player's position
+     */
     BoundingBox player_bounding_box = GetModelBoundingBox(collider.model);
     DrawBoundingBox(player_bounding_box, GREEN);
 }
