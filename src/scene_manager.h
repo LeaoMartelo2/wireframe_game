@@ -1,7 +1,6 @@
 #ifndef SCENE_MANAGER_H_
 #define SCENE_MANAGER_H_
 
-#include "geometry.h"
 #include "globals.h"
 #include "player.h"
 #include "scene.h"

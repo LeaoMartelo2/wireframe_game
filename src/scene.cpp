@@ -1,10 +1,14 @@
 #include "scene.h"
-#include "geometry.h"
+#include "collision.h"
+#include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "player.h"
-#include "triggers.h"
 #include <fstream>
+
+#define GEOMETRY_COLOR DARKGRAY;
+#define FLOOR_COLOR GetColor(0x181818FF)
+#define OUTLINE_COLOR RED
 
 Scene::Scene() {
 }
@@ -18,7 +22,7 @@ void Scene::start() {
     DisableCursor();
 
     loadmap(map_file.c_str());
-    player->pos = start_pos;
+    player->collider.pos = start_pos;
     player->camera.target = looking_at;
 }
 
@@ -49,7 +53,8 @@ void Scene::loadmap(const char *filename) {
         for (const auto &item : j) {
 
             if (item["type"] == "geometry") {
-                Geometry geometry;
+
+                Collider geometry;
 
                 geometry.size.x = item["size"]["x"];
                 geometry.size.y = item["size"]["y"];
@@ -59,11 +64,16 @@ void Scene::loadmap(const char *filename) {
                 geometry.pos.y = item["pos"]["y"];
                 geometry.pos.z = item["pos"]["z"];
 
-                map_geometry.emplace_back(geometry);
+                geometry.populate();
+                geometry.color = GEOMETRY_COLOR;
+                geometry.outline_color = OUTLINE_COLOR;
+
+                map_colliders.push_back(geometry);
             }
 
             if (item["type"] == "floor") {
-                Floor floor;
+
+                Collider floor;
 
                 floor.size.x = item["size"]["x"];
                 floor.size.y = item["size"]["y"];
@@ -73,7 +83,11 @@ void Scene::loadmap(const char *filename) {
                 floor.pos.y = item["pos"]["y"];
                 floor.pos.z = item["pos"]["z"];
 
-                map_floor.emplace_back(floor);
+                floor.populate();
+                floor.color = FLOOR_COLOR;
+                floor.outline_color = OUTLINE_COLOR;
+
+                map_colliders.push_back(floor);
             }
 
             if (item["type"] == "spawnpoint") {
@@ -87,37 +101,41 @@ void Scene::loadmap(const char *filename) {
             }
 
             if (item["type"] == "trigger") {
-                Trigger trigger;
+                continue;
 
-                trigger.pos.x = item["pos"]["x"];
-                trigger.pos.y = item["pos"]["y"];
-                trigger.pos.z = item["pos"]["z"];
-
-                trigger.size.x = item["size"]["x"];
-                trigger.size.y = item["size"]["y"];
-                trigger.size.z = item["size"]["z"];
-
-                if (item["trigger_type"] == "teleport") {
-                    trigger.type = TRIGGER_TELEPORT;
-
-                    trigger.info.teleport.x = item["info"]["teleport"]["x"];
-                    trigger.info.teleport.y = item["info"]["teleport"]["y"];
-                    trigger.info.teleport.z = item["info"]["teleport"]["z"];
-                }
-
-                if (item["trigger_type"] == "goto_scene") {
-                    trigger.type = TRIGGER_GOTO_SCENE;
-
-                    trigger.info.scene_id = item["info"]["scene_id"];
-                }
-
-                if (item["trigger_type"] == "load_level") {
-                    trigger.type = TRIGGER_LOADLEVEL;
-
-                    trigger.info.levelname = item["info"]["level_name"];
-                }
-
-                map_trigger.emplace_back(trigger);
+                //     trigger->pos.x = item["pos"]["x"];
+                //     trigger->pos.y = item["pos"]["y"];
+                //     trigger->pos.z = item["pos"]["z"];
+                //
+                //     trigger->size.x = item["size"]["x"];
+                //     trigger->size.y = item["size"]["y"];
+                //     trigger->size.z = item["size"]["z"];
+                //
+                //     if (item["trigger_type"] == "teleport") {
+                //         trigger->type = TRIGGER_TELEPORT;
+                //
+                //         trigger->info.teleport.x = item["info"]["teleport"]["x"];
+                //         trigger->info.teleport.y = item["info"]["teleport"]["y"];
+                //         trigger->info.teleport.z = item["info"]["teleport"]["z"];
+                //     }
+                //
+                //     if (item["trigger_type"] == "goto_scene") {
+                //         trigger->type = TRIGGER_GOTO_SCENE;
+                //
+                //         trigger->info.scene_id = item["info"]["scene_id"];
+                //     }
+                //
+                //     if (item["trigger_type"] == "load_level") {
+                //         trigger->type = TRIGGER_LOADLEVEL;
+                //
+                //         trigger->info.levelname = item["info"]["level_name"];
+                //     }
+                //
+                //     trigger->populate();
+                //
+                //     setup_collider_mesh(trigger, trigger->model.meshes[0]);
+                //
+                //     map_colliders.push_back(trigger);
             }
 
             ++i;
@@ -128,44 +146,25 @@ void Scene::loadmap(const char *filename) {
     }
 }
 
-void Scene::draw_map_geometry(void) {
+void Scene::draw_scene_colliders() {
 
-    for (size_t i = 0; i < map_geometry.size(); ++i) {
+    for (const auto &collider : map_colliders) {
 
-        geometry_draw(&map_geometry[i]);
-    }
-}
+        /* don't draw the geometry if its too far away */
+        float distance = Vector3Distance(player->collider.pos, collider.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
 
-void Scene::draw_map_floor(void) {
-
-    for (size_t i = 0; i < map_floor.size(); ++i) {
-        floor_draw(&map_floor[i]);
-    }
-}
-
-void Scene::update_map_triggers(void) {
-
-    /*for(size_t = 0; i<map_trigger.size(); ++i){ */
-    for (Trigger i : map_trigger) {
-        update_trigger(this, &i, player);
-    }
-}
-
-void Scene::debug_draw_map_triggers(void) {
-
-    for (Trigger i : map_trigger) {
-
-        debug_draw_trigger(&i);
+        collider.draw();
     }
 }
 
 void Scene::update(void) {
 
 #ifndef DEBUG
-    player->update(map_geometry, map_floor);
+    player->update(map_colliders);
 #endif // !DEBUG
-
-    update_map_triggers();
 
     BeginDrawing();
     {
@@ -174,15 +173,12 @@ void Scene::update(void) {
         BeginMode3D(player->camera);
         {
 #ifdef DEBUG
-            player->update(map_geometry, map_floor);
+            player->update(map_colliders);
 #endif // DEBUG
-
-            draw_map_floor();
-            draw_map_geometry();
 
             player->draw();
             player->debug_3d();
-            debug_draw_map_triggers();
+            draw_scene_colliders();
         }
         EndMode3D();
 

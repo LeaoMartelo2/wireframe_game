@@ -4,7 +4,7 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
-#include "geometry.h"
+#include "collision.h"
 #include <vector>
 
 class Player {
@@ -19,13 +19,14 @@ class Player {
 
     } camera_misc;
 
-    Vector3 pos;
     float acc_rate;
     float move_speed;
     float side_speed;
-    float air_boost;
+    float jump_speed;
     float gravity;
-    float max_acell;
+
+    Collider collider;
+    Vector3 velocity;
     bool is_grounded;
 
     struct {
@@ -33,17 +34,6 @@ class Player {
         float sideways;
         float up_down;
     } input;
-
-    struct {
-        float forwards;
-        float sideways;
-        float vertical;
-    } velocity;
-
-    struct {
-        Vector3 bounding_box_size;
-        BoundingBox bounding_box;
-    } collision;
 
     struct {
         Model model;
@@ -61,16 +51,12 @@ class Player {
         bool no_gravity;
     } misc;
 
-  public:
-    // public methods
     Player();
 
-    void update(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void update(const std::vector<Collider> &map_colliders);
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
-    bool check_collision_geometry(std::vector<Geometry> &map_geometry, Vector3 cube_pos);
-    bool check_collision_floor(std::vector<Floor> &map_floor, Vector3 cube_pos);
 
     Vector3 get_forward(void);
     Vector3 get_up(void);
@@ -86,18 +72,11 @@ class Player {
     void debug_3d(void);
 
   private:
-    // private variables
-  private:
     // private methods
     void get_input(void);
-    void calculate_velocity(void);
-    Vector3 move_forward(float distance);
-    Vector3 move_right(float distance);
-    Vector3 move_vertical(float distance);
-    void noclip_move_vertical(float distance);
-    Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
-    void move(std::vector<Geometry> &map_geometry, std::vector<Floor> &map_floor);
+    void jump();
+    void move(const std::vector<Collider> &map_colliders);
 
     void camera_yaw(float angle);
     void camera_pitch(float angle);
