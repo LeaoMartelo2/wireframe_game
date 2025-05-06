@@ -3,7 +3,6 @@
 
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
-#include "geometry.h"
 #include <stdlib.h>
 
 // https://gist.github.com/rexim/b5b0c38f53157037923e7cdd77ce685d
@@ -21,17 +20,5 @@
                                                                                        \
         (xs)->items[(xs)->count++] = (x);                                              \
     } while (0)
-
-typedef struct {
-        int *items;
-        size_t count;
-        size_t capacity;
-} int_da;
-
-typedef struct {
-        float *items;
-        size_t count;
-        size_t capacity;
-} float_da;
 
 #endif // !DARRAYS_H_

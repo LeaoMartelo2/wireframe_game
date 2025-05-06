@@ -5,7 +5,7 @@
 #include "player.h"
 #include <fstream>
 
-#define GEOMETRY_COLOR GRAY;
+#define GEOMETRY_COLOR DARKGRAY;
 #define FLOOR_COLOR GetColor(0x181818FF)
 #define OUTLINE_COLOR RED
 
@@ -21,7 +21,7 @@ void Scene::start() {
     DisableCursor();
 
     loadmap(map_file.c_str());
-    player->pos = start_pos;
+    player->collider.pos = start_pos;
     player->camera.target = looking_at;
 }
 
@@ -158,8 +158,6 @@ void Scene::update(void) {
     player->update(map_colliders);
 #endif // !DEBUG
 
-    /*update_map_triggers();*/
-
     BeginDrawing();
     {
         ClearBackground(BLACK);
@@ -170,13 +168,9 @@ void Scene::update(void) {
             player->update(map_colliders);
 #endif // DEBUG
 
-            /*draw_map_floor();*/
-            /*draw_map_geometry();*/
-
             player->draw();
             player->debug_3d();
             draw_scene_colliders();
-            /*debug_draw_map_triggers();*/
         }
         EndMode3D();
 

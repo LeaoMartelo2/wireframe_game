@@ -6,7 +6,6 @@
 #include "include/lognest.h"
 #include "misc.h"
 #include <math.h>
-#include <vector>
 
 #define FILL_COLOR GetColor(0x181818FF)
 
@@ -29,17 +28,16 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Camera created.");
 
-    move_speed = 250.0f;
-    side_speed = 180.0f;
+    move_speed = 150.0f;
+    side_speed = 120.0f;
+    jump_speed = 28.0f;
     air_boost = 1.02f;
     acc_rate = 0.15f;
-    gravity = 9.806f;
-    max_acell = 2000.0f;
+    gravity = 40.0f;
+    max_acell = 200.0f;
     is_grounded = false;
 
-    velocity.forwards = 0;
-    velocity.sideways = 0;
-    velocity.vertical = 0;
+    velocity = {0, 0, 0};
 
     lognest_debug(" ┗>[Player] Setup default movement variables.");
 
@@ -47,19 +45,15 @@ Player::Player() {
     input.sideways = 0.0f;
     input.up_down = 0.0f;
 
-    collision.bounding_box_size = {5, 15, 5};
-    // collision.bounding_box = calculate_boundingbox();
+    player_size = {5, 15, 5};
 
-    player_collider.size = {5, 15, 5};
-    player_collider.pos = pos;
-    player_collider.color = GREEN;
-    player_collider.outline_color = RED;
+    collider.size = {5, 15, 5};
+    collider.color = BLANK;
+    collider.outline_color = GREEN;
 
-    player_collider.populate();
+    collider.populate();
 
-    lognest_warn("%d", player_collider.mesh.vertexCount);
-
-    lognest_debug(" ┗>[Player] Player Bounding Box calculated.");
+    lognest_debug(" ┗>[Player] Player collider calculated.");
 
     if (file_exists(VIEWMODEL_PATH)) {
         viewmodel.model = LoadModel(VIEWMODEL_PATH);
@@ -81,23 +75,6 @@ Player::Player() {
     lognest_debug(" ┗>[Player] Player debug-tools loaded.");
 
     lognest_trace("[Player] Player loaded.");
-}
-
-BoundingBox Player::calculate_boundingbox() {
-
-    Vector3 entity_size = collision.bounding_box_size;
-
-    Vector3 negative = {pos.x - entity_size.x / 2,
-                        pos.y - entity_size.y / 2,
-                        pos.z - entity_size.z / 2};
-
-    Vector3 positive = {pos.x + entity_size.x / 2,
-                        pos.y + entity_size.y / 2,
-                        pos.z + entity_size.z / 2};
-
-    BoundingBox player_bounding_box = {negative, positive};
-
-    return player_bounding_box;
 }
 
 // Modified implementation of CameraYaw from rcamera.h
@@ -141,8 +118,8 @@ void Player::camera_pitch(float angle) {
 }
 
 void Player::update_camera() {
-    camera.position = pos;
-    camera.position.y = pos.y + 7;
+    camera.position = collider.pos;
+    camera.position.y = collider.pos.y + 7;
 }
 
 Vector3 Player::get_forward() {
@@ -197,7 +174,7 @@ void Player::noclip_move_vertical(float distance) {
 
     up = Vector3Scale(up, distance);
 
-    pos = Vector3Add(pos, up);
+    collider.pos = Vector3Add(collider.pos, up);
 }
 
 Vector3 Player::new_pos(float distance_foward, float distance_right) {
@@ -213,17 +190,15 @@ Vector3 Player::new_pos(float distance_foward, float distance_right) {
 void Player::update_gravity() {
 
     if (misc.no_gravity) {
-        velocity.vertical = 0;
+        velocity.y = 0;
         return;
     }
 
-    if (!is_grounded) {
-        if (velocity.vertical >= -max_acell) {
-            velocity.vertical -= gravity;
-        } else {
-            velocity.vertical = -max_acell;
-        }
-    }
+    float delta_time = GetFrameTime();
+
+    velocity.y -= gravity * delta_time;
+
+    collider.pos = Vector3Add(collider.pos, Vector3Scale(velocity, delta_time));
 }
 
 void Player::get_input() {
@@ -304,16 +279,24 @@ void Player::calculate_velocity() {
 
     scale = is_grounded ? 1.0f : air_boost;
 
-    velocity.forwards = move_speed * input.forwards * scale;
-    velocity.forwards = Clamp(velocity.forwards, -move_speed * scale, move_speed * scale);
+    // velocity.forwards = move_speed * input.forwards * scale;
+    // velocity.forwards = Clamp(velocity.forwards, -move_speed * scale, move_speed * scale);
 
     // x = move_speed * (-1 ... 1) <-- this leaves us with a percentage of total max speed
     // based on how long the player held the directional key
     // as in: slight tap = move slowly; held the key for a bit = fullspeed
     // makes movement more natural to controll
 
-    velocity.sideways = side_speed * input.sideways * scale;
-    velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
+    // velocity.sideways = side_speed * input.sideways * scale;
+    // velocity.sideways = Clamp(velocity.sideways, -side_speed * scale, side_speed * scale);
+}
+
+void Player::jump() {
+
+    if (is_grounded) {
+        velocity.y = jump_speed;
+        is_grounded = false;
+    }
 }
 
 void Player::move(const std::vector<Collider> &map_colliders) {
@@ -324,141 +307,59 @@ void Player::move(const std::vector<Collider> &map_colliders) {
     camera_yaw(-mouse_pos_delta.x * camera_misc.mouse_sens * delta_time);
     camera_pitch(-mouse_pos_delta.y * camera_misc.mouse_sens * delta_time);
 
-    get_input();
-
-    calculate_velocity();
-    player_collider.pos = new_pos(velocity.forwards * delta_time, -velocity.sideways * delta_time) + pos;
-
-    static Vector3 move_v;
-
-    move_v = move_vertical(velocity.vertical * delta_time);
-
-    player_collider.pos = Vector3Add(player_collider.pos, move_v);
-
-    // DrawCube(pos, 0.3, 0.3, 0.3, BLUE);
-    // DrawCube(move_v, 0.5, 0.5, 0.5, RED);
-
-    // static Vector3 move_step = pos;
-    // static Vector3 contact_point;
-    // static float lerp_step = 0.0f;
-    static float vlerp_step = 0.0f;
-    // static const float step_size = 0.05f;
-
-    // Vector3 v_pred = predicted_pos + move_v;
-
-    static Vector3 v_step = pos;
-
-    // move_step = Vector3Lerp(pos, predicted_pos, lerp_step);
-    // v_step = Vector3Lerp(pos, v_pred, vlerp_step);
-
-    // pos.x = move_step.x;
-    // pos.z = move_step.z;
-
-    // pos.y = v_step.y;
-
-    // player_collider.pos = pos;
-
-    if (IsKeyPressed(KEY_B)) {
-        player_collider.pos = pos;
+    if (IsKeyDown(KEY_SPACE)) {
+        jump();
     }
 
-    player_collider.is_colliding = false;
+    Vector3 movement = {0, 0, 0};
 
+    Vector3 forward = Vector3Normalize(get_forward());
+    forward.y = 0;
+    Vector3 right = Vector3Normalize(get_right());
+    right.y = 0;
+
+    get_input();
+
+    movement += forward * move_speed * input.forwards * delta_time;
+    movement += right * side_speed * input.sideways * -1 * delta_time;
+
+    collider.pos = Vector3Add(collider.pos, movement);
+    camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
+
+    update_gravity();
+
+    collider.is_colliding = false;
+
+    /* check collision */
     for (auto &map_collider : map_colliders) {
 
-        float dist = Vector3Distance(player_collider.pos, map_collider.pos);
+        MTV mtv;
+        if (collider_check_collision(collider, map_collider, &mtv)) {
 
-        if (dist < player_collider.get_max_radius() + map_collider.get_max_radius()) {
+            collider.is_colliding = true;
 
-            MTV mtv_data;
+            /* compute translation from collision */
+            Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+            Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+            Vector3 to_player = Vector3Subtract(collider.pos, map_collider.pos);
 
-            if (collider_check_collision(player_collider, map_collider, &mtv_data)) {
+            if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                translation = Vector3Negate(translation);
+            }
 
-                player_collider.is_colliding = true;
-                lognest_warn("is colliding");
-                // map_collider.is_colliding = true; /* its a const reference ??? */
+            /* then apply it */
+            collider.pos = Vector3Add(collider.pos, translation);
 
-                Vector3 mtv_direction = Vector3Normalize(mtv_data.axis);
-                Vector3 translation = Vector3Scale(mtv_direction, mtv_data.depth);
-                Vector3 to_player = Vector3Subtract(player_collider.pos, map_collider.pos);
-
-                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
-
-                    translation = Vector3Negate(translation);
-                }
-
-                player_collider.pos = Vector3Add(player_collider.pos, translation);
-                velocity.vertical = 0.0f;
+            /* check if its vertical from above (set grounded if true) */
+            if (mtv.axis.y == 1 && translation.y > 0) {
                 is_grounded = true;
+                velocity.y = 0;
             }
         }
     }
 
-    pos = player_collider.pos;
-
-    if (!misc.noclip) {
-        pos.y = v_step.y;
-        is_grounded = false;
-    }
-    /*}*/
-
-    // if (lerp_step < 1.0f) {
-    //     lerp_step += step_size;
-    //     lerp_step = Clamp(lerp_step, 0.0f, 1.0f);
-    // }
-    // if (vlerp_step < 1.0f) {
-    //     vlerp_step += step_size;
-    //     vlerp_step = Clamp(vlerp_step, 0.0f, 1.0f);
-    // }
-    /*}*/
-
-#ifdef DEBUG
-
-    // show last collision point
-    // DrawCubeWires(contact_point, 0.7, 0.7, 0.7, ORANGE);
-
-    // motion vector visualization
-
-    Vector3 move_a = move_forward(velocity.forwards * delta_time) + pos;
-    Vector3 move_b = move_right(-velocity.sideways * delta_time) + pos;
-
-    const float msize = 0.4;
-    const float msize2 = 0.5;
-
-    // DrawCube(pos, msize, msize, msize, GREEN);
-    // DrawLine3D(pos, move_a, GREEN);
-    // DrawCube(move_a, msize, msize, msize, GREEN);
-    //
-    // DrawCube(pos, msize, msize, msize, BLUE);
-    // DrawLine3D(pos, move_b, BLUE);
-    // DrawCube(move_b, msize, msize, msize, BLUE);
-    //
-    // DrawCube(pos, msize2, msize2, msize2, RED);
-    // DrawLine3D(pos, predicted_pos, RED);
-    // DrawCube(predicted_pos, msize2, msize2, msize2, RED);
-    //
-    // DrawCube(v_pred, 1, 1, 1, ORANGE);
-    // DrawLine3D(pos, v_pred, ORANGE);
-
-#endif
-
-    if (IsKeyDown(KEY_SPACE) && !misc.noclip) {
-        if (is_grounded) {
-            velocity.vertical = 150;
-        }
-    }
-
-    if (misc.noclip) {
-        if (IsKeyDown(KEY_LEFT_SHIFT)) {
-            noclip_move_vertical(-200 * delta_time);
-        }
-
-        if (IsKeyDown(KEY_SPACE)) {
-            noclip_move_vertical(200 * delta_time);
-        }
-    }
-
-    collision.bounding_box = calculate_boundingbox();
+    velocity.x = movement.x;
+    velocity.z = movement.z;
 }
 
 void Player::update_viewmodel() {
@@ -467,10 +368,10 @@ void Player::update_viewmodel() {
 
     Vector3 right = get_right();
 
-    new_pos = Vector3Add(new_pos, pos);
+    new_pos = Vector3Add(new_pos, collider.pos);
     new_pos = Vector3Add(new_pos, right);
 
-    new_pos.y = pos.y + 6.5f;
+    new_pos.y = collider.pos.y + 6.5f;
 
     viewmodel.viewmodel_pos = new_pos;
 }
@@ -510,7 +411,7 @@ void Player::update(const std::vector<Collider> &map_colliders) {
     move(map_colliders);
 
     // DrawModel(player_collider.model, player_collider.pos, 1, player_collider.color);
-    DrawSphere(player_collider.pos, 1.5, GREEN);
+    DrawSphere(collider.pos, 1.5, GREEN);
 
     update_viewmodel();
 
@@ -532,7 +433,7 @@ void Player::update(const std::vector<Collider> &map_colliders) {
 }
 
 void Player::set_pos(Vector3 new_pos) {
-    pos = new_pos;
+    collider.pos = new_pos;
 
     lognest_debug(" ┗> [Player] Teleported to %.2f, %.2f, %.2f",
                   new_pos.x, new_pos.y, new_pos.z);
@@ -556,18 +457,23 @@ void Player::debug() {
         return;
     }
 
-    DrawText(TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
-                        "Input:\n -> Forward: %f\n -> Sideways: %f\n"
-                        "Velocity:\n -> Forward: %.2f\n -> Vertical: %.2f\n -> Sideways: %.2f\n"
-                        "Grounded: %s\n"
-                        "is_colliding: %s",
-                        pos.x, pos.y, pos.z,
-                        input.forwards, input.sideways,
-                        velocity.forwards, velocity.vertical, velocity.sideways,
-                        bool_to_string(is_grounded),
-                        bool_to_string(player_collider.is_colliding)),
-             10, 10,
-             20, WHITE);
+    int width = 6;
+
+    std::string text_dbg = TextFormat("Position:\nX: %.2f, Y: %.2f, Z: %.2f\n"
+                                      "Input:\n -> Forward: { %f }\n -> Sideways: { %f }\n"
+                                      "Velocity:\n -> { %*.*f, %*.*f, %*.*f }\n"
+                                      "is_grounded: %s\n"
+                                      "is_colliding: %s",
+                                      collider.pos.x, collider.pos.y, collider.pos.z,
+                                      input.forwards, input.sideways,
+                                      width, 2, velocity.x,
+                                      width, 2, velocity.y,
+                                      width, 2, velocity.z,
+                                      bool_to_string(is_grounded),
+                                      bool_to_string(collider.is_colliding));
+
+    DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
+
     if (misc.noclip) {
         DrawText("NoClip enabled", GetScreenWidth() - 150, 15, 20, WHITE);
     }
@@ -579,7 +485,8 @@ void Player::debug_3d() {
     if (!misc.show_debug) {
         return;
     }
-    DrawBoundingBox(collision.bounding_box, GREEN);
+    BoundingBox player_bounding_box = GetModelBoundingBox(collider.model);
+    DrawBoundingBox(player_bounding_box, GREEN);
 }
 
 void Player::draw() {

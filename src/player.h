@@ -19,13 +19,17 @@ class Player {
 
     } camera_misc;
 
-    Vector3 pos;
     float acc_rate;
     float move_speed;
     float side_speed;
+    float jump_speed;
     float air_boost;
     float gravity;
     float max_acell;
+
+    Collider collider;
+    Vector3 player_size;
+    Vector3 velocity;
     bool is_grounded;
 
     struct {
@@ -33,19 +37,6 @@ class Player {
         float sideways;
         float up_down;
     } input;
-
-    struct {
-        float forwards;
-        float sideways;
-        float vertical;
-    } velocity;
-
-    struct {
-        Vector3 bounding_box_size;
-        BoundingBox bounding_box;
-    } collision;
-
-    Collider player_collider;
 
     struct {
         Model model;
@@ -63,8 +54,6 @@ class Player {
         bool no_gravity;
     } misc;
 
-  public:
-    // public methods
     Player();
 
     void update(const std::vector<Collider> &map_colliders);
@@ -88,8 +77,6 @@ class Player {
     void debug_3d(void);
 
   private:
-    // private variables
-  private:
     // private methods
     void get_input(void);
     void calculate_velocity(void);
@@ -99,6 +86,7 @@ class Player {
     void noclip_move_vertical(float distance);
     Vector3 new_pos(float distance_forward, float distance_right);
     void update_gravity();
+    void jump();
     void move(const std::vector<Collider> &map_colliders);
 
     void camera_yaw(float angle);
