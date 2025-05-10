@@ -9,6 +9,8 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #ifndef LOGNEST_H_
 #define LOGNEST_H_
 
+#define LOGNEST_VERSION "2.0.0"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -30,10 +32,10 @@ void _lognest_warn_raw(const char *file, const char *format, ...);
 void _lognest_error_raw(const char *file, const char *format, ...);
 void _lognest_debug_raw(const char *file, const char *format, ...);
 
-#define lognest_trace(format, ...) _lognest_trace_raw(LOGNEST_FILE, format, ##__VA_ARGS__)
-#define lognest_warn(format, ...) _lognest_warn_raw(LOGNEST_FILE, format, ##__VA_ARGS__)
-#define lognest_error(format, ...) _lognest_error_raw(LOGNEST_FILE, format, ##__VA_ARGS__)
-#define lognest_debug(format, ...) _lognest_debug_raw(LOGNEST_FILE, format, ##__VA_ARGS__)
+#define lognest_trace(...) _lognest_trace_raw(LOGNEST_FILE, __VA_ARGS__)
+#define lognest_warn(...) _lognest_warn_raw(LOGNEST_FILE, __VA_ARGS__)
+#define lognest_error(...) _lognest_error_raw(LOGNEST_FILE, __VA_ARGS__)
+#define lognest_debug(...) _lognest_debug_raw(LOGNEST_FILE, __VA_ARGS__)
 
 void lognest_to_file(const char *file, const char *level, const char *format, va_list args);
 
@@ -90,6 +92,10 @@ void lognest_to_file(const char *file, const char *level, const char *format, va
 
 void _lognest_trace_raw(const char *file, const char *format, ...) {
 
+#ifdef LOGNEST_DISABLE_TRACE
+    return;
+#endif // LOGNEST_DISABLE_TRACE
+
     va_list args;
     va_start(args, format);
     lognest_to_file(file, "[LOG]  ", format, args);
@@ -98,6 +104,10 @@ void _lognest_trace_raw(const char *file, const char *format, ...) {
 }
 
 void _lognest_warn_raw(const char *file, const char *format, ...) {
+
+#ifdef LOGNEST_DISABLE_WARN
+    return;
+#endif // LOGNEST_DISABLE_WARN
 
     va_list args;
     va_start(args, format);
@@ -108,6 +118,10 @@ void _lognest_warn_raw(const char *file, const char *format, ...) {
 
 void _lognest_error_raw(const char *file, const char *format, ...) {
 
+#ifdef LOGNEST_DISABLE_ERROR
+    return;
+#endif // LOGNEST_DISABLE_ERROR
+
     va_list args;
     va_start(args, format);
     lognest_to_file(file, "[ERROR]", format, args);
@@ -116,6 +130,10 @@ void _lognest_error_raw(const char *file, const char *format, ...) {
 }
 
 void _lognest_debug_raw(const char *file, const char *format, ...) {
+
+#ifdef LOGNEST_DISABLE_DEBUG
+    return;
+#endif // LOGNEST_DISABLE_DEBUG
 
     va_list args;
     va_start(args, format);

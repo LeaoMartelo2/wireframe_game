@@ -6,6 +6,8 @@ DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow
 
 FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -ggdb
 
+RELEASE_FLAGS = -O2 -DLOGNEST_DISABLE_DEBUG
+
 ifdef DEBUG
 	FLAGS += -DDEBUG
 endif
@@ -41,6 +43,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(WINOBJDIR)
 	$(WINDOWS_COMPILER) $(FLAGS) $(WINDOWS_FLAGS) -c $< -o $@
+
+
+release: FLAGS += ${RELEASE_FLAGS}
+release: wireframe win
 
 # Clean all builds
 clear: 
