@@ -1,4 +1,5 @@
 #include "collision.h"
+#include "wireframe.h"
 #include <cmath>
 #include <float.h>
 #include <stddef.h>
@@ -33,7 +34,8 @@ float Collider::get_max_radius() const {
 void Collider::draw() const {
 
     DrawModel(model, pos, 1.0, color);
-    DrawModelWires(model, pos, 1.0, outline_color);
+    // DrawModelWires(model, pos, 1.0, outline_color);
+    draw_wireframe(model, pos, 1.0, outline_color, 0.3);
 }
 
 bool collider_check_collision(const Collider &collider1, const Collider &collider2, MTV *mtv) {
