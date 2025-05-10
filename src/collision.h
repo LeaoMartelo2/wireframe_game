@@ -4,6 +4,7 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
+#include "wireframe.h"
 #include <float.h>
 #include <math.h>
 #include <stdlib.h>
