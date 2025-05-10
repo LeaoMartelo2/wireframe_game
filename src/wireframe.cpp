@@ -51,7 +51,6 @@ void draw_wireframe(Model model, Vector3 position, float scale, Color color, flo
         float *verts = mesh.vertices;
         unsigned short *inds = mesh.indices;
         int triangle_count = mesh.triangleCount;
-        int vert_count = mesh.vertexCount;
 
         for (int i = 0; i < triangle_count * 3; i += 3) {
 

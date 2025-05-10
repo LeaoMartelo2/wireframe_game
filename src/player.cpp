@@ -257,6 +257,16 @@ void Player::move(const std::vector<Collider> &map_colliders) {
     // based on how long the player held the directional key
     // as in: slight tap = move slowly; held the key for a bit = fullspeed
 
+    if (misc.noclip) {
+        if (IsKeyDown(KEY_SPACE)) {
+            movement += get_up() * move_speed * delta_time;
+        }
+
+        if (IsKeyDown(KEY_LEFT_SHIFT)) {
+            movement -= get_up() * move_speed * delta_time;
+        }
+    }
+
     collider.pos = Vector3Add(collider.pos, movement);
     camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
     // ^ move camera target along with the player
@@ -427,11 +437,15 @@ void Player::debug_3d() {
     if (!misc.show_debug) {
         return;
     }
-    /* @TODO:
-     * fix this not drawing at the player's position
-     */
-    BoundingBox player_bounding_box = GetModelBoundingBox(collider.model);
-    DrawBoundingBox(player_bounding_box, GREEN);
+
+    rlPushMatrix();
+    {
+        rlTranslatef(collider.pos.x, collider.pos.y, collider.pos.z);
+
+        BoundingBox player_bounding_box = GetModelBoundingBox(collider.model);
+        DrawBoundingBox(player_bounding_box, GREEN);
+    }
+    rlPopMatrix();
 }
 
 void Player::draw() {

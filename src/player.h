@@ -4,6 +4,7 @@
 #include "../raylib/raylib.h"
 #include "../raylib/raymath.h"
 #include "../raylib/rcamera.h"
+#include "../raylib/rlgl.h"
 #include "collision.h"
 #include <vector>
 
