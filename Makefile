@@ -1,4 +1,4 @@
-.PHONY: clear
+.PHONY: clear release
 CC = g++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
@@ -47,6 +47,23 @@ $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 release: FLAGS += ${RELEASE_FLAGS}
 release: wireframe win
+	@mkdir -p release/Linux-x64
+	@mkdir -p release/Windows-x64
+
+	@cp wireframe release/Linux-x64
+	@cp wireframe.exe release/Windows-x64
+
+	@cp -r levels release/Linux-x64
+	@cp -r levels release/Windows-x64
+
+	@cp -r assets release/Linux-x64
+	@cp -r assets release/Windows-x64
+
+	@cp LICENSE release/Linux-x64
+	@cp LICENSE release/Windows-x64
+
+	@tar -vczf release/Linux-x64.tar.gz release/Linux-x64/
+	@zip -r release/Windows-x64.zip release/Windows-x64/
 
 # Clean all builds
 clear: 
