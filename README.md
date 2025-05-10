@@ -107,29 +107,6 @@ The engine, by default, writes its log to `latest.log` at the main executable pa
 
 <img src="readme/2_2.png">
 
-For convenience, it's also provided a copy off [nestreader](https://github.com/LeaoMartelo2/nestreader)\
+For convenience, it's also suggested [nestreader](https://github.com/LeaoMartelo2/nestreader)\
 The CLI tool will automatically print the log, while also coloring each log type with a corresponding color.
-
-
-## Design choices
-
-The project was originally started in `C`, now ported to `C++`
-
-The decision of moving to C++ is due several factors relating to the project structure growing more complex then i would like.
-
-Some of the reasons can be boiled down to:
- - Dealing with memory was getting extremely "boilerplated" in C.
- - Easier generics.
- - Some `light use` of object oriented features prove themselves useful. (keyword `light use`)
-
-
-Due the simplicity goal, there is avoidance in the use of `"modern C++"`, and most of the C++ code is written in C like style.
-
-Some of the highlighted features are:
- - std::vector - This one is allowed, even though it's using templates, should be used sparingly.
- - std::string - This one is allowed, use `char *` if possible.
- - namespacing - Avoid at all costs, otherwise keep to minimum.
- - Function / Operator overloading - Avoid at all costs, exceptions are different Class constructors(ie. "copy constructor").
- - auto - Avoid when applicable. 
- - smart pointers - Keep to a minimum.
 
