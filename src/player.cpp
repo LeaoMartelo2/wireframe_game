@@ -27,8 +27,8 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Camera created.");
 
-    move_speed = 150.0f;
-    side_speed = 120.0f;
+    move_speed = 120.0f;
+    side_speed = 85.0f;
     jump_speed = 28.0f;
     acc_rate = 0.15f;
     gravity = 40.0f;
@@ -224,7 +224,7 @@ void Player::jump() {
     }
 }
 
-void Player::move(const std::vector<Collider> &map_colliders) {
+void Player::move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
 
     float delta_time = GetFrameTime();
     Vector2 mouse_pos_delta = GetMouseDelta();
@@ -311,6 +311,62 @@ void Player::move(const std::vector<Collider> &map_colliders) {
                 }
             }
         }
+
+        for (auto &door : map_doors) {
+            {
+
+                MTV mtv;
+                if (collider_check_collision(collider, door.collider_a, &mtv)) {
+
+                    collider.is_colliding = true;
+
+                    /* compute translation from collision */
+                    Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+                    Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+                    Vector3 to_player = Vector3Subtract(collider.pos, door.collider_a.pos);
+
+                    if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                        translation = Vector3Negate(translation);
+                    }
+
+                    /* then apply it */
+                    collider.pos = Vector3Add(collider.pos, translation);
+
+                    /* check if its vertical from above (set grounded if true) */
+                    if (mtv.axis.y == 1 && translation.y > 0) {
+                        is_grounded = true;
+                        velocity.y = 0;
+                    }
+                }
+            }
+
+            {
+
+                MTV mtv;
+                if (collider_check_collision(collider, door.collider_b, &mtv)) {
+
+                    collider.is_colliding = true;
+
+                    /* compute translation from collision */
+                    Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+                    Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+                    Vector3 to_player = Vector3Subtract(collider.pos, door.collider_b.pos);
+
+                    if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                        translation = Vector3Negate(translation);
+                    }
+
+                    /* then apply it */
+                    collider.pos = Vector3Add(collider.pos, translation);
+
+                    /* check if its vertical from above (set grounded if true) */
+                    if (mtv.axis.y == 1 && translation.y > 0) {
+                        is_grounded = true;
+                        velocity.y = 0;
+                    }
+                }
+            }
+        }
     }
 
     velocity.x = movement.x;
@@ -352,7 +408,7 @@ void Player::draw_viewmodel() {
     rlPopMatrix();
 }
 
-void Player::update(const std::vector<Collider> &map_colliders) {
+void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
 
     if (misc.noclip) {
         misc.no_gravity = true;
@@ -364,10 +420,16 @@ void Player::update(const std::vector<Collider> &map_colliders) {
     update_gravity();
     /* don't even question why this has to be called twice */
 
-    move(map_colliders);
-
     update_viewmodel();
     update_camera();
+
+    move(map_colliders, map_doors);
+
+    update_camera();
+    update_viewmodel();
+
+    // update_viewmodel();
+    // update_camera();
 
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;

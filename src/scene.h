@@ -2,6 +2,7 @@
 #define SCENE_H_
 
 #include "collision.h"
+#include "doors.h"
 #include "player.h"
 #include <string.h>
 #include <string>
@@ -14,11 +15,9 @@ class Scene {
   public:
     SceneManager *parent;
 
-    // std::vector<Geometry> map_geometry;
-    // std::vector<Floor> map_floor;
-    // std::vector<Trigger> map_trigger;
-
     std::vector<Collider> map_colliders;
+
+    std::vector<Door> map_doors;
 
     Player *player;
 

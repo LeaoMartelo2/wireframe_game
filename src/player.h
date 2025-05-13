@@ -6,6 +6,7 @@
 #include "../raylib/rcamera.h"
 #include "../raylib/rlgl.h"
 #include "collision.h"
+#include "doors.h"
 #include <vector>
 
 class Player {
@@ -54,7 +55,7 @@ class Player {
 
     Player();
 
-    void update(const std::vector<Collider> &map_colliders);
+    void update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
     void draw(void);
     void draw_hud(void);
     BoundingBox calculate_boundingbox(void);
@@ -77,7 +78,7 @@ class Player {
     void get_input(void);
     void update_gravity();
     void jump();
-    void move(const std::vector<Collider> &map_colliders);
+    void move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
 
     void camera_yaw(float angle);
     void camera_pitch(float angle);

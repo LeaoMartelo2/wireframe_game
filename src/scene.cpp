@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "collision.h"
+#include "doors.h"
 #include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
@@ -24,6 +25,26 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->collider.pos = start_pos;
     player->camera.target = looking_at;
+
+    Door test_door;
+    test_door.collider_a.size = {30, 50, 5};
+    test_door.collider_a.pos = {100, 25, 200};
+    test_door.open_pos.pos_a = {85, 25, 200};
+    test_door.collider_a.populate();
+    test_door.collider_a.color = GEOMETRY_COLOR;
+    test_door.collider_a.outline_color = BLUE;
+
+    test_door.collider_b.size = {30, 50, 5};
+    test_door.collider_b.pos = {130, 25, 200};
+    test_door.open_pos.pos_b = {145, 25, 200};
+    test_door.collider_b.populate();
+    test_door.collider_b.color = GEOMETRY_COLOR;
+    test_door.collider_b.outline_color = BLUE;
+
+    test_door.open_trigger.size = {60, 50, 50};
+    test_door.open_trigger.pos = {115, 25, 175};
+
+    map_doors.push_back(test_door);
 }
 
 void Scene::end(void) {
@@ -162,9 +183,7 @@ void Scene::draw_scene_colliders() {
 
 void Scene::update(void) {
 
-#ifndef DEBUG
-    player->update(map_colliders);
-#endif // !DEBUG
+    player->update(map_colliders, map_doors);
 
     BeginDrawing();
     {
@@ -172,13 +191,13 @@ void Scene::update(void) {
 
         BeginMode3D(player->camera);
         {
-#ifdef DEBUG
-            player->update(map_colliders);
-#endif // DEBUG
 
             player->draw();
             player->debug_3d();
             draw_scene_colliders();
+
+            map_doors[0].update(player->collider);
+            map_doors[0].draw();
         }
         EndMode3D();
 
