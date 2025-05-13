@@ -3,6 +3,7 @@
 
 Door::Door() {
     open = false;
+    open_sound = LoadSound("assets/sounds/door_open.ogg");
 };
 Door::~Door() {};
 
@@ -12,8 +13,6 @@ void Door::update(const Collider &player) {
         {player.pos.x - player.size.x / 2, player.pos.y - player.size.y / 2, player.pos.z - player.size.z / 2},
         {player.pos.x + player.size.x / 2, player.pos.y + player.size.y / 2, player.pos.z + player.size.z / 2},
     };
-
-    // DrawBoundingBox(player_bb, YELLOW);
 
     BoundingBox trigger_bb = {
         {open_trigger.pos.x - open_trigger.size.x / 2,
@@ -26,8 +25,12 @@ void Door::update(const Collider &player) {
 
     };
 
-    if (CheckCollisionBoxes(player_bb, trigger_bb)) {
-        open = true;
+    if (!open) {
+
+        if (CheckCollisionBoxes(player_bb, trigger_bb)) {
+            open = true;
+            PlaySound(open_sound);
+        }
     }
 
     if (open) {
@@ -44,6 +47,8 @@ void Door::draw() {
     collider_a.draw();
     collider_b.draw();
 
+#ifdef DEBUG
+
     DrawCubeWiresV(collider_a.pos, {6, 6, 6}, YELLOW);
     DrawCubeWiresV(collider_b.pos, {6, 6, 6}, YELLOW);
 
@@ -51,4 +56,6 @@ void Door::draw() {
     DrawSphere(open_pos.pos_b, 4, BLUE);
 
     DrawCubeWiresV(open_trigger.pos, open_trigger.size, ORANGE);
+
+#endif // DEBUG
 }

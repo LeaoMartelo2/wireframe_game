@@ -24,6 +24,8 @@ class Door {
 
     bool open;
 
+    Sound open_sound;
+
     Door();
     ~Door();
 

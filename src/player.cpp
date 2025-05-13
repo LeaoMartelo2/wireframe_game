@@ -312,7 +312,21 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
             }
         }
 
+        /* check collision with moving door parts specifically */
         for (auto &door : map_doors) {
+
+            float distance = Vector3Distance(collider.pos, door.collider_a.pos);
+
+            if (distance > g_settings.coll_distance) {
+                continue;
+            }
+
+            distance = Vector3Distance(collider.pos, door.collider_b.pos);
+
+            if (distance > g_settings.coll_distance) {
+                continue;
+            }
+
             {
 
                 MTV mtv;
@@ -427,9 +441,6 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
 
     update_camera();
     update_viewmodel();
-
-    // update_viewmodel();
-    // update_camera();
 
     if (IsKeyPressed(KEY_F3)) {
         misc.show_debug = !misc.show_debug;

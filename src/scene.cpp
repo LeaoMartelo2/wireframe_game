@@ -25,26 +25,6 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->collider.pos = start_pos;
     player->camera.target = looking_at;
-
-    Door test_door;
-    test_door.collider_a.size = {30, 50, 5};
-    test_door.collider_a.pos = {100, 25, 200};
-    test_door.open_pos.pos_a = {85, 25, 200};
-    test_door.collider_a.populate();
-    test_door.collider_a.color = GEOMETRY_COLOR;
-    test_door.collider_a.outline_color = BLUE;
-
-    test_door.collider_b.size = {30, 50, 5};
-    test_door.collider_b.pos = {130, 25, 200};
-    test_door.open_pos.pos_b = {145, 25, 200};
-    test_door.collider_b.populate();
-    test_door.collider_b.color = GEOMETRY_COLOR;
-    test_door.collider_b.outline_color = BLUE;
-
-    test_door.open_trigger.size = {60, 50, 50};
-    test_door.open_trigger.pos = {115, 25, 175};
-
-    map_doors.push_back(test_door);
 }
 
 void Scene::end(void) {
@@ -119,6 +99,42 @@ void Scene::loadmap(const char *filename) {
                 looking_at.x = item["looking_at"]["x"];
                 looking_at.y = item["looking_at"]["y"];
                 looking_at.z = item["looking_at"]["z"];
+            }
+
+            if (item["type"] == "door") {
+
+                Door door;
+                door.open = false;
+
+                Vector3 base_size;
+                Vector3 base_pos;
+
+                base_size.x = item["size"]["x"];
+                base_size.y = item["size"]["y"];
+                base_size.z = item["size"]["z"];
+
+                base_pos.x = item["pos"]["x"];
+                base_pos.y = item["pos"]["y"];
+                base_pos.z = item["pos"]["z"];
+
+                door.collider_a.size = {base_size.x / 2, base_size.y, base_size.z};
+                door.collider_a.pos = {base_pos.x + door.collider_a.size.x / 2, base_pos.y, base_pos.z};
+                door.open_pos.pos_a = {base_pos.x + door.collider_a.size.x, base_pos.y, base_pos.z};
+                door.collider_a.populate();
+                door.collider_a.color = GEOMETRY_COLOR;
+                door.collider_a.outline_color = BLUE;
+
+                door.collider_b.size = {base_size.x / 2, base_size.y, base_size.z};
+                door.collider_b.pos = {base_pos.x - door.collider_b.size.x / 2, base_pos.y, base_pos.z};
+                door.open_pos.pos_b = {base_pos.x - door.collider_b.size.x, base_pos.y, base_pos.z};
+                door.collider_b.populate();
+                door.collider_b.color = GEOMETRY_COLOR;
+                door.collider_b.outline_color = BLUE;
+
+                door.open_trigger.size = {base_size.x, base_size.y, 50};
+                door.open_trigger.pos = {base_pos.x, base_pos.y, base_pos.z - 25};
+
+                map_doors.push_back(door);
             }
 
             if (item["type"] == "trigger") {
