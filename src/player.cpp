@@ -249,8 +249,8 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     get_input();
 
-    movement += forward * move_speed * input.forwards * delta_time;
-    movement += right * side_speed * input.sideways * -1 * delta_time; /* sideways speed is inverted */
+    movement += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
+    movement += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time; /* sideways speed is inverted */
 
     // movement += direction * move speed * (-1 ... 1) * delta_time
     //                                        ^ this leaves us with a percentage of total max speed

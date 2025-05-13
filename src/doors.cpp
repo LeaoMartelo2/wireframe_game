@@ -9,6 +9,10 @@ Door::~Door() {};
 
 void Door::update(const Collider &player) {
 
+    if (finished_oppening) {
+        return;
+    }
+
     BoundingBox player_bb = {
         {player.pos.x - player.size.x / 2, player.pos.y - player.size.y / 2, player.pos.z - player.size.z / 2},
         {player.pos.x + player.size.x / 2, player.pos.y + player.size.y / 2, player.pos.z + player.size.z / 2},
@@ -39,10 +43,15 @@ void Door::update(const Collider &player) {
 
         collider_a.pos = Vector3Lerp(collider_a.pos, open_pos.pos_a, t);
         collider_b.pos = Vector3Lerp(collider_b.pos, open_pos.pos_b, t);
+
+        if (Vector3Distance(collider_a.pos, open_pos.pos_a) < 0.5) {
+
+            finished_oppening = true;
+        }
     }
 }
 
-void Door::draw() {
+void Door::draw() const {
 
     collider_a.draw();
     collider_b.draw();

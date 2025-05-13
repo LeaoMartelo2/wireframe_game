@@ -43,15 +43,10 @@ class Scene {
     virtual void loadmap(const char *filename);
 
   private:
-    // private methods
-
-    /*virtual void update_map_triggers(void);*/
-    /*virtual void debug_draw_map_triggers();*/
-
-    /*virtual void draw_map_geometry(void);*/
-    /*virtual void draw_map_floor(void);*/
-
     virtual void draw_scene_colliders(void);
+
+    virtual void update_scene_doors();
+    virtual void draw_scene_doors();
 };
 
 class MainMenu : public Scene {

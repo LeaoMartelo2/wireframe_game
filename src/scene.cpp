@@ -12,6 +12,8 @@
 #define OUTLINE_COLOR RED
 
 Scene::Scene() {
+    map_colliders.reserve(1000);
+    map_doors.reserve(10);
 }
 
 Scene::~Scene() {
@@ -197,9 +199,36 @@ void Scene::draw_scene_colliders() {
     }
 }
 
+void Scene::draw_scene_doors() {
+
+    for (const auto &door : map_doors) {
+        float distance = Vector3Distance(player->collider.pos, door.open_trigger.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        door.draw();
+    }
+}
+
+void Scene::update_scene_doors() {
+
+    for (auto &door : map_doors) {
+
+        float distance = Vector3Distance(player->collider.pos, door.open_trigger.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        door.update(player->collider);
+    }
+}
+
 void Scene::update(void) {
 
     player->update(map_colliders, map_doors);
+
+    update_scene_doors();
 
     BeginDrawing();
     {
@@ -211,9 +240,7 @@ void Scene::update(void) {
             player->draw();
             player->debug_3d();
             draw_scene_colliders();
-
-            map_doors[0].update(player->collider);
-            map_doors[0].draw();
+            draw_scene_doors();
         }
         EndMode3D();
 

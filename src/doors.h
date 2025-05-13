@@ -23,6 +23,7 @@ class Door {
     } open_pos;
 
     bool open;
+    bool finished_oppening = false;
 
     Sound open_sound;
 
@@ -30,7 +31,7 @@ class Door {
     ~Door();
 
     void update(const Collider &player);
-    void draw();
+    void draw() const;
 };
 
 #endif // !DOORS_H_
