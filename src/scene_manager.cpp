@@ -100,11 +100,6 @@ void SceneManager::update() {
         }
     }
 
-    if (IsKeyPressed(KEY_J)) {
-
-        swap_scene(1);
-    }
-
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
         if (IsKeyPressed(KEY_T)) {
             g_debug.draw_triggers = !g_debug.draw_triggers;

@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "collision.h"
+#include "doors.h"
 #include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
@@ -11,6 +12,8 @@
 #define OUTLINE_COLOR RED
 
 Scene::Scene() {
+    map_colliders.reserve(1000);
+    map_doors.reserve(10);
 }
 
 Scene::~Scene() {
@@ -100,6 +103,42 @@ void Scene::loadmap(const char *filename) {
                 looking_at.z = item["looking_at"]["z"];
             }
 
+            if (item["type"] == "door") {
+
+                Door door;
+                door.open = false;
+
+                Vector3 base_size;
+                Vector3 base_pos;
+
+                base_size.x = item["size"]["x"];
+                base_size.y = item["size"]["y"];
+                base_size.z = item["size"]["z"];
+
+                base_pos.x = item["pos"]["x"];
+                base_pos.y = item["pos"]["y"];
+                base_pos.z = item["pos"]["z"];
+
+                door.collider_a.size = {base_size.x / 2, base_size.y, base_size.z};
+                door.collider_a.pos = {base_pos.x + door.collider_a.size.x / 2, base_pos.y, base_pos.z};
+                door.open_pos.pos_a = {base_pos.x + door.collider_a.size.x, base_pos.y, base_pos.z};
+                door.collider_a.populate();
+                door.collider_a.color = GEOMETRY_COLOR;
+                door.collider_a.outline_color = BLUE;
+
+                door.collider_b.size = {base_size.x / 2, base_size.y, base_size.z};
+                door.collider_b.pos = {base_pos.x - door.collider_b.size.x / 2, base_pos.y, base_pos.z};
+                door.open_pos.pos_b = {base_pos.x - door.collider_b.size.x, base_pos.y, base_pos.z};
+                door.collider_b.populate();
+                door.collider_b.color = GEOMETRY_COLOR;
+                door.collider_b.outline_color = BLUE;
+
+                door.open_trigger.size = {base_size.x, base_size.y, 50};
+                door.open_trigger.pos = {base_pos.x, base_pos.y, base_pos.z - 25};
+
+                map_doors.push_back(door);
+            }
+
             if (item["type"] == "trigger") {
                 continue;
 
@@ -160,11 +199,36 @@ void Scene::draw_scene_colliders() {
     }
 }
 
+void Scene::draw_scene_doors() {
+
+    for (const auto &door : map_doors) {
+        float distance = Vector3Distance(player->collider.pos, door.open_trigger.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        door.draw();
+    }
+}
+
+void Scene::update_scene_doors() {
+
+    for (auto &door : map_doors) {
+
+        float distance = Vector3Distance(player->collider.pos, door.open_trigger.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        door.update(player->collider);
+    }
+}
+
 void Scene::update(void) {
 
-#ifndef DEBUG
-    player->update(map_colliders);
-#endif // !DEBUG
+    player->update(map_colliders, map_doors);
+
+    update_scene_doors();
 
     BeginDrawing();
     {
@@ -172,13 +236,11 @@ void Scene::update(void) {
 
         BeginMode3D(player->camera);
         {
-#ifdef DEBUG
-            player->update(map_colliders);
-#endif // DEBUG
 
             player->draw();
             player->debug_3d();
             draw_scene_colliders();
+            draw_scene_doors();
         }
         EndMode3D();
 

@@ -2,6 +2,7 @@
 #define SCENE_H_
 
 #include "collision.h"
+#include "doors.h"
 #include "player.h"
 #include <string.h>
 #include <string>
@@ -14,11 +15,9 @@ class Scene {
   public:
     SceneManager *parent;
 
-    // std::vector<Geometry> map_geometry;
-    // std::vector<Floor> map_floor;
-    // std::vector<Trigger> map_trigger;
-
     std::vector<Collider> map_colliders;
+
+    std::vector<Door> map_doors;
 
     Player *player;
 
@@ -44,15 +43,10 @@ class Scene {
     virtual void loadmap(const char *filename);
 
   private:
-    // private methods
-
-    /*virtual void update_map_triggers(void);*/
-    /*virtual void debug_draw_map_triggers();*/
-
-    /*virtual void draw_map_geometry(void);*/
-    /*virtual void draw_map_floor(void);*/
-
     virtual void draw_scene_colliders(void);
+
+    virtual void update_scene_doors();
+    virtual void draw_scene_doors();
 };
 
 class MainMenu : public Scene {
