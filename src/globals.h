@@ -30,4 +30,14 @@ typedef struct {
 
 extern debug_t g_debug;
 
+typedef struct {
+    Model shotgun;
+    Model axe;
+    Model cabela;
+} gmodels_t;
+
+extern gmodels_t g_assets;
+
+void load_global_assets();
+
 #endif // !_GLOBALS_H_

@@ -18,3 +18,5 @@ https://pixabay.com/sound-effects/empty-glass-table-foley-slide-3-237638/
 ## art
 
 https://opengameart.org/content/ui-black-button-settings
+
+https://opengameart.org/content/low-poly-axe-3

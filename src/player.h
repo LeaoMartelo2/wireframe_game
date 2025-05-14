@@ -7,6 +7,7 @@
 #include "../raylib/rlgl.h"
 #include "collision.h"
 #include "doors.h"
+#include "items.h"
 #include <vector>
 
 class Player {
@@ -41,6 +42,8 @@ class Player {
         Model model;
         Vector3 viewmodel_pos;
     } viewmodel;
+
+    Item items[5];
 
     struct {
         long health;

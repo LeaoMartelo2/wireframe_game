@@ -5,12 +5,14 @@
 #include "collision.h"
 #include "globals.h"
 #include "include/lognest.h"
+#include "items.h"
 #include "misc.h"
 #include <math.h>
 
 #define FILL_COLOR GetColor(0x181818FF)
 
-#define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
+// #define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
+#define VIEWMODEL_PATH "assets/models/low_poly_axe/axe.obj"
 
 Player::Player() {
 
@@ -57,6 +59,8 @@ Player::Player() {
     }
 
     viewmodel.viewmodel_pos = Vector3Zero();
+
+    items[0] = *new Shotgun();
 
     gameplay.health = 250;
     gameplay.ammo = 20;
