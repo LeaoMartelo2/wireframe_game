@@ -1,8 +1,8 @@
 .PHONY: clear release
-CC = g++
+CC = clang++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
-DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow
+DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument
 
 FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -ggdb
 

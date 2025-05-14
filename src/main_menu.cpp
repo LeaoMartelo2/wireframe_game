@@ -95,7 +95,7 @@ MainMenu::MainMenu() {
 
     lognest_trace("[Menu] Loading Main menu data.");
 
-    mm_camera = {0};
+    mm_camera = {};
     mm_camera.position = Vector3Zero();
     mm_camera.target = Vector3{10, 0, 0};
     mm_camera.up = {0, 1, 0};
