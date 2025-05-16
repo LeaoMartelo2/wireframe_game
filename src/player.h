@@ -11,9 +11,11 @@
 #include <vector>
 
 typedef enum PLAYER_ITEMS {
-    ITEM_EMPTY = 0,
-    ITEM_SHOTGUN,
+    ITEM_SHOTGUN = 0,
     ITEM_AXE,
+    ITEM_CABELA,
+
+    ITEM_COUNT,
 
 } PLAYER_ITEMS;
 
@@ -55,6 +57,7 @@ class Player {
 
         Shotgun shotgun;
         Axe axe;
+        Cabela cabela;
 
     } items;
 

@@ -1,12 +1,14 @@
 #include "items.h"
-#include "globals.h"
-#include <cmath>
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();
 };
 
 void Shotgun::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
+
+    if (!enabled) {
+        return;
+    }
 
     forward = Vector3Add(forward, player_pos);
     forward = Vector3Add(forward, right);
@@ -17,6 +19,10 @@ void Shotgun::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
 };
 
 void Shotgun::draw(Vector3 camera_pos, float input_sideways) {
+
+    if (!enabled) {
+        return;
+    }
 
     rlPushMatrix();
     {
@@ -43,6 +49,10 @@ Axe::Axe() {
 
 void Axe::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
 
+    if (!enabled) {
+        return;
+    }
+
     Vector3 new_pos = Vector3Add(forward, player_pos);
     new_pos = Vector3Add(new_pos, right);
 
@@ -54,6 +64,10 @@ void Axe::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
 };
 
 void Axe::draw(Vector3 camera_pos, float input_forward, Vector3 player_right) {
+
+    if (!enabled) {
+        return;
+    }
 
     rlPushMatrix();
     {
@@ -78,6 +92,49 @@ void Axe::draw(Vector3 camera_pos, float input_forward, Vector3 player_right) {
         rlScalef(1, 1, 1);
         DrawModel(g_assets.axe, Vector3Zero(), 1, BLACK);
         DrawModelWires(g_assets.axe, Vector3Zero(), 1, WHITE);
+    }
+    rlPopMatrix();
+}
+
+Cabela::Cabela() {
+    pos = Vector3Zero();
+}
+
+void Cabela::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
+
+    if (!enabled) {
+        return;
+    }
+
+    forward = Vector3Add(forward, player_pos);
+    forward = Vector3Add(forward, right);
+
+    forward.y = player_pos.y + 6.5f;
+
+    pos = forward;
+}
+
+void Cabela::draw(Vector3 camera_pos) {
+
+    if (!enabled) {
+        return;
+    }
+
+    rlPushMatrix();
+    {
+        rlTranslatef(pos.x, pos.y, pos.z);
+
+        Vector3 direction = Vector3Subtract(camera_pos, pos);
+        direction = Vector3Normalize(direction);
+
+        float yaw = atan2f(direction.x, direction.z);
+
+        Matrix rotation = MatrixRotateY(yaw + PI);
+
+        rlMultMatrixf(MatrixToFloat(rotation));
+        rlScalef(1, 1, 1);
+        DrawModel(g_assets.cabela, Vector3Zero(), 1, GRAY);
+        DrawModelWires(g_assets.cabela, Vector3Zero(), 1, RED);
     }
     rlPopMatrix();
 }

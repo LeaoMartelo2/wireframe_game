@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "include/lognest.h"
 // #include "items.h"
+#include "items.h"
 #include "misc.h"
 #include <math.h>
 
@@ -218,6 +219,16 @@ void Player::get_input() {
     if (fabs(input.sideways) < dead_zone) {
         input.sideways = 0.0f;
     }
+
+    float scroll = GetMouseWheelMove();
+
+    if (scroll > 0) {
+        items.selected_item = (items.selected_item + 1) % ITEM_COUNT;
+    }
+
+    if (scroll < 0) {
+        items.selected_item = (items.selected_item - 1 + ITEM_COUNT) % ITEM_COUNT;
+    }
 }
 
 void Player::jump() {
@@ -393,23 +404,36 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
 void Player::update_viewmodel() {
 
-    if (items.selected_item == ITEM_SHOTGUN) {
-        items.shotgun.update(get_forward(), get_right(), collider.pos);
-    }
+    switch (items.selected_item) {
 
-    if (items.selected_item == ITEM_AXE) {
+    case ITEM_SHOTGUN:
+        items.shotgun.update(get_forward(), get_right(), collider.pos);
+        break;
+
+    case ITEM_AXE:
         items.axe.update(get_forward(), get_right(), collider.pos);
+        break;
+
+    case ITEM_CABELA:
+        items.cabela.update(get_forward(), get_right(), collider.pos);
+        break;
     }
 }
 
 void Player::draw_viewmodel() {
 
-    if (items.selected_item == ITEM_SHOTGUN) {
-        items.shotgun.draw(camera.position, input.sideways);
-    }
+    switch (items.selected_item) {
 
-    if (items.selected_item == ITEM_AXE) {
+    case ITEM_SHOTGUN:
+        items.shotgun.draw(camera.position, input.sideways);
+        break;
+
+    case ITEM_AXE:
         items.axe.draw(camera.position, input.forwards, get_right());
+        break;
+
+    case ITEM_CABELA:
+        items.cabela.draw(camera.position);
     }
 }
 
@@ -444,6 +468,12 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
             misc.noclip = !misc.noclip;
             lognest_debug("[Player] Toggle NoClip '%s' -> '%s'",
                           bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
+        }
+
+        if (IsKeyPressed(KEY_B)) {
+            items.shotgun.enabled = true;
+            items.cabela.enabled = true;
+            items.axe.enabled = true;
         }
     }
 }
