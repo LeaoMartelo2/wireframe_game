@@ -10,15 +10,6 @@
 #include "items.h"
 #include <vector>
 
-typedef enum PLAYER_ITEMS {
-    ITEM_SHOTGUN = 0,
-    ITEM_AXE,
-    ITEM_CABELA,
-
-    ITEM_COUNT,
-
-} PLAYER_ITEMS;
-
 class Player {
     // public variables
   public:

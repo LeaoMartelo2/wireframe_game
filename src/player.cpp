@@ -61,7 +61,7 @@ Player::Player() {
 
     viewmodel.viewmodel_pos = Vector3Zero();
 
-    items.selected_item = ITEM_AXE;
+    items.selected_item = ITEM_COUNT;
 
     gameplay.health = 250;
     gameplay.ammo = 20;
@@ -509,14 +509,16 @@ void Player::debug() {
                                       "Input:\n -> Forward: { %f }\n -> Sideways: { %f }\n"
                                       "Velocity:\n -> { %*.*f, %*.*f, %*.*f }\n"
                                       "is_grounded: %s\n"
-                                      "is_colliding: %s",
+                                      "is_colliding: %s\n"
+                                      "selected_item: %d\n",
                                       collider.pos.x, collider.pos.y, collider.pos.z,
                                       input.forwards, input.sideways,
                                       width, 2, velocity.x,
                                       width, 2, velocity.y,
                                       width, 2, velocity.z,
                                       bool_to_string(is_grounded),
-                                      bool_to_string(collider.is_colliding));
+                                      bool_to_string(collider.is_colliding),
+                                      items.selected_item);
 
     DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
 

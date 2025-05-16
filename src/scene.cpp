@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
+#include "items.h"
 #include "player.h"
 #include <fstream>
 
@@ -14,6 +15,7 @@
 Scene::Scene() {
     map_colliders.reserve(1000);
     map_doors.reserve(10);
+    map_items.reserve(100);
 }
 
 Scene::~Scene() {
@@ -27,6 +29,16 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->collider.pos = start_pos;
     player->camera.target = looking_at;
+
+    DroppedItem test_item;
+    test_item.type = ITEM_SHOTGUN;
+    test_item.pos = {300, 7, 300};
+    test_item.size = Vector3One();
+    test_item.collect_trigger.size = {10, 15, 10};
+    test_item.collect_trigger.pos = test_item.pos;
+    test_item.collect_trigger.pos.y += 5;
+
+    map_items.push_back(test_item);
 }
 
 void Scene::end(void) {
@@ -139,6 +151,10 @@ void Scene::loadmap(const char *filename) {
                 map_doors.push_back(door);
             }
 
+            if (item["type"] == "dropped_item") {
+                continue;
+            }
+
             if (item["type"] == "trigger") {
                 continue;
 
@@ -224,11 +240,44 @@ void Scene::update_scene_doors() {
     }
 }
 
+void Scene::update_scene_items() {
+
+    for (auto &item : map_items) {
+
+        float distance = Vector3Distance(player->collider.pos, item.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        int collected = item.update(player->collider.pos, player->collider.size);
+
+        switch (collected) {
+        case ITEM_SHOTGUN:
+            player->items.shotgun.enabled = true;
+            break;
+        }
+    }
+}
+
+void Scene::draw_scene_items() {
+
+    for (auto &item : map_items) {
+
+        float distance = Vector3Distance(player->collider.pos, item.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        item.draw();
+    }
+}
+
 void Scene::update(void) {
 
     player->update(map_colliders, map_doors);
 
     update_scene_doors();
+    update_scene_items();
 
     BeginDrawing();
     {
@@ -241,6 +290,7 @@ void Scene::update(void) {
             player->debug_3d();
             draw_scene_colliders();
             draw_scene_doors();
+            draw_scene_items();
         }
         EndMode3D();
 

@@ -1,4 +1,80 @@
 #include "items.h"
+#include "globals.h"
+#include "include/lognest.h"
+#include <assert.h>
+
+DroppedItem::DroppedItem() {};
+
+int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
+
+    if (collected) {
+        return -1;
+    }
+
+    int ret = -1;
+
+    BoundingBox collect_bb = {
+        {collect_trigger.pos.x - collect_trigger.size.x / 2,
+         collect_trigger.pos.y - collect_trigger.size.y / 2,
+         collect_trigger.pos.z - collect_trigger.size.z / 2},
+
+        {collect_trigger.pos.x + collect_trigger.size.x / 2,
+         collect_trigger.pos.y + collect_trigger.size.y / 2,
+         collect_trigger.pos.z + collect_trigger.size.z / 2},
+    };
+
+    BoundingBox player_bb = {
+        {player_pos.x - player_size.x / 2, player_pos.y - player_size.y / 2, player_pos.z - player_size.z / 2},
+        {player_pos.x + player_size.x / 2, player_pos.y + player_size.y / 2, player_pos.z + player_size.z / 2},
+    };
+
+    if (CheckCollisionBoxes(collect_bb, player_bb)) {
+        collected = true;
+        ret = this->type;
+    }
+
+    pos.y += sinf(GetTime() * 1.5) * 0.1;
+
+    return ret;
+};
+
+void DroppedItem::draw() {
+
+    if (collected) {
+        return;
+    }
+
+    static long double rot = 0;
+    rot++;
+
+    switch (type) {
+
+    case ITEM_SHOTGUN:
+        DrawModelEx(g_assets.shotgun, pos, {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
+        DrawModelWiresEx(g_assets.shotgun, pos, {1, 1, 1}, rot, {10, 10, 10}, WHITE);
+        break;
+
+    case ITEM_AXE:
+        DrawModelEx(g_assets.axe, pos, {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
+        DrawModelWiresEx(g_assets.axe, pos, {1, 1, 1}, rot, {10, 10, 10}, WHITE);
+        break;
+
+    case ITEM_CABELA:
+        DrawModelEx(g_assets.cabela, pos, {0, 1, 0}, rot, {10, 10, 10}, GRAY);
+        DrawModelWiresEx(g_assets.cabela, pos, {0, 1, 0}, rot, {10, 10, 10}, RED);
+        break;
+
+    case ITEM_COUNT:
+        lognest_error("Unreachable.");
+        assert(1);
+    }
+
+#ifdef DEBUG
+
+    DrawCubeWiresV(collect_trigger.pos, collect_trigger.size, ORANGE);
+
+#endif // DEBUG
+};
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();

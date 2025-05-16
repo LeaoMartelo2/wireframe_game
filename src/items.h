@@ -7,7 +7,37 @@
 #include "globals.h"
 #include <math.h>
 
+typedef enum PLAYER_ITEMS {
+    ITEM_SHOTGUN = 0,
+    ITEM_AXE,
+    ITEM_CABELA,
+
+    ITEM_COUNT,
+
+} PLAYER_ITEMS;
+
 #define FILL_COLOR GetColor(0x181818FF)
+
+class DroppedItem {
+  public:
+    Vector3 pos;
+    Vector3 size;
+
+    struct {
+
+        Vector3 pos;
+        Vector3 size;
+    } collect_trigger;
+
+    bool collected = false;
+
+    PLAYER_ITEMS type;
+
+    DroppedItem();
+
+    void draw();
+    int update(Vector3 player_pos, Vector3 player_size);
+};
 
 class Shotgun {
   public:
