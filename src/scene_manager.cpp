@@ -8,6 +8,8 @@ SceneManager::SceneManager() : player() {
 
     lognest_trace("[SceneManager] Scene manager created.");
 
+    load_global_assets();
+
     current_scene = 0;
 
     add_scenes();

@@ -10,6 +10,13 @@
 #include "items.h"
 #include <vector>
 
+typedef enum PLAYER_ITEMS {
+    ITEM_EMPTY = 0,
+    ITEM_SHOTGUN,
+    ITEM_AXE,
+
+} PLAYER_ITEMS;
+
 class Player {
     // public variables
   public:
@@ -43,7 +50,13 @@ class Player {
         Vector3 viewmodel_pos;
     } viewmodel;
 
-    Item items[5];
+    struct {
+        int selected_item;
+
+        Shotgun shotgun;
+        Axe axe;
+
+    } items;
 
     struct {
         long health;

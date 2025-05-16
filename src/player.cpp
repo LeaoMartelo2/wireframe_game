@@ -5,7 +5,7 @@
 #include "collision.h"
 #include "globals.h"
 #include "include/lognest.h"
-#include "items.h"
+// #include "items.h"
 #include "misc.h"
 #include <math.h>
 
@@ -60,7 +60,7 @@ Player::Player() {
 
     viewmodel.viewmodel_pos = Vector3Zero();
 
-    items[0] = *new Shotgun();
+    items.selected_item = ITEM_AXE;
 
     gameplay.health = 250;
     gameplay.ammo = 20;
@@ -393,37 +393,24 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
 void Player::update_viewmodel() {
 
-    Vector3 new_pos = get_forward();
+    if (items.selected_item == ITEM_SHOTGUN) {
+        items.shotgun.update(get_forward(), get_right(), collider.pos);
+    }
 
-    Vector3 right = get_right();
-
-    new_pos = Vector3Add(new_pos, collider.pos);
-    new_pos = Vector3Add(new_pos, right);
-
-    new_pos.y = collider.pos.y + 6.5f;
-
-    viewmodel.viewmodel_pos = new_pos;
+    if (items.selected_item == ITEM_AXE) {
+        items.axe.update(get_forward(), get_right(), collider.pos);
+    }
 }
 
 void Player::draw_viewmodel() {
 
-    rlPushMatrix();
-    rlTranslatef(viewmodel.viewmodel_pos.x,
-                 viewmodel.viewmodel_pos.y,
-                 viewmodel.viewmodel_pos.z);
+    if (items.selected_item == ITEM_SHOTGUN) {
+        items.shotgun.draw(camera.position, input.sideways);
+    }
 
-    Vector3 direction = Vector3Subtract(camera.position, viewmodel.viewmodel_pos);
-    direction = Vector3Normalize(direction);
-
-    float yaw = atan2f(direction.x, direction.z);
-
-    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(input.sideways, -1.5, 1.5));
-
-    rlMultMatrixf(MatrixToFloat(rotation));
-    rlScalef(1, 1, 1);
-    DrawModel(viewmodel.model, Vector3Zero(), 1, FILL_COLOR);
-    DrawModelWires(viewmodel.model, Vector3Zero(), 1, WHITE);
-    rlPopMatrix();
+    if (items.selected_item == ITEM_AXE) {
+        items.axe.draw(camera.position, input.forwards, get_right());
+    }
 }
 
 void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
