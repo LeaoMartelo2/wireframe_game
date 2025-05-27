@@ -18,6 +18,18 @@ typedef enum PLAYER_ITEMS {
 
 #define FILL_COLOR GetColor(0x181818FF)
 
+typedef struct {
+    Vector3 player_pos;
+    Vector3 forward;
+    Vector3 right;
+
+    Vector3 camera_pos;
+
+    float input_forward;
+    float input_sideways;
+
+} GenericPlayerData_share;
+
 class DroppedItem {
   public:
     Vector3 pos;
@@ -39,37 +51,43 @@ class DroppedItem {
     int update(Vector3 player_pos, Vector3 player_size);
 };
 
-class Shotgun {
+class Item {
+
   public:
-    bool enabled = false;
+    Vector3 pos;
+
+    virtual void update(GenericPlayerData_share data) = 0;
+    virtual void draw(GenericPlayerData_share data) = 0;
+};
+
+class Shotgun : public Item {
+  public:
     Vector3 pos;
 
     Shotgun();
 
-    void update(Vector3 forward, Vector3 right, Vector3 player_pos);
-    void draw(Vector3 camera_pos, float input_sideways);
+    void update(GenericPlayerData_share data) override;
+    void draw(GenericPlayerData_share data) override;
 };
 
-class Axe {
+class Axe : public Item {
   public:
-    bool enabled = false;
     Vector3 pos;
 
     Axe();
 
-    void update(Vector3 forward, Vector3 right, Vector3 player_pos);
-    void draw(Vector3 camera_pos, float input_forward, Vector3 player_right);
+    void update(GenericPlayerData_share data) override;
+    void draw(GenericPlayerData_share data) override;
 };
 
-class Cabela {
+class Cabela : public Item {
   public:
-    bool enabled = false;
     Vector3 pos;
 
     Cabela();
 
-    void update(Vector3 forward, Vector3 right, Vector3 player_pos);
-    void draw(Vector3 camera_pos);
+    void update(GenericPlayerData_share data) override;
+    void draw(GenericPlayerData_share data) override;
 };
 
 #endif // !ITEMS_H_

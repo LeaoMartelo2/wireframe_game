@@ -66,7 +66,7 @@ void DroppedItem::draw() {
 
     case ITEM_COUNT:
         lognest_error("Unreachable.");
-        assert(1);
+        assert(0);
     }
 
 #ifdef DEBUG
@@ -80,36 +80,28 @@ Shotgun::Shotgun() {
     pos = Vector3Zero();
 };
 
-void Shotgun::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
+void Shotgun::update(GenericPlayerData_share data) {
 
-    if (!enabled) {
-        return;
-    }
+    Vector3 local_forward = Vector3Add(data.forward, data.player_pos);
+    local_forward = Vector3Add(local_forward, data.right);
 
-    forward = Vector3Add(forward, player_pos);
-    forward = Vector3Add(forward, right);
+    local_forward.y = data.player_pos.y + 6.5f;
 
-    forward.y = player_pos.y + 6.5f;
-
-    pos = forward;
+    pos = local_forward;
 };
 
-void Shotgun::draw(Vector3 camera_pos, float input_sideways) {
-
-    if (!enabled) {
-        return;
-    }
+void Shotgun::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
         rlTranslatef(pos.x, pos.y, pos.z);
 
-        Vector3 direction = Vector3Subtract(camera_pos, pos);
+        Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
 
         float yaw = atan2f(direction.x, direction.z);
 
-        Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(input_sideways, -1.5f, 1.5));
+        Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(data.input_sideways, -1.5f, 1.5f));
 
         rlMultMatrixf(MatrixToFloat(rotation));
         rlScalef(1, 1, 1);
@@ -123,33 +115,25 @@ Axe::Axe() {
     pos = Vector3Zero();
 };
 
-void Axe::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
+void Axe::update(GenericPlayerData_share data) {
 
-    if (!enabled) {
-        return;
-    }
+    Vector3 new_pos = Vector3Add(data.forward, data.player_pos);
+    new_pos = Vector3Add(new_pos, data.right);
 
-    Vector3 new_pos = Vector3Add(forward, player_pos);
-    new_pos = Vector3Add(new_pos, right);
-
-    new_pos.y = player_pos.y + 6.6f;
+    new_pos.y = data.player_pos.y + 6.6f;
 
     new_pos.y += sinf(GetTime() * 1.5) * 0.1;
 
     pos = new_pos;
 };
 
-void Axe::draw(Vector3 camera_pos, float input_forward, Vector3 player_right) {
-
-    if (!enabled) {
-        return;
-    }
+void Axe::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
         rlTranslatef(pos.x, pos.y, pos.z);
 
-        Vector3 direction = Vector3Subtract(camera_pos, pos);
+        Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
 
         float yaw = atan2f(direction.x, direction.z);
@@ -159,8 +143,8 @@ void Axe::draw(Vector3 camera_pos, float input_forward, Vector3 player_right) {
 
         float inclination = 15 * (PI / 180);
 
-        Matrix rotation = MatrixRotateY(yaw + (PI * 1.45) + Normalize(input_forward, -5, 5));
-        Matrix inclined_rot = MatrixRotate(player_right, inclination);
+        Matrix rotation = MatrixRotateY(yaw + (PI * 1.45) + Normalize(data.input_forward, -5, 5));
+        Matrix inclined_rot = MatrixRotate(data.right, inclination);
 
         Matrix final_rot = MatrixMultiply(rotation, inclined_rot);
 
@@ -176,31 +160,23 @@ Cabela::Cabela() {
     pos = Vector3Zero();
 }
 
-void Cabela::update(Vector3 forward, Vector3 right, Vector3 player_pos) {
+void Cabela::update(GenericPlayerData_share data) {
 
-    if (!enabled) {
-        return;
-    }
+    data.forward = Vector3Add(data.forward, data.player_pos);
+    data.forward = Vector3Add(data.forward, data.right);
 
-    forward = Vector3Add(forward, player_pos);
-    forward = Vector3Add(forward, right);
+    data.forward.y = data.player_pos.y + 6.5f;
 
-    forward.y = player_pos.y + 6.5f;
-
-    pos = forward;
+    pos = data.forward;
 }
 
-void Cabela::draw(Vector3 camera_pos) {
-
-    if (!enabled) {
-        return;
-    }
+void Cabela::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
         rlTranslatef(pos.x, pos.y, pos.z);
 
-        Vector3 direction = Vector3Subtract(camera_pos, pos);
+        Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
 
         float yaw = atan2f(direction.x, direction.z);

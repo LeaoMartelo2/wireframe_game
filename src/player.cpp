@@ -61,7 +61,8 @@ Player::Player() {
 
     viewmodel.viewmodel_pos = Vector3Zero();
 
-    items.selected_item = ITEM_COUNT;
+    give_item(1, ITEM_AXE);
+    inventory.selected_slot = 1;
 
     gameplay.health = 250;
     gameplay.ammo = 20;
@@ -220,14 +221,16 @@ void Player::get_input() {
         input.sideways = 0.0f;
     }
 
-    float scroll = GetMouseWheelMove();
-
-    if (scroll > 0) {
-        items.selected_item = (items.selected_item + 1) % ITEM_COUNT;
+    if (IsKeyPressed(KEY_ONE)) {
+        inventory.selected_slot = 1;
     }
 
-    if (scroll < 0) {
-        items.selected_item = (items.selected_item - 1 + ITEM_COUNT) % ITEM_COUNT;
+    if (IsKeyDown(KEY_TWO)) {
+        inventory.selected_slot = 2;
+    }
+
+    if (IsKeyDown(KEY_THREE)) {
+        inventory.selected_slot = 3;
     }
 }
 
@@ -404,37 +407,32 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
 void Player::update_viewmodel() {
 
-    switch (items.selected_item) {
-
-    case ITEM_SHOTGUN:
-        items.shotgun.update(get_forward(), get_right(), collider.pos);
-        break;
-
-    case ITEM_AXE:
-        items.axe.update(get_forward(), get_right(), collider.pos);
-        break;
-
-    case ITEM_CABELA:
-        items.cabela.update(get_forward(), get_right(), collider.pos);
-        break;
+    if (inventory.selected_slot == 0) {
+        return;
     }
+
+    inventory.slot.at(inventory.selected_slot)->update(share_data);
 }
 
 void Player::draw_viewmodel() {
 
-    switch (items.selected_item) {
-
-    case ITEM_SHOTGUN:
-        items.shotgun.draw(camera.position, input.sideways);
-        break;
-
-    case ITEM_AXE:
-        items.axe.draw(camera.position, input.forwards, get_right());
-        break;
-
-    case ITEM_CABELA:
-        items.cabela.draw(camera.position);
+    if (inventory.selected_slot == 0) {
+        return;
     }
+
+    inventory.slot.at(inventory.selected_slot)->draw(share_data);
+}
+
+void Player::update_share_data() {
+
+    share_data = {
+        .player_pos = collider.pos,
+        .forward = get_forward(),
+        .right = get_right(),
+        .camera_pos = camera.position,
+        .input_forward = input.forwards,
+        .input_sideways = input.sideways,
+    };
 }
 
 void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
@@ -455,6 +453,7 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
     move(map_colliders, map_doors);
 
     update_camera();
+    update_share_data();
     update_viewmodel();
 
     if (IsKeyPressed(KEY_F3)) {
@@ -468,12 +467,6 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
             misc.noclip = !misc.noclip;
             lognest_debug("[Player] Toggle NoClip '%s' -> '%s'",
                           bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
-        }
-
-        if (IsKeyPressed(KEY_B)) {
-            items.shotgun.enabled = true;
-            items.cabela.enabled = true;
-            items.axe.enabled = true;
         }
     }
 }
@@ -498,6 +491,19 @@ void Player::give_ammo(long ammount) {
     gameplay.ammo += ammount;
 }
 
+void Player::give_item(size_t slot, PLAYER_ITEMS item) {
+
+    switch (item) {
+    case ITEM_SHOTGUN:
+        inventory.slot.at(slot) = new Shotgun();
+        break;
+
+    case ITEM_AXE:
+        inventory.slot.at(slot) = new Axe();
+        break;
+    }
+}
+
 void Player::debug() {
     if (!misc.show_debug) {
         return;
@@ -518,7 +524,7 @@ void Player::debug() {
                                       width, 2, velocity.z,
                                       bool_to_string(is_grounded),
                                       bool_to_string(collider.is_colliding),
-                                      items.selected_item);
+                                      inventory.selected_slot);
 
     DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
 
@@ -552,7 +558,12 @@ void Player::draw() {
 void Player::draw_hud() {
     debug();
 
+    /* crosshair */
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 2, WHITE);
+
+    // DrawRectangleLines(GetScreenWidth() / 2 + (GetScreenWidth() / 2) - 60, GetScreenHeight() / 2 + 150, 50, 50, WHITE);
+
+    DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
 
 #ifdef DEBUG
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);

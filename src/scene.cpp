@@ -253,7 +253,7 @@ void Scene::update_scene_items() {
 
         switch (collected) {
         case ITEM_SHOTGUN:
-            player->items.shotgun.enabled = true;
+            // player->items.shotgun.enabled = true;
             break;
         }
     }

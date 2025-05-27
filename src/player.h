@@ -8,6 +8,7 @@
 #include "collision.h"
 #include "doors.h"
 #include "items.h"
+#include <array>
 #include <vector>
 
 class Player {
@@ -44,13 +45,14 @@ class Player {
     } viewmodel;
 
     struct {
-        int selected_item;
 
-        Shotgun shotgun;
-        Axe axe;
-        Cabela cabela;
+        size_t selected_slot;
 
-    } items;
+        std::array<Item *, 4> slot;
+
+    } inventory;
+
+    GenericPlayerData_share share_data;
 
     struct {
         long health;
@@ -64,7 +66,7 @@ class Player {
     } misc;
 
     Player();
-
+    void update_share_data();
     void update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
     void draw(void);
     void draw_hud(void);
@@ -79,6 +81,7 @@ class Player {
 
     void damage(long ammount);
     void give_ammo(long ammount);
+    void give_item(size_t slot, PLAYER_ITEMS item);
 
     void debug(void);
     void debug_3d(void);
