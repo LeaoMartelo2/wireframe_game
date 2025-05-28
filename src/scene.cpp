@@ -38,6 +38,8 @@ void Scene::start() {
     test_item.collect_trigger.pos = test_item.pos;
     test_item.collect_trigger.pos.y += 5;
 
+    test_item.load();
+
     map_items.push_back(test_item);
 }
 
@@ -242,19 +244,23 @@ void Scene::update_scene_doors() {
 
 void Scene::update_scene_items() {
 
-    for (auto &item : map_items) {
+    for (size_t i = 0; i < map_items.size(); ++i) {
+        auto &item = map_items[i];
 
         float distance = Vector3Distance(player->collider.pos, item.pos);
         if (distance > g_settings.draw_distance) {
             continue;
         }
 
-        int collected = item.update(player->collider.pos, player->collider.size);
+        if (item.update(player->collider.pos, player->collider.size)) {
 
-        switch (collected) {
-        case ITEM_SHOTGUN:
-            // player->items.shotgun.enabled = true;
-            break;
+            lognest_debug(" ┗>[Scene] Collected DroppedItem with ID: %zu , of type: '%s'",
+                          i,
+                          get_item_as_cstr(item.type));
+
+            player->give_item(item.player_slot, item.type);
+
+            map_items.erase(map_items.begin() + i);
         }
     }
 }

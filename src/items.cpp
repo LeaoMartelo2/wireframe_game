@@ -3,15 +3,56 @@
 #include "include/lognest.h"
 #include <assert.h>
 
+const char *get_item_as_cstr(PLAYER_ITEMS item) {
+
+    static const char *item_names[] = {
+        "ITEM_SHOTGUN",
+        "ITEM_AXE",
+        "ITEM_CABELA",
+        "UNKNOWN_ITEM",
+    };
+
+    if (item >= ITEM_SHOTGUN && item < ITEM_COUNT) {
+
+        return item_names[item];
+
+    } else {
+
+        return "UNKNOWN_ITEM";
+    }
+}
+
 DroppedItem::DroppedItem() {};
+
+void DroppedItem::load() {
+
+    switch (type) {
+
+    case ITEM_SHOTGUN:
+        player_slot = 1;
+        break;
+
+    case ITEM_AXE:
+        player_slot = 2;
+        break;
+
+    case ITEM_CABELA:
+        player_slot = 3;
+        break;
+
+    default:
+        player_slot = 0;
+        break;
+    }
+};
 
 int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
     if (collected) {
-        return -1;
+        return false;
     }
 
-    int ret = -1;
+    int ret = false;
 
     BoundingBox collect_bb = {
         {collect_trigger.pos.x - collect_trigger.size.x / 2,
@@ -30,7 +71,10 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
     if (CheckCollisionBoxes(collect_bb, player_bb)) {
         collected = true;
-        ret = this->type;
+        ret = true;
+
+        int pickup_index = GetRandomValue(0, 2);
+        PlaySound(g_sounds.item_pickup_sound[pickup_index]);
     }
 
     pos.y += sinf(GetTime() * 1.5) * 0.1;
@@ -64,9 +108,15 @@ void DroppedItem::draw() {
         DrawModelWiresEx(g_assets.cabela, pos, {0, 1, 0}, rot, {10, 10, 10}, RED);
         break;
 
-    case ITEM_COUNT:
-        lognest_error("Unreachable.");
+    case ITEM_EMPTY:
+        lognest_error("Unreachable case ITEM_EMPTY %s:%s.", __FILE__, __LINE__);
         assert(0);
+        break;
+
+    case ITEM_COUNT:
+        lognest_error("Unreachable case ITEM_COUNT %s:%s.", __FILE__, __LINE__);
+        assert(0);
+        break;
     }
 
 #ifdef DEBUG
@@ -75,6 +125,20 @@ void DroppedItem::draw() {
 
 #endif // DEBUG
 };
+
+EmptyItem::EmptyItem() {
+    return;
+}
+
+// Hello guys, so this is a tutorial on how to make ths compiler shut the fuck up
+void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) {
+    return;
+}
+
+void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) {
+    return;
+}
+// thanks for comming to my tutorial please linker and subtract
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();

@@ -38,6 +38,16 @@ typedef struct {
 
 extern gmodels_t g_assets;
 
+typedef struct {
+
+    Sound item_pickup_sound[3];
+
+    Sound door_open;
+
+} gsounds_t;
+
+extern gsounds_t g_sounds;
+
 void load_global_assets();
 
 #endif // !_GLOBALS_H_

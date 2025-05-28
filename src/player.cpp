@@ -5,9 +5,9 @@
 #include "collision.h"
 #include "globals.h"
 #include "include/lognest.h"
-// #include "items.h"
 #include "items.h"
 #include "misc.h"
+#include <assert.h>
 #include <math.h>
 
 #define FILL_COLOR GetColor(0x181818FF)
@@ -59,9 +59,9 @@ Player::Player() {
         exit(EXIT_FAILURE);
     }
 
-    viewmodel.viewmodel_pos = Vector3Zero();
+    clear_inventory();
 
-    give_item(1, ITEM_AXE);
+    // give_item(1, ITEM_AXE);
     inventory.selected_slot = 1;
 
     gameplay.health = 250;
@@ -222,15 +222,18 @@ void Player::get_input() {
     }
 
     if (IsKeyPressed(KEY_ONE)) {
-        inventory.selected_slot = 1;
+        if (inventory.slot[1] != nullptr)
+            inventory.selected_slot = 1;
     }
 
     if (IsKeyDown(KEY_TWO)) {
-        inventory.selected_slot = 2;
+        if (inventory.slot[2] != nullptr)
+            inventory.selected_slot = 2;
     }
 
     if (IsKeyDown(KEY_THREE)) {
-        inventory.selected_slot = 3;
+        if (inventory.slot.at(3) != nullptr)
+            inventory.selected_slot = 3;
     }
 }
 
@@ -491,9 +494,27 @@ void Player::give_ammo(long ammount) {
     gameplay.ammo += ammount;
 }
 
+void Player::clear_inventory() {
+
+    static EmptyItem empty_item;
+
+    for (auto &itemptr : inventory.slot) {
+        itemptr = &empty_item;
+    }
+}
+
 void Player::give_item(size_t slot, PLAYER_ITEMS item) {
 
     switch (item) {
+    case ITEM_EMPTY:
+        return;
+        break;
+
+    case ITEM_COUNT:
+        lognest_error("Unreachable case %s:%s.", __FILE__, __LINE__);
+        assert(0);
+        break;
+
     case ITEM_SHOTGUN:
         inventory.slot.at(slot) = new Shotgun();
         break;
@@ -501,7 +522,13 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
     case ITEM_AXE:
         inventory.slot.at(slot) = new Axe();
         break;
+
+    case ITEM_CABELA:
+        inventory.slot.at(slot) = new Cabela();
+        break;
     }
+
+    lognest_debug(" ┗>[Player] Gave '%s' at slot '%zu' to Player", get_item_as_cstr(item), slot);
 }
 
 void Player::debug() {
@@ -563,7 +590,7 @@ void Player::draw_hud() {
 
     // DrawRectangleLines(GetScreenWidth() / 2 + (GetScreenWidth() / 2) - 60, GetScreenHeight() / 2 + 150, 50, 50, WHITE);
 
-    DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
+    // DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
 
 #ifdef DEBUG
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);

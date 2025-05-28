@@ -81,6 +81,7 @@ class Player {
 
     void damage(long ammount);
     void give_ammo(long ammount);
+    void clear_inventory();
     void give_item(size_t slot, PLAYER_ITEMS item);
 
     void debug(void);
