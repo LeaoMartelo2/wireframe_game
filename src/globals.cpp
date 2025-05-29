@@ -30,4 +30,10 @@ void load_global_assets() {
     g_sounds.item_pickup_sound[2] = LoadSound("assets/sounds/items/pickup2.wav");
 
     g_sounds.door_open = LoadSound("assets/sounds/map_sounds/door_open.wav");
+
+    g_sounds.item_axe_equip[0] = LoadSound("assets/sounds/items/axe/equip.wav");
+    g_sounds.item_axe_equip[1] = LoadSound("assets/sounds/items/axe/equip1.wav");
+    g_sounds.item_axe_equip[2] = LoadSound("assets/sounds/items/axe/equip2.wav");
+
+    g_sounds.item_shotgun_reload = LoadSound("assets/sounds/items/shotgun/reload.wav");
 }

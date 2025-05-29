@@ -118,19 +118,14 @@ void DroppedItem::draw() {
 #endif // DEBUG
 };
 
-EmptyItem::EmptyItem() {
-    return;
-}
+EmptyItem::EmptyItem() { return; }
 
 // Hello guys, so this is a tutorial on how to make ths compiler shut the fuck up
-void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) {
-    return;
-}
-
-void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) {
-    return;
-}
+void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) { return; }
+void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) { return; }
 // thanks for comming to my tutorial please linker and subtract
+
+void EmptyItem::play_equip_sound() { return; }
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();
@@ -165,6 +160,11 @@ void Shotgun::draw(GenericPlayerData_share data) {
         DrawModelWires(g_assets.shotgun, Vector3Zero(), 1, WHITE);
     }
     rlPopMatrix();
+}
+
+void Shotgun::play_equip_sound() {
+
+    PlaySound(g_sounds.item_shotgun_reload);
 }
 
 Axe::Axe() {
@@ -212,6 +212,15 @@ void Axe::draw(GenericPlayerData_share data) {
     rlPopMatrix();
 }
 
+void Axe::play_equip_sound() {
+
+    lognest_error("played equip sound");
+
+    int index = GetRandomValue(0, 2);
+
+    PlaySound(g_sounds.item_axe_equip[index]);
+}
+
 Cabela::Cabela() {
     pos = Vector3Zero();
 }
@@ -246,3 +255,5 @@ void Cabela::draw(GenericPlayerData_share data) {
     }
     rlPopMatrix();
 }
+
+void Cabela::play_equip_sound() { return; }

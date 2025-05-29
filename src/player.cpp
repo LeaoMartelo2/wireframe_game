@@ -12,9 +12,6 @@
 
 #define FILL_COLOR GetColor(0x181818FF)
 
-// #define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
-#define VIEWMODEL_PATH "assets/models/low_poly_axe/axe.obj"
-
 Player::Player() {
 
     lognest_trace("[Player] Loading Player data.");
@@ -51,17 +48,8 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Player collision calculated.");
 
-    if (file_exists(VIEWMODEL_PATH)) {
-        viewmodel.model = LoadModel(VIEWMODEL_PATH);
-        lognest_debug(" ┗>[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
-    } else {
-        lognest_error("[Player] Viewmodel could not be loaded from '%s'.", VIEWMODEL_PATH);
-        exit(EXIT_FAILURE);
-    }
-
     clear_inventory();
 
-    // give_item(1, ITEM_AXE);
     inventory.selected_slot = 1;
 
     gameplay.health = 250;
@@ -222,18 +210,27 @@ void Player::get_input() {
     }
 
     if (IsKeyPressed(KEY_ONE)) {
-        if (inventory.slot[1] != nullptr)
-            inventory.selected_slot = 1;
+        switch_to_slot(1);
     }
 
-    if (IsKeyDown(KEY_TWO)) {
-        if (inventory.slot[2] != nullptr)
-            inventory.selected_slot = 2;
+    if (IsKeyPressed(KEY_TWO)) {
+        switch_to_slot(2);
     }
 
-    if (IsKeyDown(KEY_THREE)) {
-        if (inventory.slot.at(3) != nullptr)
-            inventory.selected_slot = 3;
+    if (IsKeyPressed(KEY_THREE)) {
+        switch_to_slot(3);
+    }
+}
+
+void Player::switch_to_slot(size_t slot) {
+
+    if (dynamic_cast<EmptyItem *>(inventory.slot.at(slot))) {
+        // lognest_error("is empty item");
+    } else {
+        if (slot != inventory.selected_slot) {
+            inventory.selected_slot = slot;
+            inventory.slot.at(slot)->play_equip_sound();
+        }
     }
 }
 

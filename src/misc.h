@@ -1,6 +1,7 @@
 #ifndef MISC_H_
 #define MISC_H_
 
+#include <stddef.h>
 #define LOGNEST_IMPLEMENTATION
 #include "include/lognest.h"
 
@@ -29,6 +30,8 @@ inline void raylib_pre(void) {
 }
 
 inline void raylib_config(void) {
+
+    SetRandomSeed(time(NULL));
 
     SetExitKey(0);
 

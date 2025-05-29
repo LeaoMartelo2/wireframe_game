@@ -44,6 +44,10 @@ typedef struct {
 
     Sound door_open;
 
+    Sound item_axe_equip[3];
+
+    Sound item_shotgun_reload;
+
 } gsounds_t;
 
 extern gsounds_t g_sounds;

@@ -40,11 +40,6 @@ class Player {
     } input;
 
     struct {
-        Model model;
-        Vector3 viewmodel_pos;
-    } viewmodel;
-
-    struct {
 
         size_t selected_slot;
 
@@ -90,6 +85,7 @@ class Player {
   private:
     // private methods
     void get_input(void);
+    void switch_to_slot(size_t slot);
     void update_gravity();
     void jump();
     void move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);

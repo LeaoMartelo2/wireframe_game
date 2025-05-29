@@ -13,6 +13,7 @@
 Shotgun Cock Reload Layered (Powerful) by Paul368 -- https://freesound.org/s/200966/ -- License: Creative Commons 0
 
 https://opengameart.org/content/3-item-sounds
+https://opengameart.org/content/machete-vs-spatula
 
 
 https://pixabay.com/sound-effects/empty-glass-table-foley-slide-3-237638/
