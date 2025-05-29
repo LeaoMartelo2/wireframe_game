@@ -29,27 +29,11 @@ void Scene::start() {
     loadmap(map_file.c_str());
     player->collider.pos = start_pos;
     player->camera.target = looking_at;
-
-    DroppedItem test_item;
-    test_item.type = ITEM_SHOTGUN;
-    test_item.pos = {300, 7, 300};
-    test_item.size = Vector3One();
-    test_item.collect_trigger.size = {10, 15, 10};
-    test_item.collect_trigger.pos = test_item.pos;
-    test_item.collect_trigger.pos.y += 5;
-
-    test_item.load();
-
-    map_items.push_back(test_item);
 }
 
-void Scene::end(void) {
-}
+void Scene::end(void) {}
 
-void Scene::set_map(const char *filename) {
-
-    map_file = filename;
-}
+void Scene::set_map(const char *filename) { map_file = filename; }
 
 void Scene::loadmap(const char *filename) {
 
@@ -153,8 +137,29 @@ void Scene::loadmap(const char *filename) {
                 map_doors.push_back(door);
             }
 
-            if (item["type"] == "dropped_item") {
-                continue;
+            if (item["type"] == "item") {
+
+                DroppedItem dropped_item;
+
+                dropped_item.pos.x = item["pos"]["x"];
+                dropped_item.pos.y = item["pos"]["y"];
+                dropped_item.pos.z = item["pos"]["z"];
+
+                if (item["item_type"] == "ITEM_SHOTGUN") {
+                    dropped_item.type = ITEM_SHOTGUN;
+                }
+
+                if (item["item_type"] == "ITEM_AXE") {
+                    dropped_item.type = ITEM_AXE;
+                }
+
+                if (item["item_type"] == "ITEM_CABELA") {
+                    dropped_item.type = ITEM_CABELA;
+                }
+
+                dropped_item.load();
+
+                map_items.push_back(dropped_item);
             }
 
             if (item["type"] == "trigger") {

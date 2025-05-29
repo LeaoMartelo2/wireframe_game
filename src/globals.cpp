@@ -15,7 +15,7 @@ debug_t g_debug = {
     .draw_triggers = false,
 };
 
-gmodels_t g_assets = {};
+gmodels_t g_assets = {0};
 
 gsounds_t g_sounds = {0};
 

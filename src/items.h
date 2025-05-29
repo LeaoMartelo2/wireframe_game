@@ -5,8 +5,8 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "globals.h"
-#include <cstddef>
 #include <math.h>
+#include <stddef.h>
 
 typedef enum PLAYER_ITEMS {
     ITEM_EMPTY = -1,

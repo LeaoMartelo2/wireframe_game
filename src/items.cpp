@@ -26,6 +26,11 @@ DroppedItem::DroppedItem() {};
 
 void DroppedItem::load() {
 
+    size = Vector3One();
+    collect_trigger.size = {10, 15, 10};
+    collect_trigger.pos = pos;
+    collect_trigger.pos.y += 5;
+
     switch (type) {
 
     case ITEM_SHOTGUN:
@@ -72,9 +77,6 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
     if (CheckCollisionBoxes(collect_bb, player_bb)) {
         collected = true;
         ret = true;
-
-        int pickup_index = GetRandomValue(0, 2);
-        PlaySound(g_sounds.item_pickup_sound[pickup_index]);
     }
 
     pos.y += sinf(GetTime() * 1.5) * 0.1;
@@ -99,8 +101,8 @@ void DroppedItem::draw() {
         break;
 
     case ITEM_AXE:
-        DrawModelEx(g_assets.axe, pos, {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
-        DrawModelWiresEx(g_assets.axe, pos, {1, 1, 1}, rot, {10, 10, 10}, WHITE);
+        DrawModelEx(g_assets.axe, pos + (Vector3){0, 3.5, 0}, {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
+        DrawModelWiresEx(g_assets.axe, pos + (Vector3){0, 3.5, 0}, {1, 1, 1}, rot, {10, 10, 10}, WHITE);
         break;
 
     case ITEM_CABELA:

@@ -526,7 +526,13 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
     case ITEM_CABELA:
         inventory.slot.at(slot) = new Cabela();
         break;
+
+    default:
+        return;
     }
+
+    int pickup_index = GetRandomValue(0, 2);
+    PlaySound(g_sounds.item_pickup_sound[pickup_index]);
 
     lognest_debug(" ┗>[Player] Gave '%s' at slot '%zu' to Player", get_item_as_cstr(item), slot);
 }
