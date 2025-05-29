@@ -67,4 +67,4 @@ release: wireframe win
 
 # Clean all builds
 clear: 
-	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe 
+	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe latest.log

@@ -53,10 +53,6 @@ void DroppedItem::load() {
 
 int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
-    if (collected) {
-        return false;
-    }
-
     int ret = false;
 
     BoundingBox collect_bb = {
@@ -75,7 +71,6 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
     };
 
     if (CheckCollisionBoxes(collect_bb, player_bb)) {
-        collected = true;
         ret = true;
     }
 
@@ -86,11 +81,6 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
 void DroppedItem::draw() {
 
-    if (collected) {
-        return;
-    }
-
-    static long double rot = 0;
     rot++;
 
     switch (type) {

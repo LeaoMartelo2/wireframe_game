@@ -45,10 +45,10 @@ class DroppedItem {
         Vector3 size;
     } collect_trigger;
 
-    bool collected = false;
-
     size_t player_slot;
     PLAYER_ITEMS type;
+
+    long double rot;
 
     DroppedItem();
 
