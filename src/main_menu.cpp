@@ -104,8 +104,7 @@ MainMenu::MainMenu() {
 
     lognest_debug(" ┗>[Menu] Camera created.");
 
-    menu_model = LoadModel(MENU_MODEL);
-    menu_click = LoadSound(MENU_CLICK);
+    menu_model = g_assets.shotgun;
     menu_music = LoadMusicStream(MENU_MUSIC);
     mmenu_settings = LoadTexture(MENU_CONFIG);
 
