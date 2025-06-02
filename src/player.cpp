@@ -225,11 +225,16 @@ void Player::get_input() {
 void Player::switch_to_slot(size_t slot) {
 
     if (dynamic_cast<EmptyItem *>(inventory.slot.at(slot))) {
-        // lognest_error("is empty item");
+        // empty item
+        // @TODO figure out something idk
+        return;
     } else {
+        /* @TODO: figure out how to prevent the player from
+         * switching items before the eqip animation finishes */
         if (slot != inventory.selected_slot) {
+
             inventory.selected_slot = slot;
-            inventory.slot.at(slot)->play_equip_sound();
+            inventory.slot.at(slot)->play_equip_animation();
         }
     }
 }

@@ -1,5 +1,32 @@
 #include "globals.h"
 
+void timer_start(WF_timer *timer, float lifetime) {
+    if (timer != NULL) {
+        timer->life_time = lifetime;
+    }
+}
+
+void timer_update(WF_timer *timer) {
+
+    if (timer != NULL && timer->life_time > 0) {
+
+        timer->life_time -= GetFrameTime();
+    }
+
+    if (timer->life_time <= 0) {
+        timer->finished = true;
+    }
+}
+
+bool timer_finished(WF_timer *timer) {
+
+    if (timer != NULL) {
+        return timer->life_time <= 0;
+    }
+
+    return false;
+}
+
 int close_application = 0;
 
 settings_t g_settings = {
@@ -36,4 +63,6 @@ void load_global_assets() {
     g_sounds.item_axe_equip[2] = LoadSound("assets/sounds/items/axe/equip2.wav");
 
     g_sounds.item_shotgun_reload = LoadSound("assets/sounds/items/shotgun/reload.wav");
+
+    g_sounds.item_cabela_interact = LoadSound("assets/sounds/items/cabela/cabela.ogg");
 }

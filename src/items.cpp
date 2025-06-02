@@ -125,13 +125,15 @@ void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) { return; 
 void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) { return; }
 // thanks for comming to my tutorial please linker and subtract
 
-void EmptyItem::play_equip_sound() { return; }
+void EmptyItem::play_equip_animation() { return; }
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();
 };
 
 void Shotgun::update(GenericPlayerData_share data) {
+
+    timer_update(&equip_time);
 
     Vector3 local_forward = Vector3Add(data.forward, data.player_pos);
     local_forward = Vector3Add(local_forward, data.right);
@@ -145,14 +147,16 @@ void Shotgun::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
-        rlTranslatef(pos.x, pos.y, pos.z);
+        rlTranslatef(pos.x, pos.y - equip_time.life_time, pos.z);
 
         Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
 
         float yaw = atan2f(direction.x, direction.z);
 
-        Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(data.input_sideways, -1.5f, 1.5f));
+        Matrix rotation = MatrixRotateY(yaw + 3.5f -
+                                        equip_time.life_time +
+                                        Normalize(data.input_sideways, -1.5f, 1.5f));
 
         rlMultMatrixf(MatrixToFloat(rotation));
         rlScalef(1, 1, 1);
@@ -162,7 +166,9 @@ void Shotgun::draw(GenericPlayerData_share data) {
     rlPopMatrix();
 }
 
-void Shotgun::play_equip_sound() {
+void Shotgun::play_equip_animation() {
+
+    timer_start(&equip_time, 1.5);
 
     PlaySound(g_sounds.item_shotgun_reload);
 }
@@ -172,6 +178,8 @@ Axe::Axe() {
 };
 
 void Axe::update(GenericPlayerData_share data) {
+
+    timer_update(&equip_time);
 
     Vector3 new_pos = Vector3Add(data.forward, data.player_pos);
     new_pos = Vector3Add(new_pos, data.right);
@@ -187,7 +195,7 @@ void Axe::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
-        rlTranslatef(pos.x, pos.y, pos.z);
+        rlTranslatef(pos.x, pos.y - equip_time.life_time, pos.z);
 
         Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
@@ -199,7 +207,10 @@ void Axe::draw(GenericPlayerData_share data) {
 
         float inclination = 15 * (PI / 180);
 
-        Matrix rotation = MatrixRotateY(yaw + (PI * 1.45) + Normalize(data.input_forward, -5, 5));
+        Matrix rotation = MatrixRotateY(yaw + (PI * 1.45) +
+                                        equip_time.life_time +
+                                        Normalize(data.input_forward, -5, 5));
+
         Matrix inclined_rot = MatrixRotate(data.right, inclination);
 
         Matrix final_rot = MatrixMultiply(rotation, inclined_rot);
@@ -212,9 +223,9 @@ void Axe::draw(GenericPlayerData_share data) {
     rlPopMatrix();
 }
 
-void Axe::play_equip_sound() {
+void Axe::play_equip_animation() {
 
-    lognest_error("played equip sound");
+    timer_start(&equip_time, 1.5);
 
     int index = GetRandomValue(0, 2);
 
@@ -226,6 +237,8 @@ Cabela::Cabela() {
 }
 
 void Cabela::update(GenericPlayerData_share data) {
+
+    timer_update(&equip_time);
 
     data.forward = Vector3Add(data.forward, data.player_pos);
     data.forward = Vector3Add(data.forward, data.right);
@@ -239,14 +252,14 @@ void Cabela::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
-        rlTranslatef(pos.x, pos.y, pos.z);
+        rlTranslatef(pos.x, pos.y - (equip_time.life_time * 2), pos.z);
 
         Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
 
         float yaw = atan2f(direction.x, direction.z);
 
-        Matrix rotation = MatrixRotateY(yaw + PI);
+        Matrix rotation = MatrixRotateY(yaw + PI + (equip_time.life_time * 5));
 
         rlMultMatrixf(MatrixToFloat(rotation));
         rlScalef(1, 1, 1);
@@ -256,4 +269,11 @@ void Cabela::draw(GenericPlayerData_share data) {
     rlPopMatrix();
 }
 
-void Cabela::play_equip_sound() { return; }
+void Cabela::play_equip_animation() {
+
+    timer_start(&equip_time, 1.5);
+
+    PlaySound(g_sounds.item_cabela_interact);
+
+    return;
+}

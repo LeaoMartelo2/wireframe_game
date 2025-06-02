@@ -65,7 +65,9 @@ class Item {
     virtual void update(GenericPlayerData_share data) = 0;
     virtual void draw(GenericPlayerData_share data) = 0;
 
-    virtual void play_equip_sound() = 0;
+    virtual void play_equip_animation() = 0;
+
+    WF_timer equip_time;
 };
 
 class EmptyItem : public Item {
@@ -77,7 +79,9 @@ class EmptyItem : public Item {
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void play_equip_sound() override;
+    void play_equip_animation() override;
+
+    WF_timer equip_time;
 };
 
 class Shotgun : public Item {
@@ -89,7 +93,9 @@ class Shotgun : public Item {
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void play_equip_sound() override;
+    WF_timer equip_time;
+
+    void play_equip_animation() override;
 };
 
 class Axe : public Item {
@@ -101,7 +107,9 @@ class Axe : public Item {
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void play_equip_sound() override;
+    WF_timer equip_time;
+
+    void play_equip_animation() override;
 };
 
 class Cabela : public Item {
@@ -113,7 +121,9 @@ class Cabela : public Item {
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void play_equip_sound() override;
+    WF_timer equip_time;
+
+    void play_equip_animation() override;
 };
 
 #endif // !ITEMS_H_
