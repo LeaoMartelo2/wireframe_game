@@ -53,6 +53,8 @@ extern gmodels_t g_assets;
 /* this shit is stupid, but uts the best i can manage */
 typedef struct {
 
+    Sound generic_click;
+
     Sound item_pickup_sound[3];
 
     Sound door_open;

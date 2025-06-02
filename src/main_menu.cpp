@@ -7,7 +7,6 @@
 
 #define MENU_MODEL "assets/models/low_poly_shotgun/shotgun.gltf"
 #define MENU_MUSIC "assets/music/menu.mp3"
-#define MENU_CLICK "assets/sounds/snd_button.wav"
 #define MENU_CONFIG "assets/sprites/menu_settings.png"
 #define FILL_COLOR GetColor(0x181818FF)
 
@@ -36,8 +35,6 @@
 
 void draw_tittle(void) {
 
-    static Sound menu_click = LoadSound(MENU_CLICK);
-
     static const Vector2 pos = {50, 50};
     static const float size = 70;
 
@@ -52,7 +49,7 @@ void draw_tittle(void) {
 
     if (frames_counter < 200) {
         if (frames_counter % 4 == 0) {
-            PlaySound(menu_click);
+            PlaySound(g_sounds.generic_click);
         }
     }
 
@@ -71,7 +68,7 @@ void draw_tittle(void) {
 
     if (name_framecounter < 1000) {
         if (name_framecounter % 17 == 0) {
-            PlaySound(menu_click);
+            PlaySound(g_sounds.generic_click);
         }
     }
 }
@@ -104,7 +101,7 @@ MainMenu::MainMenu() {
 
     lognest_debug(" ┗>[Menu] Camera created.");
 
-    menu_model = g_assets.shotgun;
+    menu_model = LoadModel(MENU_MODEL);
     menu_music = LoadMusicStream(MENU_MUSIC);
     mmenu_settings = LoadTexture(MENU_CONFIG);
 
@@ -124,7 +121,6 @@ void MainMenu::start() {
 void MainMenu::end() {
     UnloadMusicStream(menu_music);
     UnloadModel(menu_model);
-    UnloadSound(menu_click);
 
     UnloadTexture(mmenu_settings);
 
@@ -224,29 +220,29 @@ void MainMenu::update() {
         if (!settings_menu & !levels_menu) {
 
             if (IsKeyPressed(KEY_ENTER)) {
-                PlaySound(menu_click);
+                PlaySound(g_sounds.generic_click);
                 parent->swap_scene(SCENE_LEVEL_TEST1);
             }
 
             if (gui_button_ex(&play_button, "Play")) {
-                PlaySound(menu_click);
+                PlaySound(g_sounds.generic_click);
                 parent->swap_scene(SCENE_LEVEL_TEST1);
             }
 
             if (gui_button_ex(&quit_button, "Quit")) {
-                PlaySound(menu_click);
+                PlaySound(g_sounds.generic_click);
                 close_application = true;
             }
 
             if (gui_button_ex(&custom_level, "Custom Levels")) {
-                PlaySound(menu_click);
+                PlaySound(g_sounds.generic_click);
                 levels_menu = !levels_menu;
             }
         }
 
         {
             if (gui_button_ex(&settings_toggle, "")) {
-                PlaySound(menu_click);
+                PlaySound(g_sounds.generic_click);
                 settings_menu = !settings_menu;
             }
             DrawTextureEx(mmenu_settings, {settings_bounds.x, settings_bounds.y}, 0, 0.75, WHITE);
