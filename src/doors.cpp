@@ -1,9 +1,9 @@
 #include "doors.h"
 #include "collision.h"
+#include "globals.h"
 
 Door::Door() {
     open = false;
-    open_sound = LoadSound("assets/sounds/door_open.ogg");
 };
 Door::~Door() {};
 
@@ -33,7 +33,7 @@ void Door::update(const Collider &player) {
 
         if (CheckCollisionBoxes(player_bb, trigger_bb)) {
             open = true;
-            PlaySound(open_sound);
+            PlaySound(g_sounds.door_open);
         }
     }
 

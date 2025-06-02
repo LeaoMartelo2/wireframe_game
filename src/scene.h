@@ -3,6 +3,7 @@
 
 #include "collision.h"
 #include "doors.h"
+#include "items.h"
 #include "player.h"
 #include <string.h>
 #include <string>
@@ -18,6 +19,8 @@ class Scene {
     std::vector<Collider> map_colliders;
 
     std::vector<Door> map_doors;
+
+    std::vector<DroppedItem> map_items;
 
     Player *player;
 
@@ -47,6 +50,9 @@ class Scene {
 
     virtual void update_scene_doors();
     virtual void draw_scene_doors();
+
+    virtual void update_scene_items();
+    virtual void draw_scene_items();
 };
 
 class MainMenu : public Scene {

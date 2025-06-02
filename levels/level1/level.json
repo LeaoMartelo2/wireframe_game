@@ -1,6 +1,33 @@
 [
     {
         "pos": {
+            "x": 300,
+            "y": 7,
+            "z": 300
+        },
+        "item_type": "ITEM_SHOTGUN",
+        "type": "item"
+    },
+    {
+        "pos": {
+            "x": 325,
+            "y": 7,
+            "z": 300
+        },
+        "item_type": "ITEM_AXE",
+        "type": "item"
+    },
+    {
+        "pos": {
+            "x": 350,
+            "y": 7,
+            "z": 300
+        },
+        "item_type": "ITEM_CABELA",
+        "type": "item"
+    },
+    {
+        "pos": {
             "x": 115,
             "y": 25,
             "z": 200

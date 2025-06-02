@@ -7,6 +7,8 @@
 #include "../raylib/rlgl.h"
 #include "collision.h"
 #include "doors.h"
+#include "items.h"
+#include <array>
 #include <vector>
 
 class Player {
@@ -38,9 +40,14 @@ class Player {
     } input;
 
     struct {
-        Model model;
-        Vector3 viewmodel_pos;
-    } viewmodel;
+
+        size_t selected_slot;
+
+        std::array<Item *, 4> slot;
+
+    } inventory;
+
+    GenericPlayerData_share share_data;
 
     struct {
         long health;
@@ -54,7 +61,7 @@ class Player {
     } misc;
 
     Player();
-
+    void update_share_data();
     void update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
     void draw(void);
     void draw_hud(void);
@@ -69,6 +76,8 @@ class Player {
 
     void damage(long ammount);
     void give_ammo(long ammount);
+    void clear_inventory();
+    void give_item(size_t slot, PLAYER_ITEMS item);
 
     void debug(void);
     void debug_3d(void);
@@ -76,6 +85,7 @@ class Player {
   private:
     // private methods
     void get_input(void);
+    void switch_to_slot(size_t slot);
     void update_gravity();
     void jump();
     void move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);

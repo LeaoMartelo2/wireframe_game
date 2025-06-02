@@ -2,14 +2,14 @@
 CC = clang++
 WINDOWS_COMPILER = x86_64-w64-mingw32-g++
 
-DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument
+DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument -Wno-c99-extensions -Wno-missing-braces
 
-FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm -ggdb
+FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm
 
 RELEASE_FLAGS = -O2 -DLOGNEST_DISABLE_DEBUG
 
 ifdef DEBUG
-	FLAGS += -DDEBUG
+	FLAGS += -DDEBUG -ggdb
 endif
 
 POSIX_FLAGS = -L ./raylib/linux/ -lraylib
@@ -67,4 +67,4 @@ release: wireframe win
 
 # Clean all builds
 clear: 
-	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe 
+	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe

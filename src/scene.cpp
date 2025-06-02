@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
+#include "items.h"
 #include "player.h"
 #include <fstream>
 
@@ -14,6 +15,7 @@
 Scene::Scene() {
     map_colliders.reserve(1000);
     map_doors.reserve(10);
+    map_items.reserve(100);
 }
 
 Scene::~Scene() {
@@ -29,13 +31,9 @@ void Scene::start() {
     player->camera.target = looking_at;
 }
 
-void Scene::end(void) {
-}
+void Scene::end(void) {}
 
-void Scene::set_map(const char *filename) {
-
-    map_file = filename;
-}
+void Scene::set_map(const char *filename) { map_file = filename; }
 
 void Scene::loadmap(const char *filename) {
 
@@ -139,6 +137,31 @@ void Scene::loadmap(const char *filename) {
                 map_doors.push_back(door);
             }
 
+            if (item["type"] == "item") {
+
+                DroppedItem dropped_item;
+
+                dropped_item.pos.x = item["pos"]["x"];
+                dropped_item.pos.y = item["pos"]["y"];
+                dropped_item.pos.z = item["pos"]["z"];
+
+                if (item["item_type"] == "ITEM_SHOTGUN") {
+                    dropped_item.type = ITEM_SHOTGUN;
+                }
+
+                if (item["item_type"] == "ITEM_AXE") {
+                    dropped_item.type = ITEM_AXE;
+                }
+
+                if (item["item_type"] == "ITEM_CABELA") {
+                    dropped_item.type = ITEM_CABELA;
+                }
+
+                dropped_item.load();
+
+                map_items.push_back(dropped_item);
+            }
+
             if (item["type"] == "trigger") {
                 continue;
 
@@ -224,11 +247,48 @@ void Scene::update_scene_doors() {
     }
 }
 
+void Scene::update_scene_items() {
+
+    for (size_t i = 0; i < map_items.size(); ++i) {
+        auto &item = map_items[i];
+
+        float distance = Vector3Distance(player->collider.pos, item.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        if (item.update(player->collider.pos, player->collider.size)) {
+
+            lognest_debug(" ┗>[Scene] Collected DroppedItem with ID: %zu , of type: '%s'",
+                          i,
+                          get_item_as_cstr(item.type));
+
+            player->give_item(item.player_slot, item.type);
+
+            map_items.erase(map_items.begin() + i);
+        }
+    }
+}
+
+void Scene::draw_scene_items() {
+
+    for (auto &item : map_items) {
+
+        float distance = Vector3Distance(player->collider.pos, item.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        item.draw();
+    }
+}
+
 void Scene::update(void) {
 
     player->update(map_colliders, map_doors);
 
     update_scene_doors();
+    update_scene_items();
 
     BeginDrawing();
     {
@@ -241,6 +301,7 @@ void Scene::update(void) {
             player->debug_3d();
             draw_scene_colliders();
             draw_scene_doors();
+            draw_scene_items();
         }
         EndMode3D();
 

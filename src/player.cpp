@@ -5,12 +5,12 @@
 #include "collision.h"
 #include "globals.h"
 #include "include/lognest.h"
+#include "items.h"
 #include "misc.h"
+#include <assert.h>
 #include <math.h>
 
 #define FILL_COLOR GetColor(0x181818FF)
-
-#define VIEWMODEL_PATH "assets/models/low_poly_shotgun/shotgun.gltf"
 
 Player::Player() {
 
@@ -48,15 +48,9 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Player collision calculated.");
 
-    if (file_exists(VIEWMODEL_PATH)) {
-        viewmodel.model = LoadModel(VIEWMODEL_PATH);
-        lognest_debug(" ┗>[Player] Viewmodel loaded from '%s'.", VIEWMODEL_PATH);
-    } else {
-        lognest_error("[Player] Viewmodel could not be loaded from '%s'.", VIEWMODEL_PATH);
-        exit(EXIT_FAILURE);
-    }
+    clear_inventory();
 
-    viewmodel.viewmodel_pos = Vector3Zero();
+    inventory.selected_slot = 1;
 
     gameplay.health = 250;
     gameplay.ammo = 20;
@@ -213,6 +207,35 @@ void Player::get_input() {
 
     if (fabs(input.sideways) < dead_zone) {
         input.sideways = 0.0f;
+    }
+
+    if (IsKeyPressed(KEY_ONE)) {
+        switch_to_slot(1);
+    }
+
+    if (IsKeyPressed(KEY_TWO)) {
+        switch_to_slot(2);
+    }
+
+    if (IsKeyPressed(KEY_THREE)) {
+        switch_to_slot(3);
+    }
+}
+
+void Player::switch_to_slot(size_t slot) {
+
+    if (dynamic_cast<EmptyItem *>(inventory.slot.at(slot))) {
+        // empty item
+        // @TODO figure out something idk
+        return;
+    } else {
+        /* @TODO: figure out how to prevent the player from
+         * switching items before the eqip animation finishes */
+        if (slot != inventory.selected_slot) {
+
+            inventory.selected_slot = slot;
+            inventory.slot.at(slot)->play_equip_animation();
+        }
     }
 }
 
@@ -389,37 +412,32 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
 void Player::update_viewmodel() {
 
-    Vector3 new_pos = get_forward();
+    if (inventory.selected_slot == 0) {
+        return;
+    }
 
-    Vector3 right = get_right();
-
-    new_pos = Vector3Add(new_pos, collider.pos);
-    new_pos = Vector3Add(new_pos, right);
-
-    new_pos.y = collider.pos.y + 6.5f;
-
-    viewmodel.viewmodel_pos = new_pos;
+    inventory.slot.at(inventory.selected_slot)->update(share_data);
 }
 
 void Player::draw_viewmodel() {
 
-    rlPushMatrix();
-    rlTranslatef(viewmodel.viewmodel_pos.x,
-                 viewmodel.viewmodel_pos.y,
-                 viewmodel.viewmodel_pos.z);
+    if (inventory.selected_slot == 0) {
+        return;
+    }
 
-    Vector3 direction = Vector3Subtract(camera.position, viewmodel.viewmodel_pos);
-    direction = Vector3Normalize(direction);
+    inventory.slot.at(inventory.selected_slot)->draw(share_data);
+}
 
-    float yaw = atan2f(direction.x, direction.z);
+void Player::update_share_data() {
 
-    Matrix rotation = MatrixRotateY(yaw + 3.5f + Normalize(input.sideways, -1.5, 1.5));
-
-    rlMultMatrixf(MatrixToFloat(rotation));
-    rlScalef(1, 1, 1);
-    DrawModel(viewmodel.model, Vector3Zero(), 1, FILL_COLOR);
-    DrawModelWires(viewmodel.model, Vector3Zero(), 1, WHITE);
-    rlPopMatrix();
+    share_data = {
+        .player_pos = collider.pos,
+        .forward = get_forward(),
+        .right = get_right(),
+        .camera_pos = camera.position,
+        .input_forward = input.forwards,
+        .input_sideways = input.sideways,
+    };
 }
 
 void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
@@ -440,6 +458,7 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
     move(map_colliders, map_doors);
 
     update_camera();
+    update_share_data();
     update_viewmodel();
 
     if (IsKeyPressed(KEY_F3)) {
@@ -477,6 +496,49 @@ void Player::give_ammo(long ammount) {
     gameplay.ammo += ammount;
 }
 
+void Player::clear_inventory() {
+
+    static EmptyItem empty_item;
+
+    for (auto &itemptr : inventory.slot) {
+        itemptr = &empty_item;
+    }
+}
+
+void Player::give_item(size_t slot, PLAYER_ITEMS item) {
+
+    switch (item) {
+    case ITEM_EMPTY:
+        return;
+        break;
+
+    case ITEM_COUNT:
+        lognest_error("Unreachable case %s:%s.", __FILE__, __LINE__);
+        assert(0);
+        break;
+
+    case ITEM_SHOTGUN:
+        inventory.slot.at(slot) = new Shotgun();
+        break;
+
+    case ITEM_AXE:
+        inventory.slot.at(slot) = new Axe();
+        break;
+
+    case ITEM_CABELA:
+        inventory.slot.at(slot) = new Cabela();
+        break;
+
+    default:
+        return;
+    }
+
+    int pickup_index = GetRandomValue(0, 2);
+    PlaySound(g_sounds.item_pickup_sound[pickup_index]);
+
+    lognest_debug(" ┗>[Player] Gave '%s' at slot '%zu' to Player", get_item_as_cstr(item), slot);
+}
+
 void Player::debug() {
     if (!misc.show_debug) {
         return;
@@ -488,14 +550,16 @@ void Player::debug() {
                                       "Input:\n -> Forward: { %f }\n -> Sideways: { %f }\n"
                                       "Velocity:\n -> { %*.*f, %*.*f, %*.*f }\n"
                                       "is_grounded: %s\n"
-                                      "is_colliding: %s",
+                                      "is_colliding: %s\n"
+                                      "selected_item: %d\n",
                                       collider.pos.x, collider.pos.y, collider.pos.z,
                                       input.forwards, input.sideways,
                                       width, 2, velocity.x,
                                       width, 2, velocity.y,
                                       width, 2, velocity.z,
                                       bool_to_string(is_grounded),
-                                      bool_to_string(collider.is_colliding));
+                                      bool_to_string(collider.is_colliding),
+                                      inventory.selected_slot);
 
     DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
 
@@ -529,7 +593,12 @@ void Player::draw() {
 void Player::draw_hud() {
     debug();
 
+    /* crosshair */
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 2, WHITE);
+
+    // DrawRectangleLines(GetScreenWidth() / 2 + (GetScreenWidth() / 2) - 60, GetScreenHeight() / 2 + 150, 50, 50, WHITE);
+
+    // DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
 
 #ifdef DEBUG
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
