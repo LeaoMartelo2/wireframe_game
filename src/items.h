@@ -14,7 +14,7 @@ typedef enum PLAYER_ITEMS {
     ITEM_AXE,
     ITEM_CABELA,
 
-    ITEM_COUNT [[maybe_unused]],
+    ITEM_COUNT,
 
 } PLAYER_ITEMS;
 
@@ -48,7 +48,7 @@ class DroppedItem {
     size_t player_slot;
     PLAYER_ITEMS type;
 
-    long double rot;
+    float rot;
 
     DroppedItem();
 

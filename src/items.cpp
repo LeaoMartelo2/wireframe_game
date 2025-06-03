@@ -22,7 +22,9 @@ const char *get_item_as_cstr(PLAYER_ITEMS item) {
     }
 }
 
-DroppedItem::DroppedItem() {};
+DroppedItem::DroppedItem() {
+    pos = {0, 0, 0};
+}
 
 void DroppedItem::load() {
 
@@ -49,7 +51,7 @@ void DroppedItem::load() {
         player_slot = 0;
         break;
     }
-};
+}
 
 int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
@@ -74,14 +76,16 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
         ret = true;
     }
 
-    pos.y += sinf(GetTime() * 1.5) * 0.1;
+    double time = GetTime();
+
+    pos.y += sinf(time * 1.5) * 0.05;
 
     return ret;
-};
+}
 
 void DroppedItem::draw() {
 
-    rot++;
+    rot += 1;
 
     switch (type) {
 
@@ -91,8 +95,8 @@ void DroppedItem::draw() {
         break;
 
     case ITEM_AXE:
-        DrawModelEx(g_assets.axe, pos + (Vector3){0, 3.5, 0}, {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
-        DrawModelWiresEx(g_assets.axe, pos + (Vector3){0, 3.5, 0}, {1, 1, 1}, rot, {10, 10, 10}, WHITE);
+        DrawModelEx(g_assets.axe, Vector3Add(pos, {0, 3.5, 0}), {1, 1, 1}, rot, {10, 10, 10}, FILL_COLOR);
+        DrawModelWiresEx(g_assets.axe, Vector3Add(pos, {0, 3.5, 0}), {1, 1, 1}, rot, {10, 10, 10}, WHITE);
         break;
 
     case ITEM_CABELA:
@@ -116,7 +120,7 @@ void DroppedItem::draw() {
     DrawCubeWiresV(collect_trigger.pos, collect_trigger.size, ORANGE);
 
 #endif // DEBUG
-};
+}
 
 EmptyItem::EmptyItem() { return; }
 
@@ -129,7 +133,7 @@ void EmptyItem::play_equip_animation() { return; }
 
 Shotgun::Shotgun() {
     pos = Vector3Zero();
-};
+}
 
 void Shotgun::update(GenericPlayerData_share data) {
 
@@ -141,7 +145,7 @@ void Shotgun::update(GenericPlayerData_share data) {
     local_forward.y = data.player_pos.y + 6.5f;
 
     pos = local_forward;
-};
+}
 
 void Shotgun::draw(GenericPlayerData_share data) {
 
@@ -175,7 +179,7 @@ void Shotgun::play_equip_animation() {
 
 Axe::Axe() {
     pos = Vector3Zero();
-};
+}
 
 void Axe::update(GenericPlayerData_share data) {
 
@@ -189,7 +193,7 @@ void Axe::update(GenericPlayerData_share data) {
     new_pos.y += sinf(GetTime() * 1.5) * 0.1;
 
     pos = new_pos;
-};
+}
 
 void Axe::draw(GenericPlayerData_share data) {
 

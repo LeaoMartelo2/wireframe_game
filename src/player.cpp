@@ -519,14 +519,17 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
 
     case ITEM_SHOTGUN:
         inventory.slot.at(slot) = new Shotgun();
+        inventory.slot.at(slot)->play_equip_animation();
         break;
 
     case ITEM_AXE:
         inventory.slot.at(slot) = new Axe();
+        inventory.slot.at(slot)->play_equip_animation();
         break;
 
     case ITEM_CABELA:
         inventory.slot.at(slot) = new Cabela();
+        inventory.slot.at(slot)->play_equip_animation();
         break;
 
     default:

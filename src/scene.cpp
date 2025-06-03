@@ -252,7 +252,7 @@ void Scene::update_scene_items() {
     for (size_t i = 0; i < map_items.size(); ++i) {
         auto &item = map_items[i];
 
-        float distance = Vector3Distance(player->collider.pos, item.pos);
+        volatile float distance = Vector3Distance(player->collider.pos, item.pos);
         if (distance > g_settings.draw_distance) {
             continue;
         }
