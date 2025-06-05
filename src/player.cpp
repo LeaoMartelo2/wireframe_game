@@ -7,6 +7,7 @@
 #include "include/lognest.h"
 #include "items.h"
 #include "misc.h"
+#include <algorithm>
 #include <assert.h>
 #include <math.h>
 
@@ -27,11 +28,11 @@ Player::Player() {
 
     lognest_debug(" ┗>[Player] Camera created.");
 
-    move_speed = 120.0f;
-    side_speed = 85.0f;
-    jump_speed = 28.0f;
+    move_speed = 150.0f;
+    side_speed = 85.5f;
+    jump_speed = 150.0f;
     acc_rate = 0.15f;
-    gravity = 40.0f;
+    gravity = 9.5f;
     is_grounded = false;
 
     velocity = {0, 0, 0};
@@ -135,7 +136,8 @@ void Player::update_gravity() {
 
     velocity.y -= gravity * delta_time;
 
-    collider.pos = Vector3Add(collider.pos, Vector3Scale(velocity, delta_time));
+    if (is_grounded) {
+    }
 }
 
 void Player::get_input() {
@@ -242,7 +244,10 @@ void Player::switch_to_slot(size_t slot) {
 void Player::jump() {
 
     if (is_grounded) {
-        velocity.y = jump_speed;
+
+        float delta_time = GetFrameTime();
+
+        velocity.y += jump_speed * delta_time;
         is_grounded = false;
     }
 }
@@ -255,7 +260,7 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
     camera_yaw(-mouse_pos_delta.x * camera_misc.mouse_sens * delta_time);
     camera_pitch(-mouse_pos_delta.y * camera_misc.mouse_sens * delta_time);
 
-    if (IsKeyDown(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE)) {
         jump();
     }
 
@@ -272,8 +277,56 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     get_input();
 
-    movement += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
-    movement += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time; /* sideways speed is inverted */
+    update_gravity();
+
+    // add velocity forwards;
+    Vector3 velocity_frwd = {};
+    velocity_frwd += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
+    velocity_frwd.y = 0;
+
+    velocity += velocity_frwd;
+
+    // add velocity sideways;
+    Vector3 velocity_sdw = {};
+    velocity_sdw += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time;
+    velocity_sdw.y = 0;
+
+    velocity += velocity_sdw;
+
+    // decay the velocity_frwd
+    Vector3 decay_velocity = {0.5, 0, 0.5};
+
+    if (!is_grounded) {
+
+        decay_velocity = {0.60, 0, 0.60};
+    }
+
+    {
+        if (velocity.x > 0) {
+            velocity.x = std::max(0.0f, velocity.x * decay_velocity.x);
+        } else if (velocity.x < 0) {
+            velocity.x = std::min(0.0f, velocity.x * decay_velocity.x);
+        }
+
+        if (velocity.z > 0) {
+            velocity.z = std::max(0.0f, velocity.z * decay_velocity.z);
+        } else if (velocity.z < 0) {
+            velocity.z = std::min(0.0f, velocity.z * decay_velocity.z);
+        }
+    }
+
+    // add velocity boost key test
+
+    if (IsKeyPressed(KEY_J)) {
+
+        velocity.y += 10.0f * delta_time;
+    }
+
+    // move_velo += forward * move_speed * (input.forwards * input_mod) * delta_time;
+
+    // movement += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
+    // movement += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time;
+    /* sideways speed is inverted */
 
     // movement += direction * move speed * (-1 ... 1) * delta_time
     //                                        ^ this leaves us with a percentage of total max speed
@@ -282,21 +335,17 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     if (misc.noclip) {
         if (IsKeyDown(KEY_SPACE)) {
-            movement += get_up() * move_speed * delta_time;
+            velocity += get_up() * move_speed * delta_time;
         }
 
         if (IsKeyDown(KEY_LEFT_SHIFT)) {
-            movement -= get_up() * move_speed * delta_time;
+            velocity -= get_up() * move_speed * delta_time;
         }
     }
 
-    collider.pos = Vector3Add(collider.pos, movement);
+    collider.pos = Vector3Add(collider.pos, velocity);
     camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
     // ^ move camera target along with the player
-
-    update_gravity();
-
-    collider.is_colliding = false;
 
     /* skip collision checking if noclipping */
     if (!misc.noclip) {
@@ -332,6 +381,8 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
                     is_grounded = true;
                     velocity.y = 0;
                 }
+            } else {
+                collider.is_colliding = false;
             }
         }
 
@@ -373,6 +424,8 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
                     if (mtv.axis.y == 1 && translation.y > 0) {
                         is_grounded = true;
                         velocity.y = 0;
+                    } else {
+                        is_grounded = false;
                     }
                 }
             }
@@ -400,14 +453,13 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
                     if (mtv.axis.y == 1 && translation.y > 0) {
                         is_grounded = true;
                         velocity.y = 0;
+                    } else {
+                        is_grounded = false;
                     }
                 }
             }
         }
     }
-
-    velocity.x = movement.x;
-    velocity.z = movement.z;
 }
 
 void Player::update_viewmodel() {
@@ -448,9 +500,6 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
     if (!misc.noclip) {
         misc.no_gravity = false;
     }
-
-    update_gravity();
-    /* don't even question why this has to be called twice */
 
     update_viewmodel();
     update_camera();

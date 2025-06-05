@@ -298,6 +298,9 @@ void Scene::update(void) {
         {
 
             player->draw();
+
+            DrawSphereWires(player->collider.pos + (player->get_forward() * (Vector3){1, 0, 1}) * 10, 1.5, 10, 10, RED);
+
             player->debug_3d();
             draw_scene_colliders();
             draw_scene_doors();
