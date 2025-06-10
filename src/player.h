@@ -26,6 +26,7 @@ class Player {
     float acc_rate;
     float move_speed;
     float side_speed;
+    float max_speed;
     float jump_speed;
     float gravity;
 
@@ -88,6 +89,10 @@ class Player {
     void switch_to_slot(size_t slot);
     void update_gravity();
     void jump();
+    void add_velocity(Vector3 velocity_to_add);
+    void decay_velocity(Vector3 decay_velocity);
+    void noclip_vertical_move();
+    void apply_colision(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
     void move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
 
     void camera_yaw(float angle);
