@@ -31,6 +31,7 @@ Player::Player() {
     move_speed = 150.0f;
     side_speed = 85.5f;
     jump_speed = 150.0f;
+    max_speed = 3.5;
     acc_rate = 0.15f;
     gravity = 9.5f;
     is_grounded = false;
@@ -260,11 +261,9 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
     camera_yaw(-mouse_pos_delta.x * camera_misc.mouse_sens * delta_time);
     camera_pitch(-mouse_pos_delta.y * camera_misc.mouse_sens * delta_time);
 
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (IsKeyDown(KEY_SPACE)) {
         jump();
     }
-
-    Vector3 movement = {0, 0, 0};
 
     Vector3 forward = Vector3Normalize(get_forward());
     Vector3 right = Vector3Normalize(get_right());
@@ -282,23 +281,47 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
     // add velocity forwards;
     Vector3 velocity_frwd = {};
     velocity_frwd += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
-    velocity_frwd.y = 0;
+
+    if (abs(velocity.x) > max_speed) {
+        velocity_frwd.x = 0.0f;
+    }
+
+    if (abs(velocity.z) > max_speed) {
+        velocity_frwd.z = 0.0f;
+    }
+
+    if (!misc.noclip) {
+        velocity_frwd.y = 0;
+    }
+
+    // if (!is_grounded) {
+    // velocity_frwd.x *= 0.8;
+    // velocity_frwd.z *= 0.8;
+    // }
 
     velocity += velocity_frwd;
 
     // add velocity sideways;
     Vector3 velocity_sdw = {};
     velocity_sdw += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time;
-    velocity_sdw.y = 0;
+
+    if (!misc.noclip) {
+        velocity_sdw.y = 0;
+    }
+
+    static bool test = false;
 
     velocity += velocity_sdw;
 
-    // decay the velocity_frwd
-    Vector3 decay_velocity = {0.5, 0, 0.5};
+    Vector3 decay_velocity = {0.5, 1, 0.5};
 
     if (!is_grounded) {
 
-        decay_velocity = {0.60, 0, 0.60};
+        decay_velocity = {0.6, 1, 0.6};
+    }
+
+    if (test) {
+        velocity.x = 500.0f * delta_time;
     }
 
     {
@@ -319,7 +342,14 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     if (IsKeyPressed(KEY_J)) {
 
-        velocity.y += 10.0f * delta_time;
+        test = !test;
+
+        // velocity.x += 500.0f * delta_time;
+    }
+
+    if (test) {
+        test = !test;
+        velocity.x = 500.0f * delta_time;
     }
 
     // move_velo += forward * move_speed * (input.forwards * input_mod) * delta_time;
@@ -349,7 +379,6 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     /* skip collision checking if noclipping */
     if (!misc.noclip) {
-
         /* check collision */
         for (auto &map_collider : map_colliders) {
 
@@ -425,7 +454,7 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
                         is_grounded = true;
                         velocity.y = 0;
                     } else {
-                        is_grounded = false;
+                        collider.is_colliding = false;
                     }
                 }
             }
@@ -454,7 +483,7 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
                         is_grounded = true;
                         velocity.y = 0;
                     } else {
-                        is_grounded = false;
+                        collider.is_colliding = false;
                     }
                 }
             }

@@ -26,6 +26,7 @@ class Player {
     float acc_rate;
     float move_speed;
     float side_speed;
+    float max_speed;
     float jump_speed;
     float gravity;
 
