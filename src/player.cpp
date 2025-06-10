@@ -29,9 +29,9 @@ Player::Player() {
     lognest_debug(" ┗>[Player] Camera created.");
 
     move_speed = 150.0f;
-    side_speed = 85.5f;
+    side_speed = 100.5f;
     jump_speed = 150.0f;
-    max_speed = 3.5;
+    max_speed = 5.0;
     acc_rate = 0.15f;
     gravity = 9.5f;
     is_grounded = false;
@@ -253,6 +253,163 @@ void Player::jump() {
     }
 }
 
+void Player::add_velocity(Vector3 velocity_to_add) {
+
+    if (abs(velocity.x) > max_speed) {
+        velocity_to_add.x = 0.0f;
+    }
+
+    if (abs(velocity.z) > max_speed) {
+        velocity_to_add.z = 0.0f;
+    }
+
+    if (!misc.noclip) {
+        velocity_to_add.y = 0;
+    }
+
+    velocity += velocity_to_add;
+}
+
+void Player::decay_velocity(Vector3 decay_velocity) {
+
+    if (velocity.x > 0) {
+        velocity.x = std::max(0.0f, velocity.x * decay_velocity.x);
+    } else if (velocity.x < 0) {
+        velocity.x = std::min(0.0f, velocity.x * decay_velocity.x);
+    }
+
+    if (velocity.z > 0) {
+        velocity.z = std::max(0.0f, velocity.z * decay_velocity.z);
+    } else if (velocity.z < 0) {
+        velocity.z = std::min(0.0f, velocity.z * decay_velocity.z);
+    }
+}
+
+void Player::noclip_vertical_move() {
+
+    if (misc.noclip) {
+        if (IsKeyDown(KEY_SPACE)) {
+            velocity += get_up() * move_speed * GetFrameTime();
+        }
+
+        if (IsKeyDown(KEY_LEFT_SHIFT)) {
+            velocity -= get_up() * move_speed * GetFrameTime();
+        }
+    }
+}
+
+void Player::apply_colision(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
+
+    for (auto &map_collider : map_colliders) {
+
+        /* skip collision checking entirely if the object is too far away */
+        float distance = Vector3Distance(collider.pos, map_collider.pos);
+        if (distance > g_settings.coll_distance) {
+            continue;
+        }
+
+        MTV mtv;
+        if (collider_check_collision(collider, map_collider, &mtv)) {
+
+            collider.is_colliding = true;
+
+            /* compute translation from collision */
+            Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+            Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+            Vector3 to_player = Vector3Subtract(collider.pos, map_collider.pos);
+
+            if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                translation = Vector3Negate(translation);
+            }
+
+            /* then apply it */
+            collider.pos = Vector3Add(collider.pos, translation);
+
+            /* check if its vertical from above (set grounded if true) */
+            if (mtv.axis.y == 1 && translation.y > 0) {
+                is_grounded = true;
+                velocity.y = 0.0f;
+            }
+        } else {
+            collider.is_colliding = false;
+        }
+    }
+
+    /* check collision with moving door parts specifically */
+    for (auto &door : map_doors) {
+
+        float distance = Vector3Distance(collider.pos, door.collider_a.pos);
+
+        if (distance > g_settings.coll_distance) {
+            continue;
+        }
+
+        distance = Vector3Distance(collider.pos, door.collider_b.pos);
+
+        if (distance > g_settings.coll_distance) {
+            continue;
+        }
+
+        {
+
+            MTV mtv;
+            if (collider_check_collision(collider, door.collider_a, &mtv)) {
+
+                collider.is_colliding = true;
+
+                /* compute translation from collision */
+                Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+                Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+                Vector3 to_player = Vector3Subtract(collider.pos, door.collider_a.pos);
+
+                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                    translation = Vector3Negate(translation);
+                }
+
+                /* then apply it */
+                collider.pos = Vector3Add(collider.pos, translation);
+
+                /* check if its vertical from above (set grounded if true) */
+                if (mtv.axis.y == 1 && translation.y > 0) {
+                    is_grounded = true;
+                    velocity.y = 0;
+                } else {
+                    collider.is_colliding = false;
+                }
+            }
+        }
+
+        {
+
+            MTV mtv;
+            if (collider_check_collision(collider, door.collider_b, &mtv)) {
+
+                collider.is_colliding = true;
+
+                /* compute translation from collision */
+                Vector3 mtv_direction = Vector3Normalize(mtv.axis);
+                Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
+                Vector3 to_player = Vector3Subtract(collider.pos, door.collider_b.pos);
+
+                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
+                    translation = Vector3Negate(translation);
+                }
+
+                /* then apply it */
+                collider.pos = Vector3Add(collider.pos, translation);
+
+                /* check if its vertical from above (set grounded if true) */
+                if (mtv.axis.y == 1 && translation.y > 0) {
+                    is_grounded = true;
+                    velocity.y = 0;
+                } else {
+                    collider.is_colliding = false;
+                }
+            }
+        }
+    }
+}
+
 void Player::move(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
 
     float delta_time = GetFrameTime();
@@ -281,97 +438,26 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
     // add velocity forwards;
     Vector3 velocity_frwd = {};
     velocity_frwd += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
-
-    if (abs(velocity.x) > max_speed) {
-        velocity_frwd.x = 0.0f;
-    }
-
-    if (abs(velocity.z) > max_speed) {
-        velocity_frwd.z = 0.0f;
-    }
-
-    if (!misc.noclip) {
-        velocity_frwd.y = 0;
-    }
-
-    // if (!is_grounded) {
-    // velocity_frwd.x *= 0.8;
-    // velocity_frwd.z *= 0.8;
-    // }
-
-    velocity += velocity_frwd;
+    add_velocity(velocity_frwd);
 
     // add velocity sideways;
     Vector3 velocity_sdw = {};
     velocity_sdw += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time;
+    add_velocity(velocity_sdw);
 
-    if (!misc.noclip) {
-        velocity_sdw.y = 0;
-    }
-
-    static bool test = false;
-
-    velocity += velocity_sdw;
-
-    Vector3 decay_velocity = {0.5, 1, 0.5};
-
-    if (!is_grounded) {
-
-        decay_velocity = {0.6, 1, 0.6};
-    }
-
-    if (test) {
-        velocity.x = 500.0f * delta_time;
-    }
-
-    {
-        if (velocity.x > 0) {
-            velocity.x = std::max(0.0f, velocity.x * decay_velocity.x);
-        } else if (velocity.x < 0) {
-            velocity.x = std::min(0.0f, velocity.x * decay_velocity.x);
-        }
-
-        if (velocity.z > 0) {
-            velocity.z = std::max(0.0f, velocity.z * decay_velocity.z);
-        } else if (velocity.z < 0) {
-            velocity.z = std::min(0.0f, velocity.z * decay_velocity.z);
-        }
-    }
-
-    // add velocity boost key test
-
-    if (IsKeyPressed(KEY_J)) {
-
-        test = !test;
-
-        // velocity.x += 500.0f * delta_time;
-    }
-
-    if (test) {
-        test = !test;
-        velocity.x = 500.0f * delta_time;
-    }
-
-    // move_velo += forward * move_speed * (input.forwards * input_mod) * delta_time;
-
-    // movement += Vector3Normalize(forward) * move_speed * input.forwards * delta_time;
-    // movement += Vector3Normalize(right) * side_speed * input.sideways * -1 * delta_time;
-    /* sideways speed is inverted */
-
-    // movement += direction * move speed * (-1 ... 1) * delta_time
+    // direction * move speed * (-1 ... 1) * delta_time
     //                                        ^ this leaves us with a percentage of total max speed
     // based on how long the player held the directional key
     // as in: slight tap = move slowly; held the key for a bit = fullspeed
 
-    if (misc.noclip) {
-        if (IsKeyDown(KEY_SPACE)) {
-            velocity += get_up() * move_speed * delta_time;
-        }
+    Vector3 decay_velocity_scale = {0.5, 1, 0.5};
 
-        if (IsKeyDown(KEY_LEFT_SHIFT)) {
-            velocity -= get_up() * move_speed * delta_time;
-        }
-    }
+    if (!is_grounded)
+        decay_velocity_scale = {0.6, 1, 0.6};
+
+    decay_velocity(decay_velocity_scale);
+
+    noclip_vertical_move();
 
     collider.pos = Vector3Add(collider.pos, velocity);
     camera.target = Vector3Add(camera.target, Vector3Multiply(get_forward(), {10, 10, 10}));
@@ -379,115 +465,7 @@ void Player::move(const std::vector<Collider> &map_colliders, const std::vector<
 
     /* skip collision checking if noclipping */
     if (!misc.noclip) {
-        /* check collision */
-        for (auto &map_collider : map_colliders) {
-
-            /* skip collision checking entirely if the object is too far away */
-            float distance = Vector3Distance(collider.pos, map_collider.pos);
-            if (distance > g_settings.coll_distance) {
-                continue;
-            }
-
-            MTV mtv;
-            if (collider_check_collision(collider, map_collider, &mtv)) {
-
-                collider.is_colliding = true;
-
-                /* compute translation from collision */
-                Vector3 mtv_direction = Vector3Normalize(mtv.axis);
-                Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
-                Vector3 to_player = Vector3Subtract(collider.pos, map_collider.pos);
-
-                if (Vector3DotProduct(to_player, mtv_direction) < 0) {
-                    translation = Vector3Negate(translation);
-                }
-
-                /* then apply it */
-                collider.pos = Vector3Add(collider.pos, translation);
-
-                /* check if its vertical from above (set grounded if true) */
-                if (mtv.axis.y == 1 && translation.y > 0) {
-                    is_grounded = true;
-                    velocity.y = 0;
-                }
-            } else {
-                collider.is_colliding = false;
-            }
-        }
-
-        /* check collision with moving door parts specifically */
-        for (auto &door : map_doors) {
-
-            float distance = Vector3Distance(collider.pos, door.collider_a.pos);
-
-            if (distance > g_settings.coll_distance) {
-                continue;
-            }
-
-            distance = Vector3Distance(collider.pos, door.collider_b.pos);
-
-            if (distance > g_settings.coll_distance) {
-                continue;
-            }
-
-            {
-
-                MTV mtv;
-                if (collider_check_collision(collider, door.collider_a, &mtv)) {
-
-                    collider.is_colliding = true;
-
-                    /* compute translation from collision */
-                    Vector3 mtv_direction = Vector3Normalize(mtv.axis);
-                    Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
-                    Vector3 to_player = Vector3Subtract(collider.pos, door.collider_a.pos);
-
-                    if (Vector3DotProduct(to_player, mtv_direction) < 0) {
-                        translation = Vector3Negate(translation);
-                    }
-
-                    /* then apply it */
-                    collider.pos = Vector3Add(collider.pos, translation);
-
-                    /* check if its vertical from above (set grounded if true) */
-                    if (mtv.axis.y == 1 && translation.y > 0) {
-                        is_grounded = true;
-                        velocity.y = 0;
-                    } else {
-                        collider.is_colliding = false;
-                    }
-                }
-            }
-
-            {
-
-                MTV mtv;
-                if (collider_check_collision(collider, door.collider_b, &mtv)) {
-
-                    collider.is_colliding = true;
-
-                    /* compute translation from collision */
-                    Vector3 mtv_direction = Vector3Normalize(mtv.axis);
-                    Vector3 translation = Vector3Scale(mtv_direction, mtv.depth);
-                    Vector3 to_player = Vector3Subtract(collider.pos, door.collider_b.pos);
-
-                    if (Vector3DotProduct(to_player, mtv_direction) < 0) {
-                        translation = Vector3Negate(translation);
-                    }
-
-                    /* then apply it */
-                    collider.pos = Vector3Add(collider.pos, translation);
-
-                    /* check if its vertical from above (set grounded if true) */
-                    if (mtv.axis.y == 1 && translation.y > 0) {
-                        is_grounded = true;
-                        velocity.y = 0;
-                    } else {
-                        collider.is_colliding = false;
-                    }
-                }
-            }
-        }
+        apply_colision(map_colliders, map_doors);
     }
 }
 
