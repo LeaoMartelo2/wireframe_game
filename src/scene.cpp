@@ -2,6 +2,7 @@
 #include "collision.h"
 #include "doors.h"
 #include "globals.h"
+#include "gui.h"
 #include "include/json.hpp"
 #include "include/lognest.h"
 #include "items.h"
@@ -24,7 +25,7 @@ Scene::~Scene() {
 
 void Scene::start() {
 
-    DisableCursor();
+    g_gamestate.is_paused = false;
 
     loadmap(map_file.c_str());
     player->collider.pos = start_pos;
@@ -301,9 +302,49 @@ void Scene::paused_update(void) {
 
         player->draw_hud();
 
-        DrawText("paused_update", 50, 50, 30, RED);
+        draw_pause_menu();
     }
     EndDrawing();
+}
+
+void Scene::draw_pause_menu() {
+
+    static bool toggle = false;
+
+    if (toggle) {
+        g_gamestate.is_paused = false;
+        toggle = false;
+    }
+
+    static gui_panel pause_pannel = {
+        .pos = {GetScreenWidth() / 2.0f - 250, GetScreenHeight() / 2.0f - 150},
+        .size = {500, 300},
+        .color = DARKGRAY,
+        .toggle = &toggle,
+        .exit_pos = {470, 15},
+        .exit_size = {25, 25},
+    };
+
+    static const gui_color_scheme pause_buttons = {
+        .default_color = DARKGRAY,
+        .hoovered_color = GRAY,
+        .pressed_color = ColorBrightness(GRAY, -0.5),
+        .text_color = WHITE,
+    };
+
+    button_create(pause_quit, 40, &pause_buttons, 50, 160, 200, 100);
+
+    draw_panel(&pause_pannel);
+    draw_text_in_pannel_space(&pause_pannel, "Paused", 50, {30, 30});
+    draw_text_in_pannel_space(&pause_pannel, "Not much here yet...", 20, {30, 80});
+
+    if (gui_button_on_pannel(&pause_pannel, &pause_quit, "Quit")) {
+        PlaySound(g_sounds.generic_click);
+        while (IsSoundPlaying(g_sounds.generic_click)) {
+            // lol, lmao even
+        }
+        close_application = true;
+    }
 }
 
 void Scene::update(void) {

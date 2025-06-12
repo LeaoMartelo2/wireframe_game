@@ -48,4 +48,17 @@ void draw_text_in_pannel_space(gui_panel *panel, const char *text, int font_size
 
 int gui_button_on_pannel(gui_panel *panel, gui_button_t *button, const char *text);
 
+#define button_create(setting, text_size, color, posX, posY, width_, height_) \
+    gui_button_t setting = {                                                  \
+        .bounds = {                                                           \
+            .x = posX,                                                        \
+            .y = posY,                                                        \
+            .width = width_,                                                  \
+            .height = height_,                                                \
+        },                                                                    \
+        .button_style = GUI_SQUARE,                                           \
+        .font_size = text_size,                                               \
+        .colors = color,                                                      \
+    };
+
 #endif // !GUI_H_

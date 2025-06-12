@@ -105,10 +105,18 @@ void SceneManager::update() {
 
 #endif // DEBUG
 
-    lognest_error("%d", g_gamestate.is_paused);
-
-    if (IsKeyPressed(KEY_C)) {
+    if (IsKeyPressed(KEY_ESCAPE)) {
         g_gamestate.is_paused = !g_gamestate.is_paused;
+    }
+
+    if (g_gamestate.is_paused) {
+        if (IsCursorHidden())
+            EnableCursor();
+    }
+
+    if (!g_gamestate.is_paused) {
+        if (!IsCursorHidden())
+            DisableCursor();
     }
 
     if (WindowShouldClose()) {

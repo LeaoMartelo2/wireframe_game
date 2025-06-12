@@ -3,6 +3,7 @@
 
 #include "collision.h"
 #include "doors.h"
+#include "gui.h"
 #include "items.h"
 #include "player.h"
 #include <string.h>
@@ -47,6 +48,8 @@ class Scene {
     virtual void loadmap(const char *filename);
 
   private:
+    virtual void draw_pause_menu();
+
     virtual void draw_scene_colliders(void);
 
     virtual void update_scene_doors();

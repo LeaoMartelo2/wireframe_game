@@ -16,18 +16,18 @@
         offset += 100;                                                       \
     } while (0);
 
-#define button_create(setting, text_size, color, posX, posY, width_, height_) \
-    gui_button_t setting = {                                                  \
-        .bounds = {                                                           \
-            .x = posX,                                                        \
-            .y = posY,                                                        \
-            .width = width_,                                                  \
-            .height = height_,                                                \
-        },                                                                    \
-        .button_style = GUI_SQUARE,                                           \
-        .font_size = text_size,                                               \
-        .colors = color,                                                      \
-    };
+// #define button_create(setting, text_size, color, posX, posY, width_, height_) \
+//     gui_button_t setting = {                                                  \
+//         .bounds = {                                                           \
+//             .x = posX,                                                        \
+//             .y = posY,                                                        \
+//             .width = width_,                                                  \
+//             .height = height_,                                                \
+//         },                                                                    \
+//         .button_style = GUI_SQUARE,                                           \
+//         .font_size = text_size,                                               \
+//         .colors = color,                                                      \
+//     };
 
 #define bool2string(boolean) TextFormat("%s", bool_to_string_c(boolean))
 
@@ -112,7 +112,7 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::start() {
-    EnableCursor();
+    g_gamestate.is_paused = true;
 
     PlayMusicStream(menu_music);
     lognest_debug("[Menu] Started playing music stream.");
