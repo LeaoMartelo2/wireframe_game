@@ -26,6 +26,12 @@ typedef enum : size_t {
 extern int close_application;
 
 typedef struct {
+    bool is_paused;
+} state_t;
+
+extern state_t g_gamestate;
+
+typedef struct {
     bool fullscreen;
     bool camera_tilt;
     bool play_music;

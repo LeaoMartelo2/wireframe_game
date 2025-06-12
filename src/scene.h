@@ -39,6 +39,7 @@ class Scene {
     virtual ~Scene();
     virtual void start();
     virtual void update(void);
+    virtual void paused_update(void);
     virtual void end(void);
 
     virtual void set_map(const char *filename);

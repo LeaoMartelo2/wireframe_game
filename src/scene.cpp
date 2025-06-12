@@ -283,12 +283,7 @@ void Scene::draw_scene_items() {
     }
 }
 
-void Scene::update(void) {
-
-    player->update(map_colliders, map_doors);
-
-    update_scene_doors();
-    update_scene_items();
+void Scene::paused_update(void) {
 
     BeginDrawing();
     {
@@ -298,7 +293,6 @@ void Scene::update(void) {
         {
 
             player->draw();
-            player->debug_3d();
             draw_scene_colliders();
             draw_scene_doors();
             draw_scene_items();
@@ -306,6 +300,42 @@ void Scene::update(void) {
         EndMode3D();
 
         player->draw_hud();
+
+        DrawText("paused_update", 50, 50, 30, RED);
     }
     EndDrawing();
+}
+
+void Scene::update(void) {
+
+    if (!g_gamestate.is_paused) {
+
+        player->update(map_colliders, map_doors);
+
+        update_scene_doors();
+        update_scene_items();
+
+        BeginDrawing();
+        {
+            ClearBackground(BLACK);
+
+            BeginMode3D(player->camera);
+            {
+
+                player->draw();
+                player->debug_3d();
+                draw_scene_colliders();
+                draw_scene_doors();
+                draw_scene_items();
+            }
+            EndMode3D();
+
+            player->draw_hud();
+        }
+        EndDrawing();
+
+    } else { // if the game is paused
+
+        paused_update();
+    }
 }
