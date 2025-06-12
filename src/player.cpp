@@ -524,13 +524,26 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
                       bool_to_string(misc.show_debug));
     }
 
+#ifdef DEBUG
+
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
         if (IsKeyPressed(KEY_N)) {
             misc.noclip = !misc.noclip;
             lognest_debug("[Player] Toggle NoClip '%s' -> '%s'",
                           bool_to_string(!misc.noclip), bool_to_string(misc.noclip));
         }
+
+        if (IsKeyPressed(KEY_B)) {
+
+            lognest_debug("[Player] all items given.");
+
+            give_item(1, ITEM_SHOTGUN);
+            give_item(2, ITEM_AXE);
+            give_item(3, ITEM_CABELA);
+        }
     }
+
+#endif // DEBUG
 }
 
 void Player::set_pos(Vector3 new_pos) {
