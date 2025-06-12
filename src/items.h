@@ -32,6 +32,8 @@ typedef struct {
     float input_forward;
     float input_sideways;
 
+    Vector3 velocity;
+
 } GenericPlayerData_share;
 
 class DroppedItem {

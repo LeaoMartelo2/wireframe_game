@@ -496,6 +496,7 @@ void Player::update_share_data() {
         .camera_pos = camera.position,
         .input_forward = input.forwards,
         .input_sideways = input.sideways,
+        .velocity = velocity,
     };
 }
 

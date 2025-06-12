@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "include/lognest.h"
 #include <assert.h>
+#include <cmath>
 
 const char *get_item_as_cstr(PLAYER_ITEMS item) {
 
@@ -144,6 +145,10 @@ void Shotgun::update(GenericPlayerData_share data) {
 
     local_forward.y = data.player_pos.y + 6.5f;
 
+    float velo = Vector3Length(Vector3Normalize(data.velocity));
+
+    local_forward.y += sinf(GetTime() * 3.5) * 0.1 * velo * data.input_forward;
+
     pos = local_forward;
 }
 
@@ -151,7 +156,9 @@ void Shotgun::draw(GenericPlayerData_share data) {
 
     rlPushMatrix();
     {
-        rlTranslatef(pos.x, pos.y - equip_time.life_time, pos.z);
+        rlTranslatef(pos.x,
+                     pos.y - equip_time.life_time,
+                     pos.z);
 
         Vector3 direction = Vector3Subtract(data.camera_pos, pos);
         direction = Vector3Normalize(direction);
@@ -191,6 +198,10 @@ void Axe::update(GenericPlayerData_share data) {
     new_pos.y = data.player_pos.y + 6.6f;
 
     new_pos.y += sinf(GetTime() * 1.5) * 0.1;
+
+    float velo = Vector3Length(Vector3Normalize(data.velocity));
+
+    new_pos.y += sinf(GetTime() * 3.5) * 0.1 * velo * data.input_forward;
 
     pos = new_pos;
 }
@@ -244,12 +255,16 @@ void Cabela::update(GenericPlayerData_share data) {
 
     timer_update(&equip_time);
 
-    data.forward = Vector3Add(data.forward, data.player_pos);
-    data.forward = Vector3Add(data.forward, data.right);
+    Vector3 new_pos = Vector3Add(data.forward, data.player_pos);
+    new_pos = Vector3Add(new_pos, data.right);
 
-    data.forward.y = data.player_pos.y + 6.5f;
+    new_pos.y = data.player_pos.y + 6.5f;
 
-    pos = data.forward;
+    float velo = Vector3Length(Vector3Normalize(data.velocity));
+
+    new_pos.y += sinf(GetTime() * 3.5) * 0.1 * velo * data.input_forward;
+
+    pos = new_pos;
 }
 
 void Cabela::draw(GenericPlayerData_share data) {
