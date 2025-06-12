@@ -29,6 +29,10 @@ bool timer_finished(WF_timer *timer) {
 
 int close_application = 0;
 
+state_t g_gamestate = {
+    .is_paused = false,
+};
+
 settings_t g_settings = {
     .fullscreen = true,
     .camera_tilt = true,

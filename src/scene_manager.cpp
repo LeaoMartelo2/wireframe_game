@@ -1,7 +1,6 @@
 #include "scene_manager.h"
 #include "globals.h"
 #include "include/lognest.h"
-#include "misc.h"
 #include "scene.h"
 
 SceneManager::SceneManager() : player() {
@@ -89,6 +88,8 @@ size_t SceneManager::add_scene_by_name(const char *filename) {
 void SceneManager::update() {
     scenes[current_scene]->update();
 
+#ifdef DEBUG
+
     if (IsKeyPressed(KEY_H)) {
         swap_scene(current_scene + 1);
     }
@@ -102,12 +103,20 @@ void SceneManager::update() {
         }
     }
 
-    if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        if (IsKeyPressed(KEY_T)) {
-            g_debug.draw_triggers = !g_debug.draw_triggers;
-            lognest_debug("[SceneManager] Toggled drawing Scene triggers '%s' -> '%s'",
-                          bool_to_string(!g_debug.draw_triggers), bool_to_string(g_debug.draw_triggers));
-        }
+#endif // DEBUG
+
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        g_gamestate.is_paused = !g_gamestate.is_paused;
+    }
+
+    if (g_gamestate.is_paused) {
+        if (IsCursorHidden())
+            EnableCursor();
+    }
+
+    if (!g_gamestate.is_paused) {
+        if (!IsCursorHidden())
+            DisableCursor();
     }
 
     if (WindowShouldClose()) {
