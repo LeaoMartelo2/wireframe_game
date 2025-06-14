@@ -29,7 +29,7 @@ Player::Player() {
     lognest_debug(" ┗>[Player] Camera created.");
 
     move_speed = 150.0f;
-    side_speed = 100.5f;
+    side_speed = 85.5f;
     jump_speed = 150.0f;
     max_speed = 5.0;
     acc_rate = 0.15f;
