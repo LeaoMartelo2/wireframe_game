@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "include/lognest.h"
 #include <assert.h>
-#include <cmath>
+#include <math.h>
 
 const char *get_item_as_cstr(PLAYER_ITEMS item) {
 

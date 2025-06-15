@@ -48,6 +48,8 @@ class Player {
 
     } inventory;
 
+    DOORKEY_TYPE current_key;
+
     GenericPlayerData_share share_data;
 
     struct {

@@ -3,6 +3,7 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "collision.h"
+#include "doors.h"
 #include "globals.h"
 #include "include/lognest.h"
 #include "items.h"
@@ -53,6 +54,8 @@ Player::Player() {
     clear_inventory();
 
     inventory.selected_slot = 1;
+
+    current_key = DOORKEY_BLUE;
 
     gameplay.health = 250;
     gameplay.ammo = 20;
@@ -624,7 +627,8 @@ void Player::debug() {
                                       "Velocity:\n -> { %*.*f, %*.*f, %*.*f }\n"
                                       "is_grounded: %s\n"
                                       "is_colliding: %s\n"
-                                      "selected_item: %d\n",
+                                      "selected_item: %d\n"
+                                      "key_type: %s",
                                       collider.pos.x, collider.pos.y, collider.pos.z,
                                       input.forwards, input.sideways,
                                       width, 2, velocity.x,
@@ -632,7 +636,10 @@ void Player::debug() {
                                       width, 2, velocity.z,
                                       bool_to_string(is_grounded),
                                       bool_to_string(collider.is_colliding),
-                                      inventory.selected_slot);
+                                      inventory.selected_slot,
+                                      get_key_as_cstr(current_key));
+
+    get_key_as_cstr(current_key);
 
     DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
 

@@ -1,13 +1,27 @@
 #include "doors.h"
 #include "collision.h"
 #include "globals.h"
+#include <sys/types.h>
 
 Door::Door() {
     open = false;
 };
 Door::~Door() {};
 
-void Door::update(const Collider &player) {
+void Door::set_key_type(std::string ktype) {
+
+    if (ktype == "BLUE") {
+        key_type = DOORKEY_BLUE;
+    } else if (ktype == "YELLOW") {
+        key_type = DOORKEY_YELLOW;
+    } else if (ktype == "RED") {
+        key_type = DOORKEY_RED;
+    } else if (ktype == "NOKEY") {
+        key_type = DOORKEY_NONE;
+    }
+}
+
+void Door::update(const Collider &player, DOORKEY_TYPE *player_key) {
 
     if (finished_oppening) {
         return;
@@ -32,8 +46,12 @@ void Door::update(const Collider &player) {
     if (!open) {
 
         if (CheckCollisionBoxes(player_bb, trigger_bb)) {
-            open = true;
-            PlaySound(g_sounds.door_open);
+
+            if (key_type == *player_key || key_type == DOORKEY_NONE) {
+
+                open = true;
+                PlaySound(g_sounds.door_open);
+            }
         }
     }
 
@@ -67,4 +85,40 @@ void Door::draw() const {
     DrawCubeWiresV(open_trigger.pos, open_trigger.size, ORANGE);
 
 #endif // DEBUG
+}
+
+Color door_get_color_from_keytype(std::string key_type) {
+
+    Color ret = WHITE;
+
+    if (key_type == "BLUE") {
+        ret = BLUE;
+    }
+
+    if (key_type == "YELLOW") {
+        ret = YELLOW;
+    }
+
+    if (key_type == "RED") {
+        ret = RED;
+    }
+
+    return ret;
+}
+
+const char *get_key_as_cstr(DOORKEY_TYPE key_type) {
+
+    static const char *key_names[] = {
+        "KEY_BLUE",
+        "KEY_YELLOW",
+        "KEY_RED",
+        "KEY_NONE",
+    };
+
+    if (key_type >= DOORKEY_BLUE && key_type < DOORKEY_NONE) {
+
+        return key_names[key_type];
+    }
+
+    return "UNKNOWN_KEY";
 }

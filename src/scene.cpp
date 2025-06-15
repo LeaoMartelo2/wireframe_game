@@ -118,19 +118,23 @@ void Scene::loadmap(const char *filename) {
                 base_pos.y = item["pos"]["y"];
                 base_pos.z = item["pos"]["z"];
 
+                std::string keytype = item["key_type"];
+
+                door.set_key_type(keytype);
+
                 door.collider_a.size = {base_size.x / 2, base_size.y, base_size.z};
                 door.collider_a.pos = {base_pos.x + door.collider_a.size.x / 2, base_pos.y, base_pos.z};
                 door.open_pos.pos_a = {base_pos.x + door.collider_a.size.x, base_pos.y, base_pos.z};
                 door.collider_a.populate();
                 door.collider_a.color = GEOMETRY_COLOR;
-                door.collider_a.outline_color = BLUE;
+                door.collider_a.outline_color = door_get_color_from_keytype(keytype);
 
                 door.collider_b.size = {base_size.x / 2, base_size.y, base_size.z};
                 door.collider_b.pos = {base_pos.x - door.collider_b.size.x / 2, base_pos.y, base_pos.z};
                 door.open_pos.pos_b = {base_pos.x - door.collider_b.size.x, base_pos.y, base_pos.z};
                 door.collider_b.populate();
                 door.collider_b.color = GEOMETRY_COLOR;
-                door.collider_b.outline_color = BLUE;
+                door.collider_b.outline_color = door_get_color_from_keytype(keytype);
 
                 door.open_trigger.size = {base_size.x, base_size.y, 50};
                 door.open_trigger.pos = {base_pos.x, base_pos.y, base_pos.z - 25};
@@ -244,7 +248,7 @@ void Scene::update_scene_doors() {
             continue;
         }
 
-        door.update(player->collider);
+        door.update(player->collider, &player->current_key);
     }
 }
 

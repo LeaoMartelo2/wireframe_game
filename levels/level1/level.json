@@ -37,6 +37,7 @@
             "y": 50,
             "z": 5
         },
+        "key_type": "NOKEY",
         "type": "door"
     },
     {
