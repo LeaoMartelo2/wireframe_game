@@ -9,7 +9,7 @@
 typedef enum : size_t {
     DOORKEY_BLUE,
     DOORKEY_YELLOW,
-    DOORKEY_RED,
+    DOORKEY_GREEN,
     DOORKEY_NONE,
 
 } DOORKEY_TYPE;

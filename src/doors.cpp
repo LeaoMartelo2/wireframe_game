@@ -15,8 +15,8 @@ void Door::set_key_type(std::string ktype) {
         key_type = DOORKEY_BLUE;
     } else if (ktype == "YELLOW") {
         key_type = DOORKEY_YELLOW;
-    } else if (ktype == "RED") {
-        key_type = DOORKEY_RED;
+    } else if (ktype == "GREEN") {
+        key_type = DOORKEY_GREEN;
     } else if (ktype == "NOKEY") {
         key_type = DOORKEY_NONE;
     }
@@ -104,8 +104,8 @@ Color door_get_color_from_keytype(std::string key_type) {
         ret = YELLOW;
     }
 
-    if (key_type == "RED") {
-        ret = RED;
+    if (key_type == "GREEN") {
+        ret = GREEN;
     }
 
     return ret;
@@ -124,8 +124,8 @@ Color get_keycolor_from_keytipe_enum(DOORKEY_TYPE key) {
         ret = YELLOW;
         break;
 
-    case DOORKEY_RED:
-        ret = RED;
+    case DOORKEY_GREEN:
+        ret = GREEN;
         break;
 
     case DOORKEY_NONE:
@@ -151,8 +151,8 @@ DOORKEY_TYPE get_keytpe_from_string(const std::string key_type) {
         ret = DOORKEY_YELLOW;
     }
 
-    if (key_type == "RED") {
-        ret = DOORKEY_RED;
+    if (key_type == "GREEN") {
+        ret = DOORKEY_GREEN;
     }
 
     return ret;
@@ -163,7 +163,7 @@ const char *get_key_as_cstr(DOORKEY_TYPE key_type) {
     static const char *key_names[] = {
         "KEY_BLUE",
         "KEY_YELLOW",
-        "KEY_RED",
+        "KEY_GREEN",
         "KEY_NONE",
     };
 
@@ -185,8 +185,8 @@ DOORKEY_TYPE get_keytype_from_color(Color key_color) {
     } else if (ColorIsEqual(key_color, YELLOW)) {
         ret = DOORKEY_YELLOW;
 
-    } else if (ColorIsEqual(key_color, RED)) {
-        ret = DOORKEY_RED;
+    } else if (ColorIsEqual(key_color, GREEN)) {
+        ret = DOORKEY_GREEN;
     } else {
         ret = DOORKEY_NONE;
     }
