@@ -23,6 +23,8 @@ class Scene {
 
     std::vector<DroppedItem> map_items;
 
+    std::vector<DroppedKey> map_keys;
+
     Player *player;
 
     size_t scene_id;
@@ -57,6 +59,9 @@ class Scene {
 
     virtual void update_scene_items();
     virtual void draw_scene_items();
+
+    virtual void update_scene_keys();
+    virtual void draw_scene_keys();
 };
 
 class MainMenu : public Scene {

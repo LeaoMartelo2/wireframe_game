@@ -639,8 +639,6 @@ void Player::debug() {
                                       inventory.selected_slot,
                                       get_key_as_cstr(current_key));
 
-    get_key_as_cstr(current_key);
-
     DrawText(text_dbg.c_str(), 10, 10, 20, WHITE);
 
     if (misc.noclip) {

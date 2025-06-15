@@ -57,6 +57,8 @@ void load_global_assets() {
     g_assets.axe = LoadModel("assets/models/low_poly_axe/axe.obj");
     g_assets.cabela = LoadModel("assets/models/cabela/cabela.obj");
 
+    g_assets.key = LoadModel("assets/models/key/keyOGA.obj");
+
     g_sounds.generic_click = LoadSound("assets/sounds/snd_button.wav");
 
     g_sounds.item_pickup_sound[0] = LoadSound("assets/sounds/items/pickup.wav");

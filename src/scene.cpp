@@ -167,6 +167,21 @@ void Scene::loadmap(const char *filename) {
                 map_items.push_back(dropped_item);
             }
 
+            if (item["type"] == "key") {
+
+                DroppedKey key;
+
+                key.pos.x = item["pos"]["x"];
+                key.pos.y = item["pos"]["y"];
+                key.pos.z = item["pos"]["z"];
+
+                key.type = get_keytpe_from_string(item["key_type"]);
+
+                key.load();
+
+                map_keys.push_back(key);
+            }
+
             if (item["type"] == "trigger") {
                 continue;
 
@@ -288,6 +303,32 @@ void Scene::draw_scene_items() {
     }
 }
 
+void Scene::update_scene_keys() {
+
+    for (auto &key : map_keys) {
+
+        float distance = Vector3Distance(player->collider.pos, key.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        key.update(player->collider.pos, player->collider.size);
+    }
+}
+
+void Scene::draw_scene_keys() {
+
+    for (auto &key : map_keys) {
+
+        float distance = Vector3Distance(player->collider.pos, key.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        key.draw();
+    }
+}
+
 void Scene::paused_update(void) {
 
     BeginDrawing();
@@ -359,6 +400,7 @@ void Scene::update(void) {
 
         update_scene_doors();
         update_scene_items();
+        update_scene_keys();
 
         BeginDrawing();
         {
@@ -372,6 +414,7 @@ void Scene::update(void) {
                 draw_scene_colliders();
                 draw_scene_doors();
                 draw_scene_items();
+                draw_scene_keys();
             }
             EndMode3D();
 

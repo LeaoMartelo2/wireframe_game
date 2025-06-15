@@ -52,6 +52,8 @@ typedef struct {
     Model shotgun;
     Model axe;
     Model cabela;
+
+    Model key;
 } gmodels_t;
 
 extern gmodels_t g_assets;
