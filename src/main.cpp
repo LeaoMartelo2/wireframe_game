@@ -6,7 +6,7 @@ int main(void) {
 
     raylib_pre();
 
-    InitWindow(0, 0, "Wireframe Engine");
+    InitWindow(1366, 768, "Wireframe Engine");
     {
         raylib_config();
 
