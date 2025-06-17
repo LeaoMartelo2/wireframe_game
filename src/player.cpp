@@ -55,7 +55,7 @@ Player::Player() {
 
     inventory.selected_slot = 1;
 
-    current_key = DOORKEY_BLUE;
+    current_key = DOORKEY_NONE;
 
     gameplay.health = 250;
     gameplay.ammo = 20;

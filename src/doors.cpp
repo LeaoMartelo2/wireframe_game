@@ -205,7 +205,7 @@ void DroppedKey::load() {
     key_color = get_keycolor_from_keytipe_enum(type);
 }
 
-int DroppedKey::update(Vector3 player_pos, Vector3 player_size) {
+int DroppedKey::update(Vector3 player_pos, Vector3 player_size, DOORKEY_TYPE *player_key) {
 
     int ret = false;
 
@@ -225,7 +225,16 @@ int DroppedKey::update(Vector3 player_pos, Vector3 player_size) {
     };
 
     if (CheckCollisionBoxes(collect_bb, player_bb)) {
-        ret = true;
+
+        if (*player_key == DOORKEY_NONE) {
+
+            ret = true;
+
+            *player_key = type;
+
+            int pickup_index = GetRandomValue(0, 2);
+            PlaySound(g_sounds.item_pickup_sound[pickup_index]);
+        }
     }
 
     double time = GetTime();

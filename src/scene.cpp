@@ -305,14 +305,21 @@ void Scene::draw_scene_items() {
 
 void Scene::update_scene_keys() {
 
-    for (auto &key : map_keys) {
+    for (size_t i = 0; i < map_keys.size(); ++i) {
+
+        auto &key = map_keys[i];
 
         float distance = Vector3Distance(player->collider.pos, key.pos);
         if (distance > g_settings.draw_distance) {
             continue;
         }
 
-        key.update(player->collider.pos, player->collider.size);
+        if (key.update(player->collider.pos, player->collider.size, &player->current_key)) {
+
+            lognest_debug("[Player] Gave the player the '%s' key.", get_key_as_cstr(key.type));
+
+            map_keys.erase(map_keys.begin() + i);
+        }
     }
 }
 

@@ -2,6 +2,11 @@
 #define MISC_H_
 
 #include <stddef.h>
+
+#ifndef DEBUG
+#define LOGNEST_DISABLE_DEBUG
+#endif // DEBUG
+
 #define LOGNEST_IMPLEMENTATION
 #include "include/lognest.h"
 

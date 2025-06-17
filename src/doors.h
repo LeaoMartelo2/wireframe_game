@@ -5,6 +5,7 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "collision.h"
+#include "items.h"
 
 typedef enum : size_t {
     DOORKEY_BLUE,
@@ -74,7 +75,7 @@ class DroppedKey {
 
     void load();
     void draw();
-    int update(Vector3 player_pos, Vector3 player_size);
+    int update(Vector3 player_pos, Vector3 player_size, DOORKEY_TYPE *player_key);
 };
 
 #endif // !DOORS_H_
