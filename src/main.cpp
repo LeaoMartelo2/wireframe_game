@@ -1,8 +1,19 @@
+#ifndef DEBUG
+#define LOGNEST_DISABLE_DEBUG
+#endif // DEBUG
+
+#define LOGNEST_FILE "latest.log"
+#define LOGNEST_ALLOW_CRASH
+#define LOGNEST_IMPLEMENTATION
+#include "include/lognest.h"
+
 #include "globals.h"
 #include "misc.h"
 #include "scene_manager.h"
 
 int main(void) {
+
+    lognest_debug("test\n");
 
     raylib_pre();
 

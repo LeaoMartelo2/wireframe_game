@@ -17,6 +17,9 @@ Scene::Scene() {
     map_colliders.reserve(1000);
     map_doors.reserve(10);
     map_items.reserve(100);
+    map_keys.reserve(10);
+
+    test_enemy.load();
 }
 
 Scene::~Scene() {
@@ -409,6 +412,9 @@ void Scene::update(void) {
         update_scene_items();
         update_scene_keys();
 
+	test_enemy.update();
+
+
         BeginDrawing();
         {
             ClearBackground(BLACK);
@@ -422,6 +428,8 @@ void Scene::update(void) {
                 draw_scene_doors();
                 draw_scene_items();
                 draw_scene_keys();
+
+		test_enemy.draw(&player->camera);
             }
             EndMode3D();
 

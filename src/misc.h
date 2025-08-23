@@ -3,12 +3,6 @@
 
 #include <stddef.h>
 
-#ifndef DEBUG
-#define LOGNEST_DISABLE_DEBUG
-#endif // DEBUG
-
-#define LOGNEST_IMPLEMENTATION
-#include "include/lognest.h"
 
 #include "../raylib/raylib.h"
 #include "include/lognest.h"
@@ -31,7 +25,7 @@ inline void raylib_pre(void) {
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+ //   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 }
 
 inline void raylib_config(void) {

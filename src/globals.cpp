@@ -59,6 +59,8 @@ void load_global_assets() {
 
     g_assets.key = LoadModel("assets/models/key/keyOGA.obj");
 
+    g_assets.test_grunt = LoadModel("assets/models/enemies/grunt/grunt_wp.glb");
+
     g_sounds.generic_click = LoadSound("assets/sounds/snd_button.wav");
 
     g_sounds.item_pickup_sound[0] = LoadSound("assets/sounds/items/pickup.wav");

@@ -682,8 +682,8 @@ void Player::draw_hud() {
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
 #endif // DEBUG
 
-    /*DrawText(TextFormat("%d", gameplay.health),*/
-    /*(GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));*/
+    /*DrawText(TextFormat("%d", gameplay.health),
+             (GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));*/
 
     /*DrawText(TextFormat("%d", gameplay.ammo),*/
     /*(GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);*/
