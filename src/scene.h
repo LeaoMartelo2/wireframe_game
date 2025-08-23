@@ -5,12 +5,12 @@
 #include "doors.h"
 #include "enemies.h"
 #include "gui.h"
+#include "include/lognest.h"
 #include "items.h"
 #include "player.h"
 #include <string.h>
 #include <string>
 #include <vector>
-#include "include/lognest.h"
 
 class SceneManager;
 // this needs forward declaration, thanks C++

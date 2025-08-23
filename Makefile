@@ -1,70 +1,97 @@
-.PHONY: clear release
-CC = clang++
-WINDOWS_COMPILER = x86_64-w64-mingw32-g++
+.PHONY: clear clean release
 
-DISABLED_WARNINGS = -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument -Wno-missing-braces
+# compilers
+CC 		:= clang++
+WCC 		:= x86_64-w64-mingw32-g++
 
-FLAGS = -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm
+# layout
+SRCDIR 		:= src
+OBJDIR 		:= build/posix
+WINOBJDIR 	:= build/win32
+#BINDIR 		:= .
 
-RELEASE_FLAGS = -O2 -DLOGNEST_DISABLE_DEBUG
+# sources
+
+SRC 		:= $(wildcard $(SRCDIR)/*.cpp)
+OBJ 		:= $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+WINOBJ 		:= $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
+DEPS 		:= $(OBJ:.o=.d)
+WINDEPS 	:= $(WINOBJ:.o=.d)
+
+
+# flags
+DISABLED_WARNINGS 	:= -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument -Wno-missing-braces -Wno-macro-redefined
+CXX_FLAGS 		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm 
+CLANG_CONFIG 		:= -fdiagnostics-color=always -fdiagnostics-format=vi
 
 ifdef DEBUG
-	FLAGS += -DDEBUG -ggdb
+	CXX_FLAGS += -DDEBUG -g
 endif
 
-POSIX_FLAGS = -L ./raylib/linux/ -lraylib
-WINDOWS_FLAGS = -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
+RELEASE_FLAGS 		:= -O2 -DLOGNEST_DISABLE_DEBUG
 
-SRCDIR = src
-OBJDIR = build/posix
-WINOBJDIR = build/win32
+# dependency
+DEPFLAGS 		:= -MMD -MP
 
-SRC = $(wildcard $(SRCDIR)/*.cpp)
+# linker flags
+POSIX_LDFLAGS 		:= -L ./raylib/linux/ -lraylib
+WINDOWS_LDFLAGS 	:= -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
-OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
-WINOBJ = $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
+all: wireframe
 
-# Default target for Linux
+
+# binaries
+
 wireframe: $(OBJ)
-	$(CC) $^ $(FLAGS) $(POSIX_FLAGS) -o wireframe
+	$(CC) $^ $(CXX_FLAGS) $(POSIX_LDFLAGS) -o wireframe
 
 win: wireframe.exe
 
-# Windows target
 wireframe.exe: $(WINOBJ)
-	$(WINDOWS_COMPILER) $^ $(FLAGS) $(WINDOWS_FLAGS) -o wireframe.exe
+	$(WCC) $^ $(CXX_FLAGS) $(WINDOWS_LDFLAGS) -o wireframe.exe
 
-# Compile object files for Linux
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+
+# posix compile rule
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp 
 	@mkdir -p $(OBJDIR)
-	$(CC) $(FLAGS) $(POSIX_FLAGS) -c $< -o $@
 
-# Compile object files for Windows
-$(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@printf "\033[1m%s -> %s\033[0m\n" "$<" "$@"
+
+	$(CC) $(CXX_FLAGS) $(DEPFLAGS) $(CLANG_CONFIG) -MF $(@:.o=.d) -c \
+	$< -o $@ \
+
+
+# win32 compile rule
+$(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp 
 	@mkdir -p $(WINOBJDIR)
-	$(WINDOWS_COMPILER) $(FLAGS) $(WINDOWS_FLAGS) -c $< -o $@
+
+	@printf "\033[1m%s -> %s\033[0m\n" "$<" "$@"
+
+	$(WCC) $(CXX_FLAGS) $(DEPFLAGS) -MF $(@:.o=.d) -c \
+	$< -o $@ \
+
+# include dep files if present, ignore if missing
+-include $(DEPS)
+-include $(WINDEPS)
 
 
-release: FLAGS += ${RELEASE_FLAGS}
+# release
+
+release: CXX_FLAGS += $(RELEASE_FLAGS)
 release: wireframe win
-	@mkdir -p release/Linux-x64
-	@mkdir -p release/Windows-x64
-
-	@cp wireframe release/Linux-x64
-	@cp wireframe.exe release/Windows-x64
-
-	@cp -r levels release/Linux-x64
-	@cp -r levels release/Windows-x64
-
-	@cp -r assets release/Linux-x64
-	@cp -r assets release/Windows-x64
-
-	@cp LICENSE release/Linux-x64
-	@cp LICENSE release/Windows-x64
-
-	@tar -vczf release/Linux-x64.tar.gz release/Linux-x64/
+	@mkdir -p release/Linux-x64 release/Windows-x64 
+	@cp wireframe release/Linux-x64/ 			|| true
+	@cp wireframe.exe release/Windows-x64/  		|| true
+	@cp -r levels release/Linux-x64/  			|| true
+	@cp -r levels release/Windows-x64/  			|| true
+	@cp -r assets release/Linux-x64/  			|| true
+	@cp -r assets release/Windows-x64/  			|| true
+	@cp LICENSE release/Linux-x64/ release/Windows-x64/  	|| true
+	@tar -vczf release/Linux-x64.tar.gz -C release Linux-x64
 	@zip -r release/Windows-x64.zip release/Windows-x64/
 
-# Clean all builds
-clear: 
-	@rm -f $(OBJDIR)/*.o $(WINOBJDIR)/*.o wireframe wireframe.exe
+clear:
+	@rm -rf $(OBJDIR)/*.o $(WINOBJDIR)/*.o $(OBJDIR)/*.d $(WINOBJDIR)/*.d wireframe wireframe.exe release/
+
+clean: clear
+
