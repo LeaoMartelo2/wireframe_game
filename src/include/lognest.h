@@ -9,7 +9,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #ifndef LOGNEST_H_
 #define LOGNEST_H_
 
-#define LOGNEST_VERSION "2.1.5"
+#define LOGNEST_VERSION "2.1.6"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -26,9 +26,8 @@ extern "C" {
 #define LOGNEST_FILE "latest.log"
 #endif // LOGNEST_FILE
 
-// default all functions to static inline, so they are stripped from the binary if unused
 #ifndef LOGNEST_API
-#define LOGNEST_API
+#define LOGNEST_API  
 #endif // LOGNEST_API
 
 // @LOG PREFIXEX
@@ -48,6 +47,12 @@ extern "C" {
 #ifndef LOGNEST_DEBUG_PREFIX
 #define LOGNEST_DEBUG_PREFIX "[DEBUG]"
 #endif // LOGNEST_DEBUG_PREFIX
+
+// @FUNCTION_REPLACES
+
+#ifndef LOGNEST_ABORT
+#define LOGNEST_ABORT() abort()
+#endif
 
 #define LN_TIMESTAMP_BUFFER_MAX_SIZE 2048
 
@@ -70,9 +75,9 @@ LOGNEST_API void _lognest_get_datestamp(char *buffer, size_t len);
 }
 #endif // __cplusplus
 
-// TESTING DEFINE + VIM'S LINTER DIES IF I DONT HAVE IT DEFINED HERE
+// TESTING DEFINE 
 // DO NOT FORGET TO COMMENT THIS OUT BEFORE MERGING ON MAIN
-// @IMPORTANT @RELEASE @VIM @TODO
+// @IMPORTANT @RELEASE @TODO
 //#define LOGNEST_IMPLEMENTATION
 
 #ifdef LOGNEST_IMPLEMENTATION
@@ -84,7 +89,7 @@ LOGNEST_API void _lognest_get_timestamp(char *buffer, size_t len) {
         fprintf(stderr, "LogNest: timestamp buffer, was too small\n");
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
 
         return;
@@ -97,7 +102,7 @@ LOGNEST_API void _lognest_get_timestamp(char *buffer, size_t len) {
         fprintf(stderr, "LogNest: failed to get localtime[timestamp]\n");
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
 
         return;
@@ -113,7 +118,7 @@ LOGNEST_API void _lognest_get_datestamp(char *buffer, size_t len) {
         fprintf(stderr, "LogNest: timestamp buffer, was too small\n");
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
         return;
     }
@@ -125,7 +130,7 @@ LOGNEST_API void _lognest_get_datestamp(char *buffer, size_t len) {
         fprintf(stderr, "LogNest: failed to get localtime[datestamp]\n");
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
 
         return;
@@ -140,7 +145,7 @@ LOGNEST_API void lognest_to_file(const char *file, const char *level, const char
         fprintf(stderr, "LogNest @ lognest_to_file: unexpected filename: %s\n", file);
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
 
         return;
@@ -151,7 +156,7 @@ LOGNEST_API void lognest_to_file(const char *file, const char *level, const char
         fprintf(stderr, "LogNest: error trying to open file, filename: '%s'\n", file);
 
 #ifdef LOGNEST_ALLOW_CRASH
-        abort();
+        LOGNEST_ABORT();
 #endif
 
         return;
