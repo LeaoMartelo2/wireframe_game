@@ -412,7 +412,7 @@ void Scene::update(void) {
         update_scene_items();
         update_scene_keys();
 
-	test_enemy.update();
+	test_enemy.update(player->share_data);
 
 
         BeginDrawing();

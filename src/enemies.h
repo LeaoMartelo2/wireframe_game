@@ -5,16 +5,17 @@
 #include "../raylib/raymath.h"
 #include "../raylib/rlgl.h"
 #include "globals.h"
+#include "player.h"
 #include <stdint.h>
 #include <vector>
 
-
-typedef struct Enemy_body_parts{
+typedef struct Enemy_body_parts {
 
     Model model;
     Vector3 offset;
+    bool face_player;
 
-}Enemy_body_parts;
+} Enemy_body_parts;
 
 enum EnemySpriteIndex {
 
@@ -30,15 +31,18 @@ class Enemy {
         Vector3 size;
     } hitbox;
 
+    std::vector<Enemy_body_parts *> body_models;
 
-    std::vector<Enemy_body_parts> body_models;
+    Vector3 look_pos;
+
+    Vector3 forward;
 
     Enemy();
     ~Enemy();
 
     void load();
 
-    void update();
+    void update(GenericPlayerData_share player);
 
     void draw(Camera *camera);
 };
