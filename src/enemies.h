@@ -6,8 +6,17 @@
 #include "../raylib/rlgl.h"
 #include "globals.h"
 #include <stdint.h>
+#include <vector>
 
-enum EnemySpriteIndex{
+
+typedef struct Enemy_body_parts{
+
+    Model model;
+    Vector3 offset;
+
+}Enemy_body_parts;
+
+enum EnemySpriteIndex {
 
     ENEMY_NONE = 0,
     ENEMY_GRUNT,
@@ -16,13 +25,13 @@ enum EnemySpriteIndex{
 
 class Enemy {
   public:
-    Vector3 pos;
-    Vector3 hitbox_size;
+    struct {
+        Vector3 pos;
+        Vector3 size;
+    } hitbox;
 
-    EnemySpriteIndex sprite_idx;
-    size_t anim_frame;
 
-    Texture2D sprite;
+    std::vector<Enemy_body_parts> body_models;
 
     Enemy();
     ~Enemy();

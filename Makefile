@@ -8,7 +8,7 @@ WCC		:= x86_64-w64-mingw32-g++
 SRCDIR		:= src
 OBJDIR		:= build/posix
 WINOBJDIR	:= build/win32
-#BINDIR			:= .
+#BINDIR		:= .
 
 # sources
 
@@ -21,7 +21,7 @@ WINDEPS		:= $(WINOBJ:.o=.d)
 
 # flags
 DISABLED_WARNINGS	:= -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument -Wno-missing-braces -Wno-macro-redefined
-CXX_FLAGS		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm 
+CXX_FLAGS		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm
 CLANG_CONFIG		:= -fdiagnostics-color=always -fdiagnostics-format=vi
 
 ifdef DEBUG

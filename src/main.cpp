@@ -1,7 +1,3 @@
-#ifndef DEBUG
-#define LOGNEST_DISABLE_DEBUG
-#endif // DEBUG
-
 #define LOGNEST_FILE "latest.log"
 #define LOGNEST_ALLOW_CRASH
 #define LOGNEST_IMPLEMENTATION
@@ -13,7 +9,6 @@
 
 int main(void) {
 
-    lognest_debug("test\n");
 
     raylib_pre();
 

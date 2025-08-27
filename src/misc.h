@@ -3,15 +3,20 @@
 
 #include <stddef.h>
 
-
 #include "../raylib/raylib.h"
 #include "include/lognest.h"
 #include <stdlib.h>
 #include <time.h>
 
+
+#define UNUSED(x) (void)(x)
+
+#define TODO(x) do {printf("\n\n\n'%s' AT: \n %s:%d\n", x, __FILE__, __LINE__); abort(); } while(0)
+
+
 inline void troll(void);
 
-inline void raylib_pre(void) {
+static inline void raylib_pre(void) {
 
     lognest_trace("|=====================-Wireframe Engine Start-=====================|\n");
 
@@ -24,8 +29,6 @@ inline void raylib_pre(void) {
 
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
-
- //   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 }
 
 inline void raylib_config(void) {
@@ -34,16 +37,12 @@ inline void raylib_config(void) {
 
     SetExitKey(0);
 
-    SetWindowMinSize(900, 600);
 
-    // MaximizeWindow();
 
     lognest_trace("[Raylib] Window opened.");
     SetTraceLogLevel(LOG_NONE);
 
     SetTargetFPS(60);
-    ToggleFullscreen();
-    lognest_trace("[Raylib] Enabled Fullscreen.");
 
     InitAudioDevice();
 }
