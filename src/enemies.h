@@ -12,8 +12,10 @@
 typedef struct Enemy_body_parts {
 
     Model model;
+    Matrix rotation;
     Vector3 offset;
     bool face_player;
+    bool has_wireframe = true;
 
 } Enemy_body_parts;
 
@@ -37,14 +39,22 @@ class Enemy {
 
     Vector3 forward;
 
+    float angle;
+
+
+
     Enemy();
     ~Enemy();
+
+
+    Vector3 get_forward();
 
     void load();
 
     void update(GenericPlayerData_share player);
 
     void draw(Camera *camera);
+
 };
 
 #endif // !ENEMIES_H_
