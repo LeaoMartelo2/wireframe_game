@@ -527,6 +527,7 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
                       bool_to_string(misc.show_debug));
     }
 
+
 #ifdef DEBUG
 
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
@@ -545,6 +546,16 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
             give_item(3, ITEM_CABELA);
         }
     }
+
+    if(IsKeyDown(KEY_Z)){
+        camera.fovy = 30.0f;
+    }
+
+    if(IsKeyUp(KEY_Z)){
+        camera.fovy = 90.0f;
+    }
+
+
 
 #endif // DEBUG
 }

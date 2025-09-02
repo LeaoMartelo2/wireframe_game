@@ -32,7 +32,13 @@ void Enemy::load() {
     body_models.push_back(test2);
 
     Enemy_body_parts *test3 = new Enemy_body_parts;
-    test3->model = LoadModelFromMesh(GenMeshCube(7, 1, 1));
+    //    test3->model = LoadModelFromMesh(GenMeshCube(7, 1, 1));
+    test3->model = g_assets.cabela;
+    test3->offset = {0, 5, 0};
+    test3->angle_offset = 180;
+    test3->custom_scale = {10, 10, 10};
+    test3->has_wireframe = false;
+    test3->face_player = true;
     body_models.push_back(test3);
 }
 
@@ -53,31 +59,42 @@ void Enemy::draw(Camera *camera) {
 
     for (size_t i = 0; i < body_models.size(); ++i) {
 
-        if (body_models[i]->face_player) {
-            DrawModelEx(body_models[i]->model, Vector3Add(hitbox.pos, body_models[i]->offset), ROTATION_AXIS, angle, SCALE, MODEL_COLOR);
-            draw_wireframe_ex(body_models[i]->model, Vector3Add(hitbox.pos, body_models[i]->offset),
-                              ROTATION_AXIS, angle, SCALE, WIREFRAME_COLOR, WIREFRAME_WIDTH);
+        Enemy_body_parts *part = body_models[i];
 
-        } else {
+        float draw_angle = NO_ROTATION;
 
-            DrawModelEx(body_models[i]->model, Vector3Add(hitbox.pos, body_models[i]->offset), ROTATION_AXIS, NO_ROTATION, SCALE, MODEL_COLOR);
-            draw_wireframe_ex(body_models[i]->model, Vector3Add(hitbox.pos, body_models[i]->offset),
-                              ROTATION_AXIS, NO_ROTATION, SCALE, WIREFRAME_COLOR, WIREFRAME_WIDTH);
+        if (part->face_player) draw_angle = angle + part->angle_offset;
+
+        DrawModelEx(part->model,
+                    Vector3Add(hitbox.pos, part->offset),
+                    ROTATION_AXIS,
+                    draw_angle,
+                    Vector3Add(SCALE, part->custom_scale),
+                    MODEL_COLOR);
+
+        if (part->has_wireframe) {
+
+            draw_wireframe_ex(part->model,
+                              Vector3Add(hitbox.pos, part->offset),
+                              ROTATION_AXIS,
+                              draw_angle,
+                              Vector3Add(SCALE, part->custom_scale),
+                              WIREFRAME_COLOR,
+                              WIREFRAME_WIDTH);
         }
-
     }
 
 #ifdef DEBUG
 
-    DrawCubeWiresV(hitbox.pos, hitbox.size, ORANGE);
+DrawCubeWiresV(hitbox.pos, hitbox.size, ORANGE);
 
-    // center of hitbox
-    //DrawSphereWires(hitbox.pos, 1.5f, 5, 5, BLUE);
-    DrawSphere(hitbox.pos, 1.0f, BLUE);
+// center of hitbox
+// DrawSphereWires(hitbox.pos, 1.5f, 5, 5, BLUE);
+DrawSphere(hitbox.pos, 1.0f, BLUE);
 
-    // forward direction
-    // DrawSphere(Vector3Scale(forward, 5.0f) + hitbox.pos, 1, BLUE);
-    DrawLine3D(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(forward, 15.0f)), YELLOW);
+// forward direction
+// DrawSphere(Vector3Scale(forward, 5.0f) + hitbox.pos, 1, BLUE);
+DrawLine3D(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(forward, 15.0f)), YELLOW);
 
 #endif // !DEBUG
 }

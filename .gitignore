@@ -3,4 +3,5 @@ wireframe.exe
 wireframe
 release/
 nestreader
-screenshot000.png
+*.png
+*.gif

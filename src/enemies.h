@@ -12,10 +12,11 @@
 typedef struct Enemy_body_parts {
 
     Model model;
-    Matrix rotation;
     Vector3 offset;
     bool face_player;
     bool has_wireframe = true;
+    Vector3 custom_scale = {0, 0, 0};
+    float angle_offset = 0.0f;
 
 } Enemy_body_parts;
 
