@@ -49,6 +49,8 @@ class Enemy {
 
 
     Vector3 get_forward();
+    Vector3 get_up();
+    Vector3 get_right();
 
     void load();
 

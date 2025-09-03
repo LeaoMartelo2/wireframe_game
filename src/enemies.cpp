@@ -13,6 +13,8 @@ Enemy::Enemy() {};
 Enemy::~Enemy() {};
 
 Vector3 Enemy::get_forward() { return Vector3Normalize(Vector3Subtract(look_pos, hitbox.pos)); }
+Vector3 Enemy::get_up() { return Vector3Normalize({0, hitbox.pos.y + 1.0f, 0}); }
+Vector3 Enemy::get_right() { return Vector3Normalize(Vector3CrossProduct(get_forward(), get_up())); }
 
 void Enemy::load() {
 
@@ -26,7 +28,10 @@ void Enemy::load() {
     body_models.push_back(test);
 
     Enemy_body_parts *test2 = new Enemy_body_parts;
-    test2->model = LoadModelFromMesh(GenMeshCube(1, 5, 7));
+//    test2->model = LoadModelFromMesh(GenMeshCube(1, 5, 7));
+    test2->model = g_assets.shotgun;
+    test2->has_wireframe = false;
+    test2->custom_scale = {10, 10, 10};
     test2->offset = {forward.x, 0, 5};
     test2->face_player = true;
     body_models.push_back(test2);
@@ -50,7 +55,14 @@ void Enemy::update(GenericPlayerData_share player) {
     forward.y = 0.0f;
     forward = Vector3Normalize(forward);
 
-    angle = atan2f(forward.x, forward.z) * RAD2DEG;
+ //   angle = atan2f(forward.x, forward.z) * RAD2DEG;
+ 
+    float pred_angle = (atan2f(forward.x, forward.z)) * RAD2DEG ;
+
+    angle = pred_angle;
+
+
+
 }
 
 void Enemy::draw(Camera *camera) {
@@ -84,17 +96,23 @@ void Enemy::draw(Camera *camera) {
         }
     }
 
+
 #ifdef DEBUG
 
-DrawCubeWiresV(hitbox.pos, hitbox.size, ORANGE);
+    DrawCubeWiresV(hitbox.pos, hitbox.size, ORANGE);
 
-// center of hitbox
-// DrawSphereWires(hitbox.pos, 1.5f, 5, 5, BLUE);
-DrawSphere(hitbox.pos, 1.0f, BLUE);
+    // center of hitbox
+    // DrawSphereWires(hitbox.pos, 1.5f, 5, 5, BLUE);
+    DrawSphere(hitbox.pos, 1.0f, ORANGE);
 
-// forward direction
-// DrawSphere(Vector3Scale(forward, 5.0f) + hitbox.pos, 1, BLUE);
-DrawLine3D(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(forward, 15.0f)), YELLOW);
+    Vector3 drw_forward = get_forward();
+    drw_forward.y = 0;
+    drw_forward = Vector3Normalize(drw_forward);
+    draw_line3d_thick(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(drw_forward, 15.0f)), 0.2f, RED);
+
+    draw_line3d_thick(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(get_up(), 15.0f)), 0.2f, GREEN);
+
+    draw_line3d_thick(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(get_right(), 15.0f)), 0.2f, BLUE);
 
 #endif // !DEBUG
 }
