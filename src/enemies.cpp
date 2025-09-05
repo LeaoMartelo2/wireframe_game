@@ -2,6 +2,8 @@
 #include "misc.h"
 #include "wireframe.h"
 
+void draw_cabela(const Enemy_body_parts *cabela, const Vector3 pos, const float angle);
+
 const Vector3 ROTATION_AXIS = {0, 1, 0};
 const Vector3 SCALE = {1, 1, 1};
 const float NO_ROTATION = 0;
@@ -28,17 +30,19 @@ void Enemy::load() {
     body_models.push_back(test);
 
     Enemy_body_parts *test2 = new Enemy_body_parts;
-//    test2->model = LoadModelFromMesh(GenMeshCube(1, 5, 7));
+    //    test2->model = LoadModelFromMesh(GenMeshCube(1, 5, 7));
     test2->model = g_assets.shotgun;
     test2->has_wireframe = false;
     test2->custom_scale = {10, 10, 10};
-    test2->offset = {forward.x, 0, 5};
+    test2->offset = Vector3Scale(get_right(), 15.0f);
+    test2->update_pos = true;
     test2->face_player = true;
     body_models.push_back(test2);
 
     Enemy_body_parts *test3 = new Enemy_body_parts;
-    //    test3->model = LoadModelFromMesh(GenMeshCube(7, 1, 1));
     test3->model = g_assets.cabela;
+    test3->custom_drawing = true;
+    test3->custom_drawing_function = draw_cabela;
     test3->offset = {0, 5, 0};
     test3->angle_offset = 180;
     test3->custom_scale = {10, 10, 10};
@@ -55,14 +59,15 @@ void Enemy::update(GenericPlayerData_share player) {
     forward.y = 0.0f;
     forward = Vector3Normalize(forward);
 
- //   angle = atan2f(forward.x, forward.z) * RAD2DEG;
- 
-    float pred_angle = (atan2f(forward.x, forward.z)) * RAD2DEG ;
+    //   angle = atan2f(forward.x, forward.z) * RAD2DEG;
+
+    float pred_angle = (atan2f(forward.x, forward.z)) * RAD2DEG;
 
     angle = pred_angle;
 
-
-
+    if (IsKeyDown(KEY_K)) {
+        body_models[1]->offset = Vector3Scale(get_right(), 5.0f);
+    }
 }
 
 void Enemy::draw(Camera *camera) {
@@ -77,25 +82,30 @@ void Enemy::draw(Camera *camera) {
 
         if (part->face_player) draw_angle = angle + part->angle_offset;
 
-        DrawModelEx(part->model,
-                    Vector3Add(hitbox.pos, part->offset),
-                    ROTATION_AXIS,
-                    draw_angle,
-                    Vector3Add(SCALE, part->custom_scale),
-                    MODEL_COLOR);
+        if (part->custom_drawing && part->custom_drawing_function) {
+            part->custom_drawing_function(part, hitbox.pos, draw_angle);
 
-        if (part->has_wireframe) {
+        } else {
 
-            draw_wireframe_ex(part->model,
-                              Vector3Add(hitbox.pos, part->offset),
-                              ROTATION_AXIS,
-                              draw_angle,
-                              Vector3Add(SCALE, part->custom_scale),
-                              WIREFRAME_COLOR,
-                              WIREFRAME_WIDTH);
+            DrawModelEx(part->model,
+                        Vector3Add(hitbox.pos, part->offset),
+                        ROTATION_AXIS,
+                        draw_angle,
+                        Vector3Add(SCALE, part->custom_scale),
+                        MODEL_COLOR);
+
+            if (part->has_wireframe) {
+
+                draw_wireframe_ex(part->model,
+                                  Vector3Add(hitbox.pos, part->offset),
+                                  ROTATION_AXIS,
+                                  draw_angle,
+                                  Vector3Add(SCALE, part->custom_scale),
+                                  WIREFRAME_COLOR,
+                                  WIREFRAME_WIDTH);
+            }
         }
     }
-
 
 #ifdef DEBUG
 
@@ -115,4 +125,21 @@ void Enemy::draw(Camera *camera) {
     draw_line3d_thick(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(get_right(), 15.0f)), 0.2f, BLUE);
 
 #endif // !DEBUG
+}
+
+void draw_cabela(const Enemy_body_parts *cabela, const Vector3 pos, const float angle) {
+
+    DrawModelEx(cabela->model,
+                Vector3Add(pos, cabela->offset),
+                ROTATION_AXIS,
+                angle,
+                Vector3Multiply(SCALE, cabela->custom_scale),
+                GRAY);
+
+    DrawModelWiresEx(cabela->model,
+                     Vector3Add(pos, cabela->offset),
+                     ROTATION_AXIS,
+                     angle,
+                     Vector3Multiply(SCALE, cabela->custom_scale),
+                     RED);
 }

@@ -94,15 +94,7 @@ void SceneManager::update() {
         swap_scene(current_scene + 1);
     }
 
-    if (IsKeyPressed(KEY_K)) {
-
-        size_t new_scene = add_scene_by_name("levels/level4");
-
-        if (new_scene != current_scene) {
-            swap_scene(new_scene);
-        }
-    }
-
+    
 #endif // DEBUG
 
     if (IsKeyPressed(KEY_ESCAPE)) {

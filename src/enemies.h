@@ -17,15 +17,12 @@ typedef struct Enemy_body_parts {
     bool has_wireframe = true;
     Vector3 custom_scale = {0, 0, 0};
     float angle_offset = 0.0f;
+    bool update_pos;
+
+    bool custom_drawing = false;
+    void (*custom_drawing_function)(const Enemy_body_parts *, const Vector3, const float);
 
 } Enemy_body_parts;
-
-enum EnemySpriteIndex {
-
-    ENEMY_NONE = 0,
-    ENEMY_GRUNT,
-
-};
 
 class Enemy {
   public:
@@ -42,11 +39,8 @@ class Enemy {
 
     float angle;
 
-
-
     Enemy();
     ~Enemy();
-
 
     Vector3 get_forward();
     Vector3 get_up();
@@ -57,7 +51,6 @@ class Enemy {
     void update(GenericPlayerData_share player);
 
     void draw(Camera *camera);
-
 };
 
 #endif // !ENEMIES_H_
