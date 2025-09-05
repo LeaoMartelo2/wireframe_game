@@ -2,6 +2,7 @@
 #include "enemy_dispatch.h"
 #include "misc.h"
 #include "wireframe.h"
+#include <algorithm>
 
 Enemy::Enemy() {};
 Enemy::~Enemy() {};
@@ -58,16 +59,20 @@ void Enemy::update(GenericPlayerData_share player) {
 
     float pred_angle = (atan2f(forward.x, forward.z)) * RAD2DEG;
 
-    angle = pred_angle;
+    float angle_difference = pred_angle - angle;
 
+    if (angle_difference >  180.0f) angle_difference -= 360.0f;
+    if (angle_difference < -180.0f) angle_difference += 360.0f;
 
-    for(size_t i = 0; i < body_models.size(); ++i){
-        if(body_models[i]->update_pos && body_models[i]->update_pos_function){
+    angle += std::clamp(angle_difference, -1.6f, 1.6f);
+
+    //    angle = pred_angle;
+
+    for (size_t i = 0; i < body_models.size(); ++i) {
+        if (body_models[i]->update_pos && body_models[i]->update_pos_function) {
             body_models[i]->update_pos_function(body_models[i], this);
         }
     }
-
-
 
     if (IsKeyDown(KEY_K)) {
         body_models[1]->offset = Vector3Scale(get_right(), -5.0f);
