@@ -27,8 +27,10 @@ void Enemy::load() {
     test2->custom_drawing = true;
     test2->custom_drawing_function = draw_shotgun;
     test2->custom_scale = {10, 10, 10};
-    test2->offset = Vector3Scale(get_right(), 15.0f);
+    test2->offset = Vector3Scale(get_right(), -5.0f);
     test2->update_pos = true;
+    test2->distance = 5.0f;
+    test2->update_pos_function = update_pos_right;
     test2->face_player = true;
     body_models.push_back(test2);
 
@@ -58,8 +60,17 @@ void Enemy::update(GenericPlayerData_share player) {
 
     angle = pred_angle;
 
+
+    for(size_t i = 0; i < body_models.size(); ++i){
+        if(body_models[i]->update_pos && body_models[i]->update_pos_function){
+            body_models[i]->update_pos_function(body_models[i], this);
+        }
+    }
+
+
+
     if (IsKeyDown(KEY_K)) {
-        body_models[1]->offset = Vector3Scale(get_right(), 5.0f);
+        body_models[1]->offset = Vector3Scale(get_right(), -5.0f);
     }
 }
 

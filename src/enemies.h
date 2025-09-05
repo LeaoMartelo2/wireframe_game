@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <vector>
 
-
 const Vector3 ROTATION_AXIS = {0, 1, 0};
 const Vector3 SCALE = {1, 1, 1};
 const float NO_ROTATION = 0;
@@ -28,11 +27,9 @@ typedef struct Enemy_body_parts {
     Vector3 custom_scale = {1, 1, 1};
     float angle_offset = 0.0f;
 
-
-
     bool update_pos;
-    void (*update_pos_function)(Enemy *, const float distance);
-
+    void (*update_pos_function)(Enemy_body_parts *, Enemy *);
+    float distance;
 
     bool custom_drawing = false;
     void (*custom_drawing_function)(const Enemy_body_parts *, const Vector3, const float);
@@ -40,6 +37,7 @@ typedef struct Enemy_body_parts {
 } Enemy_body_parts;
 
 class Enemy {
+
   public:
     struct {
         Vector3 pos;

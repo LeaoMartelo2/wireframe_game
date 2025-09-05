@@ -33,3 +33,10 @@ void draw_shotgun(const Enemy_body_parts *shotgun, const Vector3 pos, const floa
                      Vector3Multiply(SCALE, shotgun->custom_scale),
                      WHITE);
 }
+
+
+void update_pos_right(Enemy_body_parts *part, Enemy *enemy){
+
+    part->offset = Vector3Scale(enemy->get_right(), part->distance);
+
+}
