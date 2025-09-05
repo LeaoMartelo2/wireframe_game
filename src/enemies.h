@@ -17,6 +17,7 @@ const float WIREFRAME_WIDTH = 0.3f;
 const Color WIREFRAME_COLOR = BLACK;
 const Color MODEL_COLOR = WHITE;
 
+class Enemy;
 
 typedef struct Enemy_body_parts {
 
@@ -26,7 +27,12 @@ typedef struct Enemy_body_parts {
     bool has_wireframe = true;
     Vector3 custom_scale = {1, 1, 1};
     float angle_offset = 0.0f;
+
+
+
     bool update_pos;
+    void (*update_pos_function)(Enemy *, const float distance);
+
 
     bool custom_drawing = false;
     void (*custom_drawing_function)(const Enemy_body_parts *, const Vector3, const float);

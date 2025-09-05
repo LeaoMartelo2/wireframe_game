@@ -1,5 +1,5 @@
 #include "enemies.h"
-#include "enemy_draw.h"
+#include "enemy_dispatch.h"
 #include "misc.h"
 #include "wireframe.h"
 
@@ -17,14 +17,15 @@ void Enemy::load() {
 
     Enemy_body_parts *test = new Enemy_body_parts;
     test->model = LoadModelFromMesh(GenMeshCube(7, 7.5, 7));
-    test->face_player = false;
+    test->face_player = true;
     test->offset = {0, -3.5, 0};
     body_models.push_back(test);
 
     Enemy_body_parts *test2 = new Enemy_body_parts;
-    //    test2->model = LoadModelFromMesh(GenMeshCube(1, 5, 7));
     test2->model = g_assets.shotgun;
     test2->has_wireframe = false;
+    test2->custom_drawing = true;
+    test2->custom_drawing_function = draw_shotgun;
     test2->custom_scale = {10, 10, 10};
     test2->offset = Vector3Scale(get_right(), 15.0f);
     test2->update_pos = true;

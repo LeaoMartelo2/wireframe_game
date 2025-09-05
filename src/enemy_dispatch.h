@@ -10,6 +10,7 @@
 
 
 void draw_cabela(const Enemy_body_parts *cabela, const Vector3 pos, const float angle);
+void draw_shotgun(const Enemy_body_parts *shotgun, const Vector3 pos, const float angle);
 
 
 #endif // !ENEMY_DRAW_H_
