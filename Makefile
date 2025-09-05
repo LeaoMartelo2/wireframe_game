@@ -20,8 +20,8 @@ WINDEPS		:= $(WINOBJ:.o=.d)
 
 
 # flags
-DISABLED_WARNINGS	:= -Wno-missing-field-initializers -Wno-format-overflow -Wno-unused-command-line-argument -Wno-missing-braces -Wno-macro-redefined
-CXX_FLAGS		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic -lm
+DISABLED_WARNINGS	:= -Wno-missing-field-initializers -Wno-format-overflow -Wno-missing-braces -Wno-macro-redefined
+CXX_FLAGS		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic
 CLANG_CONFIG		:= -fdiagnostics-color=always -fdiagnostics-format=vi
 
 ifdef DEBUG
@@ -34,7 +34,7 @@ RELEASE_FLAGS		:= -O2 -DLOGNEST_DISABLE_DEBUG
 DEPFLAGS		:= -MMD -MP
 
 # linker flags
-POSIX_LDFLAGS		:= -L ./raylib/linux/ -lraylib
+POSIX_LDFLAGS		:= -lm -L ./raylib/linux/ -lraylib -lGL -lpthread -ldl -lrt -lX11
 WINDOWS_LDFLAGS		:= -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 all: wireframe
