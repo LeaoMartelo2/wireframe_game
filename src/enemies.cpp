@@ -1,15 +1,7 @@
 #include "enemies.h"
+#include "enemy_draw.h"
 #include "misc.h"
 #include "wireframe.h"
-
-void draw_cabela(const Enemy_body_parts *cabela, const Vector3 pos, const float angle);
-
-const Vector3 ROTATION_AXIS = {0, 1, 0};
-const Vector3 SCALE = {1, 1, 1};
-const float NO_ROTATION = 0;
-const float WIREFRAME_WIDTH = 0.3f;
-const Color WIREFRAME_COLOR = BLACK;
-const Color MODEL_COLOR = WHITE;
 
 Enemy::Enemy() {};
 Enemy::~Enemy() {};
@@ -91,7 +83,7 @@ void Enemy::draw(Camera *camera) {
                         Vector3Add(hitbox.pos, part->offset),
                         ROTATION_AXIS,
                         draw_angle,
-                        Vector3Add(SCALE, part->custom_scale),
+                        Vector3Multiply(SCALE, part->custom_scale),
                         MODEL_COLOR);
 
             if (part->has_wireframe) {
@@ -100,7 +92,7 @@ void Enemy::draw(Camera *camera) {
                                   Vector3Add(hitbox.pos, part->offset),
                                   ROTATION_AXIS,
                                   draw_angle,
-                                  Vector3Add(SCALE, part->custom_scale),
+                                  Vector3Multiply(SCALE, part->custom_scale),
                                   WIREFRAME_COLOR,
                                   WIREFRAME_WIDTH);
             }
@@ -125,21 +117,4 @@ void Enemy::draw(Camera *camera) {
     draw_line3d_thick(hitbox.pos, Vector3Add(hitbox.pos, Vector3Scale(get_right(), 15.0f)), 0.2f, BLUE);
 
 #endif // !DEBUG
-}
-
-void draw_cabela(const Enemy_body_parts *cabela, const Vector3 pos, const float angle) {
-
-    DrawModelEx(cabela->model,
-                Vector3Add(pos, cabela->offset),
-                ROTATION_AXIS,
-                angle,
-                Vector3Multiply(SCALE, cabela->custom_scale),
-                GRAY);
-
-    DrawModelWiresEx(cabela->model,
-                     Vector3Add(pos, cabela->offset),
-                     ROTATION_AXIS,
-                     angle,
-                     Vector3Multiply(SCALE, cabela->custom_scale),
-                     RED);
 }
