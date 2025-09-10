@@ -32,7 +32,7 @@ void DroppedItem::load() {
     size = Vector3One();
     collect_trigger.size = {10, 15, 10};
     collect_trigger.pos = pos;
-    collect_trigger.pos.y += 5;
+    collect_trigger.pos.y += 5.0f;
 
     switch (type) {
 
@@ -55,6 +55,8 @@ void DroppedItem::load() {
 }
 
 int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
+
+    rot += 1.0f;
 
     int ret = false;
 
@@ -79,14 +81,12 @@ int DroppedItem::update(Vector3 player_pos, Vector3 player_size) {
 
     double time = GetTime();
 
-    pos.y += sinf(time * 1.5) * 0.05;
+    pos.y += sinf(time * 1.5f) * 0.05f;
 
     return ret;
 }
 
 void DroppedItem::draw() {
-
-    rot += 1;
 
     switch (type) {
 
