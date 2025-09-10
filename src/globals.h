@@ -59,7 +59,7 @@ typedef struct {
 
 extern gmodels_t g_assets;
 
-/* this shit is stupid, but uts the best i can manage */
+/* this shit is stupid, but its the best i can manage */
 typedef struct {
 
     Sound generic_click;
