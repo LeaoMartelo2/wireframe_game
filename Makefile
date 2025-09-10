@@ -35,7 +35,7 @@ DEPFLAGS		:= -MMD -MP
 
 # linker flags
 POSIX_LDFLAGS		:= -lm -L ./raylib/linux/ -lraylib -lGL -lpthread -ldl -lrt -lX11
-WINDOWS_LDFLAGS		:= -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
+WINDOWS_LDFLAGS		:= -lm -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 all: wireframe
 

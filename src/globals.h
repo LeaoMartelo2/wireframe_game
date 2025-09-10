@@ -55,7 +55,6 @@ typedef struct {
 
     Model key;
 
-    Model test_grunt;
 } gmodels_t;
 
 extern gmodels_t g_assets;
