@@ -29,6 +29,8 @@ static inline void raylib_pre(void) {
 
     SetWindowState(FLAG_MSAA_4X_HINT);
     SetWindowState(FLAG_VSYNC_HINT);
+
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 }
 
 inline void raylib_config(void) {
@@ -43,6 +45,7 @@ inline void raylib_config(void) {
     SetTraceLogLevel(LOG_NONE);
 
     SetTargetFPS(60);
+    ToggleFullscreen();
 
     InitAudioDevice();
 }
