@@ -1,41 +1,41 @@
-.PHONY: clear clean release
+.PHONY: clear clean release help
 
 # compilers
-CC		:= clang++
-WCC		:= x86_64-w64-mingw32-g++
+CC              := clang++
+WCC             := x86_64-w64-mingw32-g++
 
 # layout
-SRCDIR		:= src
-OBJDIR		:= build/posix
-WINOBJDIR	:= build/win32
-#BINDIR		:= .
+SRCDIR          := src
+OBJDIR          := build/posix
+WINOBJDIR       := build/win32
+#BINDIR	        := .
 
 # sources
 
-SRC		:= $(wildcard $(SRCDIR)/*.cpp)
-OBJ		:= $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
-WINOBJ		:= $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
-DEPS		:= $(OBJ:.o=.d)
-WINDEPS		:= $(WINOBJ:.o=.d)
+SRC             := $(wildcard $(SRCDIR)/*.cpp)
+OBJ             := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+WINOBJ          := $(patsubst $(SRCDIR)/%.cpp, $(WINOBJDIR)/%.o, $(SRC))
+DEPS            := $(OBJ:.o=.d)
+WINDEPS         := $(WINOBJ:.o=.d)
 
 
 # flags
-DISABLED_WARNINGS	:= -Wno-missing-field-initializers -Wno-format-overflow -Wno-missing-braces -Wno-macro-redefined
-CXX_FLAGS		:= -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic
-CLANG_CONFIG		:= -fdiagnostics-color=always -fdiagnostics-format=vi
+DISABLED_WARNINGS       := -Wno-missing-field-initializers -Wno-format-overflow -Wno-missing-braces -Wno-macro-redefined
+CXX_FLAGS               := -std=c++20 -Wall -Wextra $(DISABLED_WARNINGS) -pedantic
+CLANG_CONFIG            := -fdiagnostics-color=always -fdiagnostics-format=vi
 
 ifdef DEBUG
 	CXX_FLAGS += -DDEBUG -g
 endif
 
-RELEASE_FLAGS		:= -O2 -DLOGNEST_DISABLE_DEBUG
+RELEASE_FLAGS           := -O2 -DLOGNEST_DISABLE_DEBUG
 
 # dependency
-DEPFLAGS		:= -MMD -MP
+DEPFLAGS                := -MMD -MP
 
 # linker flags
-POSIX_LDFLAGS		:= -lm -L ./raylib/linux/ -lraylib -lGL -lpthread -ldl -lrt -lX11
-WINDOWS_LDFLAGS		:= -lm -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
+POSIX_LDFLAGS           := -lm -L ./raylib/linux/ -lraylib -lGL -lpthread -ldl -lrt -lX11
+WINDOWS_LDFLAGS	        := -lm -L ./raylib/windows/ -lraylib -lgdi32 -lwinmm -lopengl32 -static -mwindows
 
 all: wireframe
 
@@ -67,7 +67,7 @@ $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 	@printf "\033[1m%s -> %s\033[0m\n" "$<" "$@"
 
-	$(WCC) $(CXX_FLAGS) $(DEPFLAGS) -MF $(@:.o=.d) -c \
+	$(WCC) $(CXX_FLAGS) -ggdb $(DEPFLAGS) -MF $(@:.o=.d) -c \
 	$< -o $@ \
 
 # include dep files if present, ignore if missing
@@ -80,13 +80,13 @@ $(WINOBJDIR)/%.o: $(SRCDIR)/%.cpp
 release: CXX_FLAGS += $(RELEASE_FLAGS)
 release: wireframe win
 	@mkdir -p release/Linux-x64 release/Windows-x64 
-	@cp wireframe release/Linux-x64/			|| true
-	@cp wireframe.exe release/Windows-x64/			|| true
-	@cp -r levels release/Linux-x64/			|| true
-	@cp -r levels release/Windows-x64/			|| true
-	@cp -r assets release/Linux-x64/			|| true
-	@cp -r assets release/Windows-x64/			|| true
-	@cp LICENSE release/Linux-x64/ release/Windows-x64/	|| true
+	@cp wireframe release/Linux-x64/                        || true
+	@cp wireframe.exe release/Windows-x64/                  || true
+	@cp -r levels release/Linux-x64/                        || true
+	@cp -r levels release/Windows-x64/                      || true
+	@cp -r assets release/Linux-x64/                        || true
+	@cp -r assets release/Windows-x64/                      || true
+	@cp LICENSE release/Linux-x64/ release/Windows-x64/     || true
 	@tar -vczf release/Linux-x64.tar.gz -C release Linux-x64
 	@zip -r release/Windows-x64.zip release/Windows-x64/
 
@@ -95,3 +95,12 @@ clear:
 
 clean: clear
 
+help:
+	@printf "\n"
+	@printf "make                           -> wireframe Linux x86_64 \n"
+	@printf "make win                       -> wireframe Win32 x64    \n"
+	@printf "make release                   -> both exe/elf64 + pack assets in to release/ and make .zip/.tar.gz for respective target \n"
+	@printf "make DEBUG=1 <target>          -> Debug build (make a clean build before)\n"
+	@printf "make clean/clear               -> Clear object files and release/ \n"
+	@printf "make help                      -> Display this message \n"
+	@printf "\n"

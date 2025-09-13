@@ -94,7 +94,6 @@ void SceneManager::update() {
         swap_scene(current_scene + 1);
     }
 
-    
 #endif // DEBUG
 
     if (IsKeyPressed(KEY_ESCAPE)) {

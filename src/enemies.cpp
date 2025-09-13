@@ -5,7 +5,12 @@
 #include <algorithm>
 
 Enemy::Enemy() {};
-Enemy::~Enemy() {};
+Enemy::~Enemy() {
+
+    for(auto &bp : body_models){
+        delete bp;
+    }
+};
 
 Vector3 Enemy::get_forward() { return Vector3Normalize(Vector3Subtract(look_pos, hitbox.pos)); }
 Vector3 Enemy::get_up() { return Vector3Normalize({0, hitbox.pos.y + 1.0f, 0}); }
@@ -36,6 +41,7 @@ void Enemy::load() {
     body_models.push_back(test2);
 
     Enemy_body_parts *test3 = new Enemy_body_parts;
+    test3->update_pos = false;
     test3->model = g_assets.cabela;
     test3->custom_drawing = true;
     test3->custom_drawing_function = draw_cabela;
@@ -55,21 +61,18 @@ void Enemy::update(GenericPlayerData_share player) {
     forward.y = 0.0f;
     forward = Vector3Normalize(forward);
 
-    //   angle = atan2f(forward.x, forward.z) * RAD2DEG;
-
     float pred_angle = (atan2f(forward.x, forward.z)) * RAD2DEG;
 
     float angle_difference = pred_angle - angle;
 
-    if (angle_difference >  180.0f) angle_difference -= 360.0f;
+    if (angle_difference > 180.0f) angle_difference -= 360.0f;
     if (angle_difference < -180.0f) angle_difference += 360.0f;
 
     angle += std::clamp(angle_difference, -1.6f, 1.6f);
 
-    //    angle = pred_angle;
-
     for (size_t i = 0; i < body_models.size(); ++i) {
         if (body_models[i]->update_pos && body_models[i]->update_pos_function) {
+
             body_models[i]->update_pos_function(body_models[i], this);
         }
     }
