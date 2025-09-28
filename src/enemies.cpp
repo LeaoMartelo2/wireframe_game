@@ -1,6 +1,5 @@
 #include "enemies.h"
 #include "enemy_dispatch.h"
-#include "misc.h"
 #include "wireframe.h"
 #include <algorithm>
 
@@ -53,6 +52,8 @@ void Enemy::load() {
     test3->face_player = true;
     body_models.push_back(test3);
 
+
+    turning_speed = 2.6f;
     loaded = true;
 }
 
@@ -71,7 +72,9 @@ void Enemy::update(GenericPlayerData_share player) {
     if (angle_difference > 180.0f) angle_difference -= 360.0f;
     if (angle_difference < -180.0f) angle_difference += 360.0f;
 
-    angle += std::clamp(angle_difference, -1.6f, 1.6f);
+    //float turning_speed = 5.6f;
+
+    angle += std::clamp(angle_difference, -turning_speed, turning_speed);
 
     for (size_t i = 0; i < body_models.size(); ++i) {
         if (body_models[i]->update_pos && body_models[i]->update_pos_function) {
@@ -82,14 +85,10 @@ void Enemy::update(GenericPlayerData_share player) {
         }
     }
 
-    if (IsKeyDown(KEY_K)) {
-        body_models[1]->offset = Vector3Scale(get_right(), -5.0f);
-    }
 }
 
-void Enemy::draw(Camera *camera) {
+void Enemy::draw() {
 
-    UNUSED(camera);
 
     for (size_t i = 0; i < body_models.size(); ++i) {
 
@@ -132,6 +131,8 @@ void Enemy::draw(Camera *camera) {
     // DrawSphereWires(hitbox.pos, 1.5f, 5, 5, BLUE);
     DrawSphere(hitbox.pos, 1.0f, ORANGE);
 
+
+    /* orientation lines */
     Vector3 drw_forward = get_forward();
     drw_forward.y = 0;
     drw_forward = Vector3Normalize(drw_forward);

@@ -50,7 +50,8 @@ class Enemy {
 
     Vector3 forward;
 
-    float angle;
+    float angle = 0.0f;
+    float turning_speed = 0.0f;
 
     Enemy();
     ~Enemy();
@@ -64,7 +65,7 @@ class Enemy {
 
     void update(GenericPlayerData_share player);
 
-    void draw(Camera *camera);
+    void draw();
 };
 
 #endif // !ENEMIES_H_
