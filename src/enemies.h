@@ -28,7 +28,7 @@ typedef struct Enemy_body_parts {
     float angle_offset = 0.0f;
 
     bool update_pos;
-    void (*update_pos_function)(Enemy_body_parts *, Enemy *);
+    void (*update_pos_function)(Enemy_body_parts *, Vector3);
     float distance;
 
     bool custom_drawing = false;
@@ -60,6 +60,7 @@ class Enemy {
     Vector3 get_right();
 
     void load();
+    bool loaded = false;
 
     void update(GenericPlayerData_share player);
 

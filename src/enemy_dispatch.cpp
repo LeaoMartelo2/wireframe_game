@@ -40,3 +40,10 @@ void update_pos_right(Enemy_body_parts *part, Enemy *enemy){
     part->offset = Vector3Scale(enemy->get_right(), part->distance);
 
 }
+
+
+void update_pos_vec(Enemy_body_parts *part, Vector3 vec){
+
+    part->offset = Vector3Scale(vec, part->distance);
+
+}

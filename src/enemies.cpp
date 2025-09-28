@@ -7,7 +7,7 @@
 Enemy::Enemy() {};
 Enemy::~Enemy() {
 
-    for(auto &bp : body_models){
+    for (auto &bp : body_models) {
         delete bp;
     }
 };
@@ -25,6 +25,7 @@ void Enemy::load() {
     test->model = LoadModelFromMesh(GenMeshCube(7, 7.5, 7));
     test->face_player = true;
     test->offset = {0, -3.5, 0};
+    test->update_pos = false;
     body_models.push_back(test);
 
     Enemy_body_parts *test2 = new Enemy_body_parts;
@@ -36,7 +37,7 @@ void Enemy::load() {
     test2->offset = Vector3Scale(get_right(), -5.0f);
     test2->update_pos = true;
     test2->distance = 5.0f;
-    test2->update_pos_function = update_pos_right;
+    test2->update_pos_function = update_pos_vec;
     test2->face_player = true;
     body_models.push_back(test2);
 
@@ -51,6 +52,8 @@ void Enemy::load() {
     test3->has_wireframe = false;
     test3->face_player = true;
     body_models.push_back(test3);
+
+    loaded = true;
 }
 
 void Enemy::update(GenericPlayerData_share player) {
@@ -73,7 +76,9 @@ void Enemy::update(GenericPlayerData_share player) {
     for (size_t i = 0; i < body_models.size(); ++i) {
         if (body_models[i]->update_pos && body_models[i]->update_pos_function) {
 
-            body_models[i]->update_pos_function(body_models[i], this);
+            if (loaded) {
+                body_models[i]->update_pos_function(body_models[i], get_right());
+            }
         }
     }
 
