@@ -14,7 +14,6 @@ Enemy *load_enemy_grunt(Vector3 pos) {
     enemy->hitbox.pos = pos;
     enemy->hitbox.size = grunt_hitbox_size;
 
-
     /* enemy body parts */
 
     Enemy_body_parts *head = new Enemy_body_parts;
@@ -27,10 +26,15 @@ Enemy *load_enemy_grunt(Vector3 pos) {
     head->custom_scale = {10, 10, 10};
     head->has_wireframe = false;
     head->face_player = true;
-
     enemy->body_models.push_back(head);
 
-
+    Enemy_body_parts *body = new Enemy_body_parts;
+    body->update_pos = false;
+    body->model = LoadModelFromMesh(GenMeshCube(7.0f, 10.0f, 5.0f));
+    body->offset = {0, 0, 0};
+    body->has_wireframe = true;
+    body->face_player = true;
+    enemy->body_models.push_back(body);
 
     return enemy;
 }
