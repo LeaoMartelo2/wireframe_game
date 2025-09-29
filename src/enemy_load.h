@@ -5,6 +5,6 @@
 #include "globals.h"
 #include "enemy_dispatch.h"
 
-Enemy *load_enemy_test_ptr();
+Enemy *load_enemy_grunt(Vector3 pos);
 
 #endif /* ! ENEMY_LOAD_H_ */
