@@ -503,6 +503,10 @@ void Player::update_share_data() {
     };
 }
 
+GenericPlayerData_share Player::get_share_data(){
+    return share_data;
+}
+
 void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
 
     if (misc.noclip) {

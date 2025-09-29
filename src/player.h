@@ -65,6 +65,7 @@ class Player {
 
     Player();
     void update_share_data();
+    GenericPlayerData_share get_share_data();
     void update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors);
     void draw(void);
     void draw_hud(void);
