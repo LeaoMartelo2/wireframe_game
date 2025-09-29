@@ -1,5 +1,9 @@
 [
     {
+        "enemy_type": "enemy_grunt",
+        "type": "enemy"
+    },
+    {
         "pos": {
             "x": 300,
             "y": 7,
@@ -85,16 +89,16 @@
     {
         "pos": {
             "x": 300,
-            "y":7,
+            "y": 7,
             "z": 200
         },
         "key_type": "BLUE",
         "type": "key"
-    }, 
+    },
     {
         "pos": {
             "x": 325,
-            "y":7,
+            "y": 7,
             "z": 200
         },
         "key_type": "YELLOW",
@@ -103,7 +107,7 @@
     {
         "pos": {
             "x": 350,
-            "y":7,
+            "y": 7,
             "z": 200
         },
         "key_type": "GREEN",
@@ -178,12 +182,12 @@
         "pos": {
             "x": 50,
             "y": 50,
-            "z":50
+            "z": 50
         },
         "size": {
-            "x":10,
-            "y":10,
-            "z":10
+            "x": 10,
+            "y": 10,
+            "z": 10
         },
         "trigger_type": "load_level",
         "info": {

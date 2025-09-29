@@ -1,6 +1,7 @@
 #include "scene.h"
 #include "collision.h"
 #include "doors.h"
+#include "enemy_load.h"
 #include "globals.h"
 #include "gui.h"
 #include "include/json.hpp"
@@ -18,8 +19,7 @@ Scene::Scene() {
     map_doors.reserve(10);
     map_items.reserve(100);
     map_keys.reserve(10);
-
-    test_enemy.load();
+    map_enemies.reserve(100);
 }
 
 Scene::~Scene() {
@@ -183,6 +183,19 @@ void Scene::loadmap(const char *filename) {
                 key.load();
 
                 map_keys.push_back(key);
+            }
+
+            if (item["type"] == "enemy") {
+
+                Enemy *enemy;
+
+                if (item["enemy_type"] == "enemy_grunt") {
+
+                    //load_enemy_test(&enemy);
+                    enemy = load_enemy_test_ptr();
+                }
+
+                map_enemies.push_back(enemy);
             }
 
             if (item["type"] == "trigger") {
@@ -412,8 +425,7 @@ void Scene::update(void) {
         update_scene_items();
         update_scene_keys();
 
-	test_enemy.update(player->share_data);
-
+        map_enemies[0]->update(player->get_share_data());
 
         BeginDrawing();
         {
@@ -429,7 +441,7 @@ void Scene::update(void) {
                 draw_scene_items();
                 draw_scene_keys();
 
-		test_enemy.draw(&player->camera);
+                map_enemies[0]->draw();
             }
             EndMode3D();
 

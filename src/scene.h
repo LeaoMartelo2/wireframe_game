@@ -27,7 +27,7 @@ class Scene {
 
     std::vector<DroppedKey> map_keys;
 
-    Enemy test_enemy;
+    std::vector<Enemy *> map_enemies;
 
     Player *player;
 
