@@ -1,6 +1,11 @@
 [
     {
         "enemy_type": "enemy_grunt",
+        "pos" : {
+            "x": -50,
+            "y": 7,
+            "z": -30
+        },
         "type": "enemy"
     },
     {

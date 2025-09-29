@@ -1,6 +1,4 @@
 #include "enemies.h"
-#include "enemy_dispatch.h"
-#include "enemy_load.h"
 #include "wireframe.h"
 #include <algorithm>
 
@@ -17,7 +15,14 @@ Vector3 Enemy::get_up() { return Vector3Normalize({0, hitbox.pos.y + 1.0f, 0}); 
 Vector3 Enemy::get_right() { return Vector3Normalize(Vector3CrossProduct(get_forward(), get_up())); }
 
 void Enemy::load() {
-  /* idk */
+
+    if(!loaded){
+        angle = 0;
+        turning_speed = 0;
+
+        loaded = true;
+    }
+
 }
 
 void Enemy::update(GenericPlayerData_share player) {

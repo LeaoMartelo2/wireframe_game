@@ -1,102 +1,36 @@
 #include "enemy_load.h"
+#include "enemies.h"
 
-void load_enemy_grunt(Enemy *enemy) {
-    enemy->hitbox.pos = {-50, 7, -30};
-    enemy->hitbox.size = {10, 15, 10};
+Enemy *load_enemy_grunt(Vector3 pos) {
 
-    Enemy_body_parts *test = new Enemy_body_parts;
-    test->model = LoadModelFromMesh(GenMeshCube(7, 7.5, 7));
-    test->face_player = true;
-    test->offset = {0, -3.5, 0};
-    test->update_pos = false;
-    enemy->body_models.push_back(test);
-
-    Enemy_body_parts *test2 = new Enemy_body_parts;
-    test2->model = g_assets.shotgun;
-    test2->has_wireframe = false;
-    test2->custom_drawing = true;
-    test2->custom_drawing_function = draw_shotgun;
-    test2->custom_scale = {10, 10, 10};
-    test2->offset = Vector3Scale(enemy->get_right(), -5.0f);
-    test2->update_pos = true;
-    test2->distance = 5.0f;
-    test2->update_pos_function = update_pos_vec;
-    test2->face_player = true;
-    enemy->body_models.push_back(test2);
-
-    Enemy_body_parts *test3 = new Enemy_body_parts;
-    test3->update_pos = false;
-    test3->model = g_assets.cabela;
-    test3->custom_drawing = true;
-    test3->custom_drawing_function = draw_cabela;
-    test3->offset = {0, 5, 0};
-    test3->angle_offset = 180;
-    test3->custom_scale = {10, 10, 10};
-    test3->has_wireframe = false;
-    test3->face_player = true;
-    enemy->body_models.push_back(test3);
-
-    enemy->turning_speed = 2.6f;
-    enemy->loaded = true;
-}
-
-void load_enemy_test(Enemy *enemy) {
-
-    enemy->hitbox.pos = {-50, 7, -30};
-    enemy->hitbox.size = {10, 15, 10};
-
-    Enemy_body_parts *test3 = new Enemy_body_parts;
-    test3->update_pos = false;
-    test3->model = g_assets.cabela;
-    test3->custom_drawing = true;
-    test3->custom_drawing_function = draw_cabela;
-    test3->offset = {0, 5, 0};
-    test3->angle_offset = 180;
-    test3->custom_scale = {10, 10, 10};
-    test3->has_wireframe = false;
-    test3->face_player = true;
-    enemy->body_models.push_back(test3);
-
-    /*
-    Enemy_body_parts *test = new Enemy_body_parts;
-    test->model = LoadModelFromMesh(GenMeshCube(7, 7.5, 7));
-    test->face_player = true;
-    test->offset = {0, -3.5, 0};
-    test->angle_offset = 0.0f;
-    test->update_pos = false;
-    test->custom_scale = {1, 1, 1};
-    enemy->body_models.push_back(test);
-
-    */
-
-    enemy->turning_speed = 2.6f;
-    enemy->loaded = true;
-}
-
-Enemy *load_enemy_test_ptr() {
+    const Vector3 grunt_hitbox_size = {10, 15, 10};
+    const float grunt_turning_speed = 2.6f;
 
     Enemy *enemy = new Enemy;
+    enemy->load();
 
-    enemy->hitbox.pos = {-50, 7, -30};
-    enemy->hitbox.size = {10, 15, 10};
+    enemy->turning_speed = grunt_turning_speed;
 
-    enemy->angle = 0.0f;
+    enemy->hitbox.pos = pos;
+    enemy->hitbox.size = grunt_hitbox_size;
 
-    Enemy_body_parts *test3 = new Enemy_body_parts;
-    test3->update_pos = false;
-    test3->model = g_assets.cabela;
-    test3->custom_drawing = true;
-    test3->custom_drawing_function = draw_cabela;
-    test3->offset = {0, 5, 0};
-    test3->angle_offset = 180;
-    test3->custom_scale = {10, 10, 10};
-    test3->has_wireframe = false;
-    test3->face_player = true;
 
-    enemy->body_models.push_back(test3);
+    /* enemy body parts */
 
-    enemy->turning_speed = 2.6f;
-    enemy->loaded = true;
+    Enemy_body_parts *head = new Enemy_body_parts;
+    head->update_pos = false;
+    head->model = g_assets.cabela;
+    head->custom_drawing = true;
+    head->custom_drawing_function = draw_cabela;
+    head->offset = {0, 5, 0};
+    head->angle_offset = 180;
+    head->custom_scale = {10, 10, 10};
+    head->has_wireframe = false;
+    head->face_player = true;
+
+    enemy->body_models.push_back(head);
+
+
 
     return enemy;
 }

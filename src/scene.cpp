@@ -189,10 +189,15 @@ void Scene::loadmap(const char *filename) {
 
                 Enemy *enemy;
 
+                Vector3 pos;
+
+                pos.x = item["pos"]["x"];
+                pos.y = item["pos"]["y"];
+                pos.z = item["pos"]["z"];
+
                 if (item["enemy_type"] == "enemy_grunt") {
 
-                    //load_enemy_test(&enemy);
-                    enemy = load_enemy_test_ptr();
+                    enemy = load_enemy_grunt(pos);
                 }
 
                 map_enemies.push_back(enemy);
