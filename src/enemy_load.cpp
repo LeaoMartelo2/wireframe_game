@@ -4,7 +4,7 @@
 Enemy *load_enemy_grunt(Vector3 pos) {
 
     const Vector3 grunt_hitbox_size = {10, 15, 10};
-    const float grunt_turning_speed = 2.6f;
+    const float grunt_turning_speed = 5.6f;
 
     Enemy *enemy = new Enemy;
     enemy->load();

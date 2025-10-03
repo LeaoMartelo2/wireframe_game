@@ -5,9 +5,10 @@
 Enemy::Enemy() {};
 Enemy::~Enemy() {
 
-    for (auto &bp : body_models) {
-        delete bp;
-    }
+    /*   for (auto &bp : body_models) {
+           delete bp;
+       }
+    */
 };
 
 Vector3 Enemy::get_forward() { return Vector3Normalize(Vector3Subtract(look_pos, hitbox.pos)); }
@@ -16,13 +17,12 @@ Vector3 Enemy::get_right() { return Vector3Normalize(Vector3CrossProduct(get_for
 
 void Enemy::load() {
 
-    if(!loaded){
+    if (!loaded) {
         angle = 0;
         turning_speed = 0;
 
         loaded = true;
     }
-
 }
 
 void Enemy::update(GenericPlayerData_share player) {
