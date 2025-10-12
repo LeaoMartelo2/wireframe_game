@@ -357,6 +357,32 @@ void Scene::draw_scene_keys() {
     }
 }
 
+void Scene::update_scene_enemies() {
+
+    for (auto &enemy : map_enemies) {
+
+        float distance = Vector3Distance(player->collider.pos, enemy->hitbox.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        enemy->update(player->get_share_data());
+    }
+}
+
+void Scene::draw_scene_enemies() {
+
+    for (auto &enemy : map_enemies) {
+
+        float distance = Vector3Distance(player->collider.pos, enemy->hitbox.pos);
+        if (distance > g_settings.draw_distance) {
+            continue;
+        }
+
+        enemy->draw();
+    }
+}
+
 void Scene::paused_update(void) {
 
     BeginDrawing();
@@ -429,8 +455,8 @@ void Scene::update(void) {
         update_scene_doors();
         update_scene_items();
         update_scene_keys();
+        update_scene_enemies();
 
-        map_enemies[0]->update(player->get_share_data());
 
         BeginDrawing();
         {
@@ -445,8 +471,8 @@ void Scene::update(void) {
                 draw_scene_doors();
                 draw_scene_items();
                 draw_scene_keys();
+                draw_scene_enemies();
 
-                map_enemies[0]->draw();
             }
             EndMode3D();
 

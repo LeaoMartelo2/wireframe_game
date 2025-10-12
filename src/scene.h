@@ -66,6 +66,9 @@ class Scene {
 
     virtual void update_scene_keys();
     virtual void draw_scene_keys();
+
+    virtual void update_scene_enemies();
+    virtual void draw_scene_enemies();
 };
 
 class MainMenu : public Scene {
