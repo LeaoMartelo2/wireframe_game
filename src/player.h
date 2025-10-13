@@ -54,7 +54,11 @@ class Player {
 
     struct {
         long health;
-        long ammo;
+        
+        size_t ammo_shells;
+        size_t ammo_axes;
+        size_t ammo_energy;
+
     } gameplay;
 
     struct {
@@ -79,7 +83,7 @@ class Player {
     void set_looking_at(Vector3 new_pos);
 
     void damage(long ammount);
-    void give_ammo(long ammount);
+    void give_ammo(long ammount, AMMO_TYPE type);
     void clear_inventory();
     void give_item(size_t slot, PLAYER_ITEMS item);
 
@@ -90,6 +94,7 @@ class Player {
     // private methods
     void get_input(void);
     void switch_to_slot(size_t slot);
+    void fire();
     void update_gravity();
     void jump();
     void add_velocity(Vector3 velocity_to_add);

@@ -58,7 +58,6 @@ Player::Player() {
     current_key = DOORKEY_NONE;
 
     gameplay.health = 250;
-    gameplay.ammo = 20;
 
     misc.show_debug = false;
     misc.noclip = false;
@@ -243,6 +242,11 @@ void Player::switch_to_slot(size_t slot) {
             inventory.slot.at(slot)->play_equip_animation();
         }
     }
+}
+
+void Player::fire() {
+
+    inventory.slot.at(inventory.selected_slot)->fire();
 }
 
 void Player::jump() {
@@ -503,9 +507,11 @@ void Player::update_share_data() {
     };
 }
 
-GenericPlayerData_share Player::get_share_data(){
+GenericPlayerData_share Player::get_share_data() {
     return share_data;
 }
+
+// @MAIN UPDATE
 
 void Player::update(const std::vector<Collider> &map_colliders, const std::vector<Door> &map_doors) {
 
@@ -531,10 +537,14 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
                       bool_to_string(misc.show_debug));
     }
 
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        fire();
+    }
 
 #ifdef DEBUG
 
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
+
         if (IsKeyPressed(KEY_N)) {
             misc.noclip = !misc.noclip;
             lognest_debug("[Player] Toggle NoClip '%s' -> '%s'",
@@ -542,24 +552,20 @@ void Player::update(const std::vector<Collider> &map_colliders, const std::vecto
         }
 
         if (IsKeyPressed(KEY_B)) {
-
             lognest_debug("[Player] all items given.");
-
             give_item(1, ITEM_SHOTGUN);
             give_item(2, ITEM_AXE);
             give_item(3, ITEM_CABELA);
         }
     }
 
-    if(IsKeyDown(KEY_Z)){
+    if (IsKeyDown(KEY_Z)) {
         camera.fovy = 30.0f;
     }
 
-    if(IsKeyUp(KEY_Z)){
+    if (IsKeyUp(KEY_Z)) {
         camera.fovy = 90.0f;
     }
-
-
 
 #endif // DEBUG
 }
@@ -580,8 +586,22 @@ void Player::damage(long ammount) {
     gameplay.health += ammount;
 }
 
-void Player::give_ammo(long ammount) {
-    gameplay.ammo += ammount;
+void Player::give_ammo(long ammount, AMMO_TYPE type) {
+
+    switch (type) {
+    case AMMO_TYPE::SHELLS: {
+        gameplay.ammo_shells += ammount;
+        break;
+    }
+    case AMMO_TYPE::AXES: {
+        gameplay.ammo_axes += ammount;
+        break;
+    }
+    case AMMO_TYPE::ENERGY: {
+        gameplay.ammo_energy += ammount;
+        break;
+    }
+    }
 }
 
 void Player::clear_inventory() {
@@ -608,6 +628,9 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
     case ITEM_SHOTGUN:
         inventory.slot.at(slot) = new Shotgun();
         inventory.slot.at(slot)->play_equip_animation();
+
+        give_ammo(inventory.slot.at(slot)->stats.ammo_on_pickup, inventory.slot.at(slot)->stats.ammo_type);
+
         break;
 
     case ITEM_AXE:
@@ -697,9 +720,9 @@ void Player::draw_hud() {
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
 #endif // DEBUG
 
-    /*DrawText(TextFormat("%d", gameplay.health),
-             (GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));*/
+    DrawText(TextFormat("%d", gameplay.health),
+             (GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));
 
-    /*DrawText(TextFormat("%d", gameplay.ammo),*/
-    /*(GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);*/
+    DrawText(TextFormat("%d", gameplay.ammo_shells),
+             (GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);
 }

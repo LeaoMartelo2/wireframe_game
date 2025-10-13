@@ -18,6 +18,12 @@ typedef enum PLAYER_ITEMS {
 
 } PLAYER_ITEMS;
 
+enum class AMMO_TYPE : size_t{
+    SHELLS,
+    AXES,
+    ENERGY,
+};
+
 const char *get_item_as_cstr(PLAYER_ITEMS item);
 
 #define FILL_COLOR GetColor(0x181818FF)
@@ -70,25 +76,42 @@ class Item {
     virtual void play_equip_animation() = 0;
 
     WF_timer equip_time;
+
+
+
+    bool can_fire = true;
+    WF_timer fire_time;
+    virtual void fire() = 0;
+
+
+    struct {
+        size_t damage;
+
+        size_t ammo_capacity;
+        size_t current_ammo;
+        size_t ammo_on_pickup;
+
+        AMMO_TYPE ammo_type;
+
+        float use_cooldown;
+
+    }stats;
 };
 
 class EmptyItem : public Item {
   public:
-    Vector3 pos;
 
     EmptyItem();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
-
+    void fire() override;
     void play_equip_animation() override;
 
-    WF_timer equip_time;
 };
 
 class Shotgun : public Item {
   public:
-    Vector3 pos;
 
     Shotgun();
 
@@ -98,16 +121,20 @@ class Shotgun : public Item {
     WF_timer equip_time;
 
     void play_equip_animation() override;
+
+
+    void fire() override;
 };
 
 class Axe : public Item {
   public:
-    Vector3 pos;
 
     Axe();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
+
+    void fire() override;
 
     WF_timer equip_time;
 
@@ -116,12 +143,13 @@ class Axe : public Item {
 
 class Cabela : public Item {
   public:
-    Vector3 pos;
 
     Cabela();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
+
+    void fire() override;
 
     WF_timer equip_time;
 

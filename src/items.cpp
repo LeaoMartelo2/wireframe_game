@@ -128,17 +128,37 @@ EmptyItem::EmptyItem() { return; }
 // Hello guys, so this is a tutorial on how to make ths compiler shut the fuck up
 void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) { return; }
 void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) { return; }
+void EmptyItem::fire() { return; }
 // thanks for comming to my tutorial please linker and subtract
 
 void EmptyItem::play_equip_animation() { return; }
 
+/*
+ *
+ * @ITEM_SHOTGUN
+ *
+ */
+
 Shotgun::Shotgun() {
     pos = Vector3Zero();
+
+    stats.ammo_type = AMMO_TYPE::SHELLS;
+    stats.ammo_capacity = 100;
+    stats.ammo_on_pickup = 20;
+
+
+
+
 }
 
 void Shotgun::update(GenericPlayerData_share data) {
 
     timer_update(&equip_time);
+    timer_update(&fire_time);
+
+    if (timer_finished(&fire_time)) {
+        can_fire = true;
+    }
 
     Vector3 local_forward = Vector3Add(data.forward, data.player_pos);
     local_forward = Vector3Add(local_forward, data.right);
@@ -183,6 +203,23 @@ void Shotgun::play_equip_animation() {
 
     PlaySound(g_sounds.item_shotgun_reload);
 }
+
+void Shotgun::fire() {
+
+    if (can_fire) {
+
+        can_fire = false;
+
+        PlaySound(g_sounds.item_axe_equip[1]);
+        timer_start(&fire_time, 1.5f);
+    }
+}
+
+/*
+ *
+ * @ITEM_AXE
+ *
+ */
 
 Axe::Axe() {
     pos = Vector3Zero();
@@ -247,6 +284,14 @@ void Axe::play_equip_animation() {
     PlaySound(g_sounds.item_axe_equip[index]);
 }
 
+void Axe::fire() {}
+
+/*
+ *
+ * @ITEM_CABELA
+ *
+ */
+
 Cabela::Cabela() {
     pos = Vector3Zero();
 }
@@ -296,3 +341,5 @@ void Cabela::play_equip_animation() {
 
     return;
 }
+
+void Cabela::fire() {}
