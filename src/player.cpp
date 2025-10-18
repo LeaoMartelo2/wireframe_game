@@ -251,30 +251,13 @@ void Player::fire() {
 
     Item *item = inventory.slot.at(inventory.selected_slot);
 
-    size_t ammo_check = 0;
+    size_t ammo_check = get_ammo_count(item->stats.ammo_type);
 
-    switch (item->stats.ammo_type) {
-    case AMMO_TYPE::SHELLS:
-        ammo_check = gameplay.ammo_shells;
-        break;
-
-    case AMMO_TYPE::AXES:
-        ammo_check = gameplay.ammo_axes;
-        break;
-
-    case AMMO_TYPE::ENERGY:
-        ammo_check = gameplay.ammo_energy;
-        break;
-    }
-
-    if(ammo_check <= 0){
+    if (ammo_check <= 0) {
         return;
 
         /* @TODO: item->failed_fire() ? */
     }
-
-
-
 
     if (item->fire()) {
 
@@ -645,6 +628,27 @@ void Player::give_ammo(long ammount, AMMO_TYPE type) {
     }
 }
 
+size_t Player::get_ammo_count(AMMO_TYPE type) {
+
+    size_t ret = 0;
+
+    switch (type) {
+    case AMMO_TYPE::SHELLS:
+        ret = gameplay.ammo_shells;
+        break;
+
+    case AMMO_TYPE::AXES:
+        ret = gameplay.ammo_axes;
+        break;
+
+    case AMMO_TYPE::ENERGY:
+        ret = gameplay.ammo_energy;
+        break;
+    }
+
+    return ret;
+}
+
 void Player::clear_inventory() {
 
     static EmptyItem empty_item;
@@ -762,24 +766,15 @@ void Player::draw_hud() {
 
     // DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
 
+
+
     DrawText(TextFormat("%d", gameplay.health),
              (GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));
 
-    size_t ammo_display = (size_t)NULL;
 
-    switch (inventory.slot.at(inventory.selected_slot)->stats.ammo_type) {
-    case AMMO_TYPE::SHELLS:
-        ammo_display = gameplay.ammo_shells;
-        break;
+    Item *current_item = inventory.slot.at(inventory.selected_slot);
 
-    case AMMO_TYPE::AXES:
-        ammo_display = gameplay.ammo_axes;
-        break;
-
-    case AMMO_TYPE::ENERGY:
-        ammo_display = gameplay.ammo_energy;
-        break;
-    }
+    size_t ammo_display = get_ammo_count(current_item->stats.ammo_type);
 
     DrawText(TextFormat("%d", ammo_display),
              (GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);

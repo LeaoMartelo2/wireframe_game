@@ -84,6 +84,7 @@ class Player {
 
     void damage(long ammount);
     void give_ammo(long ammount, AMMO_TYPE type);
+    size_t get_ammo_count(AMMO_TYPE type);
     void clear_inventory();
     void give_item(size_t slot, PLAYER_ITEMS item);
 
