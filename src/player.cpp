@@ -58,6 +58,9 @@ Player::Player() {
     current_key = DOORKEY_NONE;
 
     gameplay.health = 250;
+    gameplay.ammo_shells = 0;
+    gameplay.ammo_axes = 0;
+    gameplay.ammo_energy = 0;
 
     misc.show_debug = false;
     misc.noclip = false;
@@ -636,11 +639,17 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
     case ITEM_AXE:
         inventory.slot.at(slot) = new Axe();
         inventory.slot.at(slot)->play_equip_animation();
+
+        give_ammo(inventory.slot.at(slot)->stats.ammo_on_pickup, inventory.slot.at(slot)->stats.ammo_type);
         break;
 
     case ITEM_CABELA:
         inventory.slot.at(slot) = new Cabela();
         inventory.slot.at(slot)->play_equip_animation();
+
+
+        give_ammo(inventory.slot.at(slot)->stats.ammo_on_pickup, inventory.slot.at(slot)->stats.ammo_type);
+
         break;
 
     default:
@@ -716,13 +725,30 @@ void Player::draw_hud() {
 
     // DrawText(TextFormat("%d", inventory.selected_slot), GetScreenWidth() / 2, GetScreenHeight() / 2, 50, WHITE);
 
-#ifdef DEBUG
-    DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
-#endif // DEBUG
-
     DrawText(TextFormat("%d", gameplay.health),
              (GetScreenWidth() / 32), GetScreenHeight() / 2 + 150, 50, GetColor(0xFF0000FF));
 
-    DrawText(TextFormat("%d", gameplay.ammo_shells),
+    size_t ammo_display = (size_t)NULL;
+
+    switch (inventory.slot.at(inventory.selected_slot)->stats.ammo_type) {
+        case AMMO_TYPE::SHELLS:
+            ammo_display = gameplay.ammo_shells;
+            break;
+        
+        case AMMO_TYPE::AXES:
+            ammo_display = gameplay.ammo_axes;
+            break;
+        
+        case AMMO_TYPE::ENERGY:
+            ammo_display = gameplay.ammo_energy;
+            break;
+    }
+
+    DrawText(TextFormat("%d", ammo_display),
              (GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);
+
+
+#ifdef DEBUG
+    DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);
+#endif // DEBUG
 }

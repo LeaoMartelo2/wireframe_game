@@ -145,10 +145,6 @@ Shotgun::Shotgun() {
     stats.ammo_type = AMMO_TYPE::SHELLS;
     stats.ammo_capacity = 100;
     stats.ammo_on_pickup = 20;
-
-
-
-
 }
 
 void Shotgun::update(GenericPlayerData_share data) {
@@ -223,6 +219,9 @@ void Shotgun::fire() {
 
 Axe::Axe() {
     pos = Vector3Zero();
+
+    stats.ammo_type = AMMO_TYPE::AXES;
+    stats.ammo_on_pickup = 1;
 }
 
 void Axe::update(GenericPlayerData_share data) {
