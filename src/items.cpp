@@ -128,7 +128,7 @@ EmptyItem::EmptyItem() { return; }
 // Hello guys, so this is a tutorial on how to make ths compiler shut the fuck up
 void EmptyItem::update(GenericPlayerData_share data [[maybe_unused]]) { return; }
 void EmptyItem::draw(GenericPlayerData_share data [[maybe_unused]]) { return; }
-void EmptyItem::fire() { return; }
+bool EmptyItem::fire() { return false; }
 // thanks for comming to my tutorial please linker and subtract
 
 void EmptyItem::play_equip_animation() { return; }
@@ -145,6 +145,7 @@ Shotgun::Shotgun() {
     stats.ammo_type = AMMO_TYPE::SHELLS;
     stats.ammo_capacity = 100;
     stats.ammo_on_pickup = 20;
+    stats.ammo_to_fire = 1;
 }
 
 void Shotgun::update(GenericPlayerData_share data) {
@@ -200,15 +201,18 @@ void Shotgun::play_equip_animation() {
     PlaySound(g_sounds.item_shotgun_reload);
 }
 
-void Shotgun::fire() {
+bool Shotgun::fire() {
 
     if (can_fire) {
-
         can_fire = false;
 
-        PlaySound(g_sounds.item_axe_equip[1]);
+        PlaySound(g_sounds.generic_click);
+
+        
         timer_start(&fire_time, 1.5f);
+        return true;
     }
+    return false;
 }
 
 /*
@@ -283,7 +287,9 @@ void Axe::play_equip_animation() {
     PlaySound(g_sounds.item_axe_equip[index]);
 }
 
-void Axe::fire() {}
+bool Axe::fire() {
+    return false;
+}
 
 /*
  *
@@ -293,6 +299,9 @@ void Axe::fire() {}
 
 Cabela::Cabela() {
     pos = Vector3Zero();
+
+    stats.ammo_type = AMMO_TYPE::ENERGY;
+    stats.ammo_on_pickup = 25;
 }
 
 void Cabela::update(GenericPlayerData_share data) {
@@ -341,4 +350,6 @@ void Cabela::play_equip_animation() {
     return;
 }
 
-void Cabela::fire() {}
+bool Cabela::fire() {
+    return false;
+}

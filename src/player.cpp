@@ -249,7 +249,37 @@ void Player::switch_to_slot(size_t slot) {
 
 void Player::fire() {
 
-    inventory.slot.at(inventory.selected_slot)->fire();
+    Item *item = inventory.slot.at(inventory.selected_slot);
+
+    size_t ammo_check = 0;
+
+    switch (item->stats.ammo_type) {
+    case AMMO_TYPE::SHELLS:
+        ammo_check = gameplay.ammo_shells;
+        break;
+
+    case AMMO_TYPE::AXES:
+        ammo_check = gameplay.ammo_axes;
+        break;
+
+    case AMMO_TYPE::ENERGY:
+        ammo_check = gameplay.ammo_energy;
+        break;
+    }
+
+    if(ammo_check <= 0){
+        return;
+
+        /* @TODO: item->failed_fire() ? */
+    }
+
+
+
+
+    if (item->fire()) {
+
+        give_ammo(item->stats.ammo_to_fire * -1, item->stats.ammo_type);
+    }
 }
 
 void Player::jump() {
@@ -494,6 +524,14 @@ void Player::draw_viewmodel() {
         return;
     }
 
+    /* specific to axes */
+
+    if (inventory.selected_slot == (size_t)ITEM_SLOTS::AXE) {
+        if (gameplay.ammo_axes < 1) {
+            return;
+        }
+    }
+
     inventory.slot.at(inventory.selected_slot)->draw(share_data);
 }
 
@@ -647,7 +685,6 @@ void Player::give_item(size_t slot, PLAYER_ITEMS item) {
         inventory.slot.at(slot) = new Cabela();
         inventory.slot.at(slot)->play_equip_animation();
 
-
         give_ammo(inventory.slot.at(slot)->stats.ammo_on_pickup, inventory.slot.at(slot)->stats.ammo_type);
 
         break;
@@ -731,22 +768,21 @@ void Player::draw_hud() {
     size_t ammo_display = (size_t)NULL;
 
     switch (inventory.slot.at(inventory.selected_slot)->stats.ammo_type) {
-        case AMMO_TYPE::SHELLS:
-            ammo_display = gameplay.ammo_shells;
-            break;
-        
-        case AMMO_TYPE::AXES:
-            ammo_display = gameplay.ammo_axes;
-            break;
-        
-        case AMMO_TYPE::ENERGY:
-            ammo_display = gameplay.ammo_energy;
-            break;
+    case AMMO_TYPE::SHELLS:
+        ammo_display = gameplay.ammo_shells;
+        break;
+
+    case AMMO_TYPE::AXES:
+        ammo_display = gameplay.ammo_axes;
+        break;
+
+    case AMMO_TYPE::ENERGY:
+        ammo_display = gameplay.ammo_energy;
+        break;
     }
 
     DrawText(TextFormat("%d", ammo_display),
              (GetScreenWidth() - 150), GetScreenHeight() / 2 + 150, 50, LIGHTGRAY);
-
 
 #ifdef DEBUG
     DrawText("Debug build", GetScreenWidth() - 150, GetScreenHeight() - 100, 20, WHITE);

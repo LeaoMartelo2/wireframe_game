@@ -18,7 +18,13 @@ typedef enum PLAYER_ITEMS {
 
 } PLAYER_ITEMS;
 
-enum class AMMO_TYPE : size_t{
+enum class ITEM_SLOTS : size_t {
+    SHOTGUN = 1,
+    AXE = 2,
+    CABELA = 3,  
+};
+
+enum class AMMO_TYPE : size_t {
     SHELLS,
     AXES,
     ENERGY,
@@ -77,42 +83,36 @@ class Item {
 
     WF_timer equip_time;
 
-
-
     bool can_fire = true;
     WF_timer fire_time;
-    virtual void fire() = 0;
-
+    virtual bool fire() = 0;
 
     struct {
         size_t damage;
 
         size_t ammo_capacity;
-        size_t current_ammo;
         size_t ammo_on_pickup;
+        size_t ammo_to_fire;
 
         AMMO_TYPE ammo_type;
 
         float use_cooldown;
 
-    }stats;
+    } stats;
 };
 
 class EmptyItem : public Item {
   public:
-
     EmptyItem();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
-    void fire() override;
+    bool fire() override;
     void play_equip_animation() override;
-
 };
 
 class Shotgun : public Item {
   public:
-
     Shotgun();
 
     void update(GenericPlayerData_share data) override;
@@ -122,19 +122,17 @@ class Shotgun : public Item {
 
     void play_equip_animation() override;
 
-
-    void fire() override;
+    bool fire() override;
 };
 
 class Axe : public Item {
   public:
-
     Axe();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void fire() override;
+    bool fire() override;
 
     WF_timer equip_time;
 
@@ -143,13 +141,12 @@ class Axe : public Item {
 
 class Cabela : public Item {
   public:
-
     Cabela();
 
     void update(GenericPlayerData_share data) override;
     void draw(GenericPlayerData_share data) override;
 
-    void fire() override;
+    bool fire() override;
 
     WF_timer equip_time;
 
